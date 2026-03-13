@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical AI Implementation Timeline</title>
+<style>
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:#f6f7f9;
+    margin:0;
+    padding:0;
+    color:#222;
+}
+header{
+    background:#1a7a6e;
+    color:white;
+    padding:30px 40px;
+}
+h1{margin:0;font-size:28px}
+h2{margin-top:0}
+.container{
+    padding:30px 40px;
+}
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:30px;
+}
+.card{
+    background:white;
+    border-radius:8px;
+    border:1px solid #ddd;
+    padding:18px;
+    cursor:pointer;
+    transition:.2s;
+}
+.card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+.card h3{
+    margin:0 0 8px 0;
+    font-size:18px;
+}
+.badge{
+    display:inline-block;
+    background:#e8f5f3;
+    color:#1a7a6e;
+    font-size:12px;
+    padding:4px 8px;
+    border-radius:4px;
+}
+.section{
+    background:white;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:20px;
+    margin-bottom:20px;
+}
+.hidden{
+    display:none;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+th,td{
+    border-bottom:1px solid #eee;
+    padding:10px;
+    text-align:left;
+}
+th{
+    background:#fafafa;
+}
+.phase{
+    border-left:4px solid #1a7a6e;
+    padding-left:12px;
+    margin-bottom:12px;
+}
+footer{
+    text-align:center;
+    font-size:12px;
+    color:#666;
+    padding:20px;
+}
+</style>
+
+<script>
+function showSection(id){
+    let sections=document.querySelectorAll(".optionDetail");
+    sections.forEach(s=>s.classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+}
+</script>
+
+</head>
+<body>
+
+<header>
+<h1>Forma Medical AI Implementation</h1>
+<p>Interactive Timeline & Time Estimate — Prepared by Jessica Peaden</p>
+</header>
+
+<div class="container">
+
+<h2>Implementation Options</h2>
+<p>Click an option to explore the detailed timeline and estimated work.</p>
+
+<div class="grid">
+
+<div class="card" onclick="showSection('opt1')">
+<h3>Option 1</h3>
+<p>Lightweight AI Overlay</p>
+<span class="badge">4–6 weeks</span>
+</div>
+
+<div class="card" onclick="showSection('opt2')">
+<h3>Option 2</h3>
+<p>Central Platform + AI</p>
+<span class="badge">8–12 weeks</span>
+</div>
+
+<div class="card" onclick="showSection('opt3')">
+<h3>Option 3</h3>
+<p>Custom BI Foundation</p>
+<span class="badge">12–16 weeks</span>
+</div>
+
+<div class="card" onclick="showSection('opt4')">
+<h3>Option 4 (Recommended)</h3>
+<p>Full AI Architecture</p>
+<span class="badge">12–16 weeks</span>
+</div>
+
+</div>
+
+
+<div id="opt1" class="section optionDetail hidden">
+<h2>Option 1 — Quick Automation Wins</h2>
+
+<div class="phase">
+<strong>Goal:</strong> Eliminate manual weekly reporting.
+</div>
+
+<ul>
+<li>Automate financial exports</li>
+<li>Pull CRM data from Google Sheets</li>
+<li>Compile structured AI prompts</li>
+<li>Generate weekly business review reports</li>
+<li>Index Dropbox documentation</li>
+</ul>
+
+<table>
+<tr><th>Estimate</th><th>Value</th></tr>
+<tr><td>Duration</td><td>3–4 weeks</td></tr>
+<tr><td>Estimated Effort</td><td>80–120 hours</td></tr>
+<tr><td>Primary Outcome</td><td>Automated Weekly Review</td></tr>
+</table>
+
+</div>
+
+
+<div id="opt2" class="section optionDetail hidden">
+<h2>Option 2 — Central Platform + AI</h2>
+
+<ul>
+<li>Migrate CRM from Google Sheets</li>
+<li>Build ClickUp pipeline tracking</li>
+<li>Create rep reporting automation</li>
+<li>Automate pipeline dashboards</li>
+<li>Connect Gmail triggers</li>
+</ul>
+
+<table>
+<tr><th>Estimate</th><th>Value</th></tr>
+<tr><td>Duration</td><td>4–6 weeks</td></tr>
+<tr><td>Estimated Effort</td><td>120–160 hours</td></tr>
+<tr><td>Primary Outcome</td><td>Centralized operational platform</td></tr>
+</table>
+
+</div>
+
+
+<div id="opt3" class="section optionDetail hidden">
+<h2>Option 3 — Data Warehouse & AI Knowledge Layer</h2>
+
+<ul>
+<li>Deploy Snowflake data warehouse</li>
+<li>Build ETL pipelines</li>
+<li>Normalize operational datasets</li>
+<li>Vector index Dropbox knowledge</li>
+<li>Build RAG architecture</li>
+</ul>
+
+<table>
+<tr><th>Estimate</th><th>Value</th></tr>
+<tr><td>Duration</td><td>4–6 weeks</td></tr>
+<tr><td>Estimated Effort</td><td>140–200 hours</td></tr>
+<tr><td>Primary Outcome</td><td>AI knowledge layer</td></tr>
+</table>
+
+</div>
+
+
+<div id="opt4" class="section optionDetail hidden">
+<h2>Option 4 — Full AI Business Brain</h2>
+
+<ul>
+<li>AI orchestration layer</li>
+<li>Business intelligence queries</li>
+<li>Sales performance insights</li>
+<li>Financial analysis queries</li>
+<li>Strategic AI assistant</li>
+</ul>
+
+<table>
+<tr><th>Estimate</th><th>Value</th></tr>
+<tr><td>Duration</td><td>2–4 weeks</td></tr>
+<tr><td>Estimated Effort</td><td>80–120 hours</td></tr>
+<tr><td>Primary Outcome</td><td>Company “Business Brain”</td></tr>
+</table>
+
+</div>
+
+
+<div class="section">
+<h2>Total Recommended Implementation</h2>
+
+<table>
+<tr>
+<th>Phase</th>
+<th>Timeline</th>
+<th>Estimated Hours</th>
+</tr>
+
+<tr>
+<td>Discovery & Architecture</td>
+<td>1–2 weeks</td>
+<td>40–60 hrs</td>
+</tr>
+
+<tr>
+<td>Quick Automation Wins</td>
+<td>3–4 weeks</td>
+<td>80–120 hrs</td>
+</tr>
+
+<tr>
+<td>Central Platform</td>
+<td>4–6 weeks</td>
+<td>120–160 hrs</td>
+</tr>
+
+<tr>
+<td>Data Warehouse</td>
+<td>4–6 weeks</td>
+<td>140–200 hrs</td>
+</tr>
+
+<tr>
+<td>AI Business Brain</td>
+<td>2–4 weeks</td>
+<td>80–120 hrs</td>
+</tr>
+
+</table>
+
+</div>
+
+
+</div>
+
+<footer>
+Forma Medical AI Transformation · Interactive Planning Document
+</footer>
+
+</body>
+</html>

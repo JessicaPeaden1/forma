@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — Current Technology Stack Map</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:       #0b0f1a;
+    --bg2:      #111724;
+    --bg3:      #161d2e;
+    --surface:  #1a2235;
+    --surface2: #1f2a3d;
+    --border:   #263247;
+    --border2:  #2e3d56;
+    --text1:    #e8edf5;
+    --text2:    #8fa3c0;
+    --text3:    #536880;
+    --blue:     #4d9de0;
+    --blue-bg:  rgba(77,157,224,0.10);
+    --blue-b:   rgba(77,157,224,0.30);
+    --green:    #4db89a;
+    --green-bg: rgba(77,184,154,0.10);
+    --green-b:  rgba(77,184,154,0.30);
+    --orange:   #e8a94d;
+    --orange-bg:rgba(232,169,77,0.10);
+    --orange-b: rgba(232,169,77,0.30);
+    --purple:   #9b72e8;
+    --purple-bg:rgba(155,114,232,0.10);
+    --purple-b: rgba(155,114,232,0.30);
+    --red:      #e86b6b;
+    --red-bg:   rgba(232,107,107,0.10);
+    --red-b:    rgba(232,107,107,0.30);
+    --gray:     #536880;
+    --gray-bg:  rgba(83,104,128,0.12);
+    --r:        8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text1);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 32px 28px 64px; }
+
+  /* HEADER */
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border2);
+    margin-bottom: 32px;
+  }
+  .header-left {}
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 6px;
+  }
+  .board-title {
+    font-size: 26px; font-weight: 600;
+    letter-spacing: -0.02em; color: var(--text1);
+  }
+  .board-sub { font-size: 13px; color: var(--text2); margin-top: 4px; }
+  .header-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--text3);
+    text-align: right; line-height: 1.8;
+  }
+  .status-pill {
+    display: inline-block;
+    background: var(--orange-bg); border: 1px solid var(--orange-b);
+    color: var(--orange); border-radius: 20px;
+    padding: 2px 10px; font-size: 10px; font-weight: 500;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  /* METRICS ROW */
+  .metrics {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+    margin-bottom: 32px;
+  }
+  .metric-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 14px 16px;
+  }
+  .metric-num { font-size: 28px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; line-height: 1; margin-bottom: 4px; }
+  .metric-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .metric-card.blue .metric-num  { color: var(--blue); }
+  .metric-card.red .metric-num   { color: var(--red); }
+  .metric-card.orange .metric-num{ color: var(--orange); }
+  .metric-card.purple .metric-num{ color: var(--purple); }
+  .metric-card.gray .metric-num  { color: var(--gray); }
+
+  /* SECTION HEADER */
+  .sec-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px; margin-top: 32px;
+  }
+  .sec-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text2);
+  }
+  .sec-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* CONSTELLATION MAP */
+  .constellation-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--r);
+    padding: 20px;
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .constellation-wrap::before {
+    content: 'SYSTEM INTEGRATION MAP — CURRENT STATE';
+    position: absolute; top: 16px; left: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--text3);
+    letter-spacing: 0.1em;
+  }
+  .no-integrations-banner {
+    position: absolute; top: 16px; right: 20px;
+    background: var(--red-bg); border: 1px solid var(--red-b);
+    color: var(--red); border-radius: 4px;
+    padding: 4px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  #constellation {
+    width: 100%; height: 560px; display: block; margin-top: 10px;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--text2);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-line {
+    width: 24px; height: 2px;
+  }
+
+  /* SYSTEMS GRID */
+  .systems-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 0;
+  }
+
+  .sys-group {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 16px;
+  }
+  .sys-group-title {
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sys-group-title.blue  { color: var(--blue); }
+  .sys-group-title.purple{ color: var(--purple); }
+  .sys-group-title.orange{ color: var(--orange); }
+  .sys-group-title.red   { color: var(--red); }
+  .sys-group-title.gray  { color: var(--gray); }
+
+  .sys-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .sys-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .sys-item-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 2px;
+  }
+  .sys-name { font-size: 13px; font-weight: 500; }
+  .sys-cat  { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .sys-detail {
+    font-size: 11px; color: var(--text2); line-height: 1.55;
+    display: none;
+    margin-top: 6px; padding-top: 6px;
+    border-top: 1px dashed var(--border2);
+  }
+  .sys-detail.open { display: block; }
+  .sys-item:hover .sys-name { color: var(--blue); }
+
+  /* BADGES */
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border-radius: 4px; padding: 2px 7px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .badge-active   { color: var(--green);  background: var(--green-bg);  border-color: var(--green-b); }
+  .badge-trans    { color: var(--orange); background: var(--orange-bg); border-color: var(--orange-b); }
+  .badge-unknown  { color: var(--red);    background: var(--red-bg);    border-color: var(--red-b); }
+  .badge-rejected { color: var(--gray);   background: var(--gray-bg);   border-color: rgba(83,104,128,0.3); }
+  .badge-ai       { color: var(--purple); background: var(--purple-bg); border-color: var(--purple-b); }
+
+  /* INTEGRATION TABLE */
+  .int-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 12px;
+  }
+  .int-table th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--bg3);
+    color: var(--text3);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border2);
+  }
+  .int-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .int-table tr:last-child td { border-bottom: none; }
+  .int-table tr:hover td { background: var(--surface2); }
+  .int-table td:first-child { font-weight: 500; }
+
+  .int-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 600;
+  }
+  .int-status.none   { color: var(--red); }
+  .int-status.manual { color: var(--orange); }
+  .int-status.api    { color: var(--green); }
+  .int-status.tbd    { color: var(--text3); }
+
+  .flag {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 1px 6px; border-radius: 3px;
+    margin-left: 6px;
+  }
+  .flag-red  { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-b); }
+  .flag-warn { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-b); }
+
+  /* DATA CREATION POINTS */
+  .data-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  }
+  .data-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 14px;
+  }
+  .data-icon { font-size: 20px; margin-bottom: 8px; }
+  .data-type { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .data-source { font-size: 12px; font-weight: 500; margin-bottom: 4px; }
+  .data-note { font-size: 11px; color: var(--text3); }
+
+  /* TOOLS FLAGGED */
+  .flags-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  }
+  .flag-card {
+    background: var(--red-bg); border: 1px solid var(--red-b);
+    border-radius: var(--r); padding: 14px 16px;
+    display: flex; gap: 12px;
+  }
+  .flag-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .flag-card-title { font-size: 13px; font-weight: 600; color: var(--red); margin-bottom: 3px; }
+  .flag-card-body  { font-size: 11px; color: var(--text2); line-height: 1.55; }
+
+  .warn-card {
+    background: var(--orange-bg); border: 1px solid var(--orange-b);
+    border-radius: var(--r); padding: 14px 16px;
+    display: flex; gap: 12px;
+  }
+  .warn-card .flag-card-title { color: var(--orange); }
+
+  /* TWO-COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* TABLE WRAPPER */
+  .table-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); overflow: hidden;
+  }
+
+  /* TOOLTIP */
+  .tooltip {
+    position: absolute;
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 6px; padding: 8px 12px;
+    font-size: 11px; color: var(--text2);
+    max-width: 220px; line-height: 1.5;
+    pointer-events: none;
+    opacity: 0; transition: opacity 0.15s;
+    z-index: 100;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .tooltip strong { color: var(--text1); display: block; margin-bottom: 2px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="eyebrow">Board 2 · Forma Medical — AI Implementation</div>
+      <div class="board-title">Current Technology Stack Map</div>
+      <div class="board-sub">All systems identified across source materials — status, data held, integration readiness</div>
+    </div>
+    <div class="header-meta">
+      <div class="status-pill">● Discovery Phase</div><br>
+      Client: Forma Medical<br>
+      Lead: Jessica Peaden · Plus 1 Technology<br>
+      Date: March 2026<br>
+      Board Status: Current-State Only
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric-card blue"><div class="metric-num">9</div><div class="metric-label">Active Systems</div></div>
+    <div class="metric-card red"><div class="metric-num">0</div><div class="metric-label">Integrations Exist</div></div>
+    <div class="metric-card orange"><div class="metric-num">3</div><div class="metric-label">In Transition / Eval</div></div>
+    <div class="metric-card purple"><div class="metric-num">3</div><div class="metric-label">AI Tools in Use</div></div>
+    <div class="metric-card gray"><div class="metric-num">4</div><div class="metric-label">Critical Unknowns</div></div>
+  </div>
+
+  <!-- CONSTELLATION -->
+  <div class="sec-header"><div class="sec-title">Integration Map</div><div class="sec-line"></div></div>
+
+  <div class="constellation-wrap">
+    <div class="no-integrations-banner">⚠ ZERO CONFIRMED INTEGRATIONS</div>
+    <svg id="constellation" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#4d9de0"></div>Active System</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#9b72e8"></div>AI Tool</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e8a94d"></div>In Transition / Eval</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e86b6b"></div>Unknown / At Risk</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#536880"></div>Rejected / Former</div>
+      <div class="legend-item" style="margin-left:8px">
+        <svg width="24" height="8"><line x1="0" y1="4" x2="24" y2="4" stroke="#e86b6b" stroke-width="1.5" stroke-dasharray="4,3"/></svg>
+        No Integration (Gap)
+      </div>
+      <div class="legend-item">
+        <svg width="24" height="8"><line x1="0" y1="4" x2="24" y2="4" stroke="#e8a94d" stroke-width="1.5" stroke-dasharray="2,2"/></svg>
+        Manual Bridge Only
+      </div>
+      <div class="legend-item">
+        <svg width="24" height="8"><line x1="0" y1="4" x2="24" y2="4" stroke="#4d9de0" stroke-width="1.5" opacity="0.5"/></svg>
+        Data Flow (Manual)
+      </div>
+    </div>
+  </div>
+
+  <!-- SYSTEM INVENTORY -->
+  <div class="sec-header" style="margin-top:36px"><div class="sec-title">System Inventory</div><div class="sec-line"></div></div>
+
+  <div class="systems-grid">
+
+    <!-- ACTIVE SYSTEMS -->
+    <div class="sys-group">
+      <div class="sys-group-title blue">🔵 Active Systems</div>
+
+      <div class="sys-item" onclick="toggleDetail(this)">
+        <div class="sys-item-header"><span class="sys-name">QuickBooks Desktop</span><span class="badge badge-trans">In Transition</span></div>
+        <div class="sys-cat">ERP / Finance / Inventory</div>
+        <div class="sys-detail">Core accounting and ERP backbone. Handles multi-site consignment inventory, A/P, A/R, COGS. Hosted on remote server — adds integration friction. Andrew called it "terrible" and "too slow to scale." Still active because it supports complex inventory needs. No automation should be built here until ERP direction is confirmed. <span class="flag flag-red">BUILD GATE</span></div>
+      </div>
+
+      <div class="sys-item" onclick="toggleDetail(this)">
+        <div class="sys-item-header"><span class="sys-name">Google Sheets (CRM)</span><span class="badge badge-active">Active</span></div>
+        <div class="sys-cat">CRM / Sales Tracking / Customer Data</div>
+        <div class="sys-detail">Replaced Nutshell CRM after adoption failure. Manually updated weekly by 2 employees aggregating input from ~45 distributors. Tracks surgeons, reps, territories, surgery pipeline, cohorts, weekly sales targets. Works operationally today. Not scalable long-term. Google API available for future integration.</div>
+      </div>
+
+      <div class="sys-item" onclick="toggleDetail(this)">
+        <div class="sys-item-header"><span class="sys-name">Dropbox</span><span class="badge badge-active">Active</span></div>
+        <div class="sys-cat">Document Management</div>
+        <div class="sys-detail">Highly organized folder tree — SOPs, pricing files, contracts, account info, operational docs. Andrew calls it a "strategic asset." Not AI-indexed or searchable. Dropbox API available. Andrew explicitly wants this connected to the BI/AI layer. During a prior acquisition, Dropbox's organization proved its value.</div>
+      </div>
+
+      <div class="sys-item" onclick="toggleDetail(this)">
+        <div class="sys-item-header"><span class="sys-name">Gmail</span><span class="badge badge-active">Active</span></div>
+        <div class="sys-cat">Email / Operations Trigger</div>
+        <div class="sys-detail">Case sheets and hospital POs from 1099 reps arrive via Gmail and are manually entered into ERP. This is the order-to-cash trigger. Andrew called it "marginally important" — this is a scope conflict. Gmail is the operational entry point for the entire revenue cycle. Gmail API available. <span class="flag flag-warn">SCOPE CONFLICT</span></div>
+      </div>
+
+      <div class="sys-item" onclick="toggleDetail(this)">
+        <div class="sys-item-header"><span class="sys-name">Excel</span><span class="badge badge-active">Active</span></div>
+        <div class="sys-cat">Supplemental Tracking (multiple uses)</div>
+        <div class="sys-detail">Appears in two distinct roles on the tech stack: inventory tracking AND customer tracking. These may be separate files. Scope and content of each must be clarified. May overlap with QB Desktop inventory records or Google Sheets customer tracking. <span class="flag flag-red">CLARIFY SCOPE</span></div>
+      </div>
+
+      <div class="sys-item" onclick="toggleDetail(this)">
+        <div class="sys-item-header"><span class="sys-name">Bill.com</span><span class="badge badge-active">Active</span></div>
+        <div class="sys-cat">Finance / Accounts Payable</div>
+        <div class="sys-detail">Confirmed on tech stack slide. Handles AP and bill payment processing. Specific role vs. QuickBooks Desktop in the AP workflow was not discussed in discovery. Handoff and data relationship between the two systems needs documentation. <span class="flag flag-warn">NOT DISCUSSED</span></div>
+      </div>
+
+      <div class="sys-item" onclick="toggleDetail(this)">
+        <div class="sys-item-header"><span class="sys-name">Adobe Sign</span><span class="badge badge-active">Active</span></div>
+        <div class="sys-cat">Contract Management</div>
+        <div class="sys-detail">Electronic contract signing and management. Confirmed on tech stack. Integration scope not discussed in discovery. Likely remains unchanged in future state.</div>
+      </div>
+
+      <div class="sys-item" onclick="toggleDetail(this)">
+        <div class="sys-item-header"><span class="sys-name">Zoom + Otter.ai</span><span class="badge badge-active">Active</span></div>
+        <div class="sys-cat">Meetings / Transcription</div>
+        <div class="sys-detail">Video conferencing and meeting transcription. Confirmed on tech stack. Active use frequency not verified. Integration scope not discussed. Not a current BI priority.</div>
+      </div>
+
+      <div class="sys-item" onclick="toggleDetail(this)">
+        <div class="sys-item-header"><span class="sys-name">FDA QMS</span><span class="badge badge-active">Active</span></div>
+        <div class="sys-cat">Compliance / Quality Management</div>
+        <div class="sys-detail">Mandatory FDA compliance backbone. Records receiving, inspection, and packaging activity. Andrew described it as "pretty boring" and "just a checkbox." Quality records do NOT flow back to ERP — a documented data silo. Platform name not identified. Non-negotiable; should not be disrupted by any integration work. <span class="flag flag-red">PLATFORM UNKNOWN</span></div>
+      </div>
+
+    </div>
+
+    <!-- AI TOOLS + TRANSITION -->
+    <div>
+      <div class="sys-group" style="margin-bottom:12px">
+        <div class="sys-group-title purple">🟣 AI Tools in Use</div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">Grok (xAI)</span><span class="badge badge-ai">Heavy Use</span></div>
+          <div class="sys-cat">Strategic Analysis · Andrew's primary tool</div>
+          <div class="sys-detail">Andrew's most-used model. Weekly strategic reviews, scenario modeling, multi-model analysis. Used for P&L review, CRM data, surgery cohort tracking, rep performance. No API integration path currently identified — no platform integrates well with Grok. This is a known architectural constraint. <span class="flag flag-red">NO API PATH</span></div>
+        </div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">Google Gemini</span><span class="badge badge-ai">Active</span></div>
+          <div class="sys-cat">Strategic Analysis · Andrew's parallel tool</div>
+          <div class="sys-detail">Used alongside Grok by Andrew for multi-model analysis and major business decisions. Andrew shared a Gemini conversation as the AI baseline demonstration for this engagement. Google API available — ready for integration when architecture is confirmed.</div>
+        </div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">Claude (Anthropic)</span><span class="badge badge-ai">Active</span></div>
+          <div class="sys-cat">Team tool · Used alongside Grok + Gemini</div>
+          <div class="sys-detail">Used more by other team members than Andrew directly. Part of the multi-model decision process. Claude.ai connector integrations available per Jessica. Currently manual, not integrated into any workflow.</div>
+        </div>
+      </div>
+
+      <div class="sys-group">
+        <div class="sys-group-title orange">🟠 In Transition / Under Evaluation</div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">Odoo</span><span class="badge badge-trans">Paused</span></div>
+          <div class="sys-cat">ERP · Implementation started, paused</div>
+          <div class="sys-detail">ERP Option A. Implementation started then paused. Andrew now sees it as "a huge lift and very challenging to modify in the future." Still on the table. Open-source flexibility was appealing but customization complexity became a concern. <span class="flag flag-warn">ERP GATE</span></div>
+        </div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">Implantbase</span><span class="badge badge-trans">Leading Candidate</span></div>
+          <div class="sys-cat">Inventory Management / ERP-adjacent</div>
+          <div class="sys-detail">Niche orthopedic inventory platform designed specifically for medical device companies. Strong operational fit for consignment and orthopedic workflows implied by Andrew. Contract not signed. API and integration capability completely unverified. Most critical unknown for BI layer design. <span class="flag flag-red">API UNVERIFIED</span></div>
+        </div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">QuickBooks Online / Enterprise</span><span class="badge badge-trans">Evaluating</span></div>
+          <div class="sys-cat">Finance / ERP · Possible future replacement</div>
+          <div class="sys-detail">Introduced by Marc during discovery — Andrew was unaware it existed. QBO Enterprise released less than 1 year ago. Potential to simplify future integrations vs. Desktop version. Fit for Forma's complex inventory requirements not yet evaluated. <span class="flag flag-warn">NOT YET EVALUATED</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNKNOWNS + REJECTED -->
+    <div>
+      <div class="sys-group" style="margin-bottom:12px; border-color: var(--red-b); background: rgba(232,107,107,0.04)">
+        <div class="sys-group-title red">🔴 Critical Unknowns</div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">Surgery Tracking System</span><span class="badge badge-unknown">Unnamed</span></div>
+          <div class="sys-cat">Operations / Analytics · Platform unknown</div>
+          <div class="sys-detail">Andrew references this system weekly as a primary input into his AI analysis. Tracks per-surgery details — customer cohorts, regions, individual rep performance, weekly targets. Platform has never been identified in any source material. CRITICAL GAP — BI layer cannot be designed until this source is named and its API capability assessed. <span class="flag flag-red">MUST IDENTIFY</span></div>
+        </div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">Tray Locator</span><span class="badge badge-unknown">Unknown Platform</span></div>
+          <div class="sys-cat">Inventory / Field Tracking · Outside ERP</div>
+          <div class="sys-detail">Tracks physical tray/set locations across field inventory. Exists outside the ERP entirely. Platform not identified in any source material. Tracks SET 01, SET 02, etc. by field location (rep, hospital, territory). Physical location and financial inventory record are permanently siloed. Critical for inventory traceability architecture. <span class="flag flag-red">OUTSIDE ERP</span></div>
+        </div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">QMS Platform</span><span class="badge badge-unknown">Unnamed</span></div>
+          <div class="sys-cat">Compliance · FDA-required</div>
+          <div class="sys-detail">The specific QMS software platform was never named. It's active and required by FDA. Records receiving, inspection, and packaging. Does not connect to ERP — data remains siloed. If it has no integration capability, quality data and inventory data stay permanently separated.</div>
+        </div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">ClickUp / Go High Level</span><span class="badge badge-trans">Future Eval Only</span></div>
+          <div class="sys-cat">CRM / PM · Not current state</div>
+          <div class="sys-detail">Discussed as potential future CRM/PM hub options. ClickUp covered in depth by Jessica — dashboards, automations, QB bi-directional sync, AI agents. Go High Level mentioned as CRM candidate. Neither is in current-state stack. Not yet selected.</div>
+        </div>
+      </div>
+
+      <div class="sys-group" style="border-color: rgba(83,104,128,0.3)">
+        <div class="sys-group-title gray">⚫ Rejected / Former Systems</div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">NetSuite</span><span class="badge badge-rejected">Rejected</span></div>
+          <div class="sys-cat">ERP · Evaluated and rejected</div>
+          <div class="sys-detail">Evaluated as ERP replacement. Custom coding to support Forma's orthopedic workflows quoted at $150K+. Rejected — establishes a clear budget and customization ceiling for all future ERP decisions.</div>
+        </div>
+
+        <div class="sys-item" onclick="toggleDetail(this)">
+          <div class="sys-item-header"><span class="sys-name">Nutshell CRM</span><span class="badge badge-rejected">Abandoned</span></div>
+          <div class="sys-cat">CRM · Non-adoption failure</div>
+          <div class="sys-detail">Previously used as formal CRM. Abandoned due to non-adoption. Replaced by Google Sheets. This failure is a key constraint for any future CRM recommendation — adoption risk is real and must be designed around.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INTEGRATION STATUS TABLE -->
+  <div class="sec-header" style="margin-top:36px"><div class="sec-title">Integration Status</div><div class="sec-line"></div></div>
+
+  <div class="table-wrap">
+    <table class="int-table">
+      <thead>
+        <tr>
+          <th>Tool</th>
+          <th>Category</th>
+          <th>Integration Status</th>
+          <th>API Availability</th>
+          <th>Notes / Gaps</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>QuickBooks Desktop</td>
+          <td>ERP / Finance</td>
+          <td><span class="int-status none">STANDALONE</span></td>
+          <td>Limited (Desktop) / Full (Online)</td>
+          <td>Do not build automation until ERP decision confirmed <span class="flag flag-red">BUILD GATE</span></td>
+        </tr>
+        <tr>
+          <td>Google Sheets (CRM)</td>
+          <td>CRM</td>
+          <td><span class="int-status none">STANDALONE</span></td>
+          <td>Google API available ✓</td>
+          <td>Ready for integration when architecture confirmed</td>
+        </tr>
+        <tr>
+          <td>Dropbox</td>
+          <td>Documents</td>
+          <td><span class="int-status none">STANDALONE</span></td>
+          <td>Dropbox API available ✓</td>
+          <td>High-value knowledge layer — Andrew wants this in AI stack</td>
+        </tr>
+        <tr>
+          <td>Gmail</td>
+          <td>Email / Ops Trigger</td>
+          <td><span class="int-status manual">MANUAL ONLY</span></td>
+          <td>Gmail API available ✓</td>
+          <td>Order-to-cash trigger — understated by Andrew <span class="flag flag-warn">SCOPE CONFLICT</span></td>
+        </tr>
+        <tr>
+          <td>Excel (multiple files)</td>
+          <td>Tracking</td>
+          <td><span class="int-status none">STANDALONE</span></td>
+          <td>File-based</td>
+          <td>Scope of each file unclear — may overlap with other systems <span class="flag flag-red">CLARIFY</span></td>
+        </tr>
+        <tr>
+          <td>Bill.com</td>
+          <td>Finance / AP</td>
+          <td><span class="int-status tbd">UNKNOWN</span></td>
+          <td>API available</td>
+          <td>Role vs. QB Desktop not discussed in discovery <span class="flag flag-warn">DOCUMENT</span></td>
+        </tr>
+        <tr>
+          <td>FDA QMS (unnamed)</td>
+          <td>Compliance</td>
+          <td><span class="int-status none">SILOED</span></td>
+          <td>Unknown — platform unnamed</td>
+          <td>Quality data permanently separated from ERP. Do not disrupt. <span class="flag flag-red">PLATFORM UNKNOWN</span></td>
+        </tr>
+        <tr>
+          <td>Grok (xAI)</td>
+          <td>AI</td>
+          <td><span class="int-status none">MANUAL ONLY</span></td>
+          <td>No known API path <span class="flag flag-red">GAP</span></td>
+          <td>Andrew's primary tool — architectural constraint. Research required.</td>
+        </tr>
+        <tr>
+          <td>Google Gemini</td>
+          <td>AI</td>
+          <td><span class="int-status none">MANUAL ONLY</span></td>
+          <td>Google API available ✓</td>
+          <td>Ready for integration</td>
+        </tr>
+        <tr>
+          <td>Claude (Anthropic)</td>
+          <td>AI</td>
+          <td><span class="int-status none">MANUAL ONLY</span></td>
+          <td>Claude.ai connectors available ✓</td>
+          <td>Ready for integration</td>
+        </tr>
+        <tr>
+          <td>Implantbase</td>
+          <td>Inventory (Eval)</td>
+          <td><span class="int-status tbd">NOT VERIFIED</span></td>
+          <td>Unknown — unverified <span class="flag flag-red">CRITICAL</span></td>
+          <td>Leading inventory candidate. Must verify API before architecture</td>
+        </tr>
+        <tr>
+          <td>Surgery Tracking System</td>
+          <td>Analytics (Unknown)</td>
+          <td><span class="int-status none">UNNAMED SYSTEM</span></td>
+          <td>Unknown</td>
+          <td>Critical weekly data source. Platform must be identified. <span class="flag flag-red">CRITICAL GAP</span></td>
+        </tr>
+        <tr>
+          <td>Tray Locator</td>
+          <td>Field Inventory (Unknown)</td>
+          <td><span class="int-status none">OUTSIDE ERP</span></td>
+          <td>Unknown</td>
+          <td>Physical tray location siloed from ERP financial records <span class="flag flag-red">CRITICAL GAP</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DATA CREATION POINTS -->
+  <div class="sec-header" style="margin-top:36px"><div class="sec-title">Where Data Is Created Today</div><div class="sec-line"></div></div>
+
+  <div class="data-grid">
+    <div class="data-card">
+      <div class="data-icon">📦</div>
+      <div class="data-type">Inventory</div>
+      <div class="data-source">QB Desktop + Tray Locator</div>
+      <div class="data-note">Asset values in ERP; physical location tracked outside ERP in unknown system</div>
+    </div>
+    <div class="data-card">
+      <div class="data-icon">📋</div>
+      <div class="data-type">Case / Usage</div>
+      <div class="data-source">Paper case sheet → Gmail</div>
+      <div class="data-note">Rep fills paper form in OR, emails to Forma — triggers entire revenue cycle</div>
+    </div>
+    <div class="data-card">
+      <div class="data-icon">🧪</div>
+      <div class="data-type">Quality / Receiving</div>
+      <div class="data-source">FDA QMS (not ERP)</div>
+      <div class="data-note">Receiving, inspection, and packaging records never flow back to ERP</div>
+    </div>
+    <div class="data-card">
+      <div class="data-icon">💵</div>
+      <div class="data-type">Financial</div>
+      <div class="data-source">QB Desktop (P&L, A/P, A/R)</div>
+      <div class="data-note">Core financial record; manually extracted for weekly AI review</div>
+    </div>
+    <div class="data-card">
+      <div class="data-icon">👥</div>
+      <div class="data-type">Sales / CRM</div>
+      <div class="data-source">Google Sheets (manual weekly)</div>
+      <div class="data-note">Surgeons, reps, territories, cohorts — aggregated manually from 45 distributors</div>
+    </div>
+    <div class="data-card">
+      <div class="data-icon">📊</div>
+      <div class="data-type">Surgery Analytics</div>
+      <div class="data-source">Unnamed surgery system</div>
+      <div class="data-note">Weekly AI input — platform unidentified. Critical gap for BI layer.</div>
+    </div>
+    <div class="data-card">
+      <div class="data-icon">📄</div>
+      <div class="data-type">Documents / SOPs</div>
+      <div class="data-source">Dropbox</div>
+      <div class="data-note">Highly organized but zero AI connectivity — strategic asset not yet leveraged</div>
+    </div>
+    <div class="data-card">
+      <div class="data-icon">📬</div>
+      <div class="data-type">POs / Contracts</div>
+      <div class="data-source">Gmail + Adobe Sign</div>
+      <div class="data-note">Hospital POs and vendor invoices arrive via email; contracts via Adobe Sign</div>
+    </div>
+  </div>
+
+  <!-- FLAGGED SYSTEMS -->
+  <div class="sec-header" style="margin-top:36px"><div class="sec-title">Tools Flagged for Special Attention</div><div class="sec-line"></div></div>
+
+  <div class="flags-grid">
+    <div class="flag-card">
+      <div class="flag-icon">🔴</div>
+      <div>
+        <div class="flag-card-title">QuickBooks Desktop — Build Gate</div>
+        <div class="flag-card-body">In active transition. Do not design or build any automation tied to this layer until the ERP direction is formally confirmed by Andrew. Either Odoo or QB Online + Implantbase — both paths remain open.</div>
+      </div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon">🔴</div>
+      <div>
+        <div class="flag-card-title">Implantbase — API Must Be Verified</div>
+        <div class="flag-card-body">Leading candidate for the highest-value operational layer (inventory), but API and integration capability are completely unverified. Architecture cannot be finalized until Implantbase connectivity is confirmed.</div>
+      </div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon">🔴</div>
+      <div>
+        <div class="flag-card-title">Surgery Tracking System — Must Be Named</div>
+        <div class="flag-card-body">Andrew references this as a primary data source for every weekly AI review but has never named the platform. BI layer design cannot begin until this system is identified and its integration path assessed.</div>
+      </div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon">🔴</div>
+      <div>
+        <div class="flag-card-title">Tray Locator — Outside ERP, Platform Unknown</div>
+        <div class="flag-card-body">Physical tray location tracking exists in a separate system with no connection to ERP financial records. Platform unknown. Creates inventory traceability risk on the highest-value assets in the business.</div>
+      </div>
+    </div>
+    <div class="warn-card">
+      <div class="flag-icon">🟠</div>
+      <div>
+        <div class="flag-card-title">Excel (Multiple Uses) — Scope Must Be Clarified</div>
+        <div class="flag-card-body">Appears in both inventory tracking AND customer tracking contexts. These may be separate files. Scope and content of each must be documented before BI layer design to avoid data gaps or duplication.</div>
+      </div>
+    </div>
+    <div class="warn-card">
+      <div class="flag-icon">🟠</div>
+      <div>
+        <div class="flag-card-title">Gmail — Understated Importance</div>
+        <div class="flag-card-body">Andrew rated email as "marginally important" for the BI layer. In reality, Gmail is the intake point for case sheets that trigger the entire order-to-cash process. This scope conflict must be resolved before deprioritizing Gmail integration.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// Toggle system detail
+function toggleDetail(el) {
+  const detail = el.querySelector('.sys-detail');
+  if (detail) detail.classList.toggle('open');
+}
+
+// ── CONSTELLATION MAP ─────────────────────────────────
+const svg = document.getElementById('constellation');
+const ns = 'http://www.w3.org/2000/svg';
+
+const cx = 450, cy = 280;
+
+const nodes = [
+  // Center
+  { id: 'forma',   x: 450,  y: 280,  label: 'Forma Medical', sub: 'Central Entity',    color: '#e8edf5', ring: '#4d9de0', r: 36, type: 'center' },
+
+  // Inner ring — core active
+  { id: 'qbd',     x: 280,  y: 155,  label: 'QuickBooks\nDesktop',  sub: 'ERP / Finance', color: '#e8a94d', ring: '#e8a94d', r: 28, type: 'trans' },
+  { id: 'sheets',  x: 450,  y: 110,  label: 'Google\nSheets',      sub: 'CRM',           color: '#4d9de0', ring: '#4d9de0', r: 26, type: 'active' },
+  { id: 'dropbox', x: 620,  y: 155,  label: 'Dropbox',             sub: 'Documents',     color: '#4d9de0', ring: '#4d9de0', r: 26, type: 'active' },
+  { id: 'gmail',   x: 680,  y: 280,  label: 'Gmail',               sub: 'Email / Ops',   color: '#4d9de0', ring: '#4d9de0', r: 26, type: 'active' },
+  { id: 'qms',     x: 620,  y: 400,  label: 'FDA QMS',             sub: 'Compliance',    color: '#e86b6b', ring: '#e86b6b', r: 26, type: 'unknown' },
+  { id: 'excel',   x: 450,  y: 440,  label: 'Excel',               sub: 'Tracking',      color: '#4d9de0', ring: '#4d9de0', r: 24, type: 'active' },
+  { id: 'bill',    x: 280,  y: 400,  label: 'Bill.com',            sub: 'AP / Finance',  color: '#4d9de0', ring: '#4d9de0', r: 24, type: 'active' },
+  { id: 'adobe',   x: 220,  y: 280,  label: 'Adobe Sign',          sub: 'Contracts',     color: '#4d9de0', ring: '#4d9de0', r: 24, type: 'active' },
+
+  // Outer ring
+  { id: 'grok',    x: 120,  y: 155,  label: 'Grok',                sub: 'AI · No API',   color: '#9b72e8', ring: '#9b72e8', r: 24, type: 'ai' },
+  { id: 'gemini',  x: 120,  y: 280,  label: 'Gemini',              sub: 'AI',            color: '#9b72e8', ring: '#9b72e8', r: 22, type: 'ai' },
+  { id: 'claude',  x: 120,  y: 400,  label: 'Claude',              sub: 'AI',            color: '#9b72e8', ring: '#9b72e8', r: 22, type: 'ai' },
+  { id: 'odoo',    x: 340,  y: 68,   label: 'Odoo',                sub: 'ERP (Paused)',  color: '#e8a94d', ring: '#e8a94d', r: 22, type: 'trans' },
+  { id: 'impl',    x: 570,  y: 68,   label: 'Implantbase',         sub: 'Inventory Eval',color: '#e8a94d', ring: '#e8a94d', r: 22, type: 'trans' },
+  { id: 'qbo',     x: 770,  y: 155,  label: 'QB Online\nEnterprise',sub: 'Eval',         color: '#e8a94d', ring: '#e8a94d', r: 22, type: 'trans' },
+  { id: 'surgery', x: 770,  y: 280,  label: 'Surgery\nTracker',    sub: '⚠ UNNAMED',    color: '#e86b6b', ring: '#e86b6b', r: 26, type: 'unknown' },
+  { id: 'tray',    x: 770,  y: 400,  label: 'Tray\nLocator',       sub: '⚠ UNKNOWN',    color: '#e86b6b', ring: '#e86b6b', r: 24, type: 'unknown' },
+  { id: 'netsuite',x: 340,  y: 500,  label: 'NetSuite',            sub: 'Rejected',      color: '#536880', ring: '#536880', r: 20, type: 'rejected' },
+  { id: 'nutshell',x: 570,  y: 500,  label: 'Nutshell',            sub: 'Abandoned',     color: '#536880', ring: '#536880', r: 20, type: 'rejected' },
+];
+
+// Connections: [fromId, toId, type: 'gap'|'manual'|'flow']
+const edges = [
+  // Core to Forma — manual flows
+  ['qbd',     'forma',   'flow'],
+  ['sheets',  'forma',   'flow'],
+  ['gmail',   'forma',   'flow'],
+  ['excel',   'forma',   'flow'],
+  ['bill',    'forma',   'manual'],
+  // AI to Forma — manual only
+  ['grok',    'forma',   'manual'],
+  ['gemini',  'forma',   'manual'],
+  ['claude',  'forma',   'manual'],
+  // All others — gaps
+  ['dropbox', 'forma',   'gap'],
+  ['adobe',   'forma',   'gap'],
+  ['qms',     'forma',   'gap'],
+  ['odoo',    'forma',   'gap'],
+  ['impl',    'forma',   'gap'],
+  ['qbo',     'forma',   'gap'],
+  ['surgery', 'forma',   'gap'],
+  ['tray',    'forma',   'gap'],
+  // QB Desktop → Bill.com (implied relationship)
+  ['qbd',     'bill',    'manual'],
+];
+
+const edgeColors = {
+  gap:    '#e86b6b',
+  manual: '#e8a94d',
+  flow:   '#4d9de0',
+};
+const edgeDash = {
+  gap:    '5,4',
+  manual: '2,2',
+  flow:   '0',
+};
+
+// Defs
+const defs = document.createElementNS(ns, 'defs');
+// Glow filter for center
+const filt = document.createElementNS(ns, 'filter');
+filt.setAttribute('id', 'glow');
+filt.innerHTML = '<feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>';
+defs.appendChild(filt);
+svg.appendChild(defs);
+
+// Draw edges first (behind nodes)
+const edgeGroup = document.createElementNS(ns, 'g');
+svg.appendChild(edgeGroup);
+
+const nodeMap = {};
+nodes.forEach(n => nodeMap[n.id] = n);
+
+edges.forEach(([a, b, type]) => {
+  const na = nodeMap[a], nb = nodeMap[b];
+  const line = document.createElementNS(ns, 'line');
+  line.setAttribute('x1', na.x); line.setAttribute('y1', na.y);
+  line.setAttribute('x2', nb.x); line.setAttribute('y2', nb.y);
+  line.setAttribute('stroke', edgeColors[type]);
+  line.setAttribute('stroke-width', type === 'flow' ? '1.5' : '1');
+  line.setAttribute('stroke-dasharray', edgeDash[type]);
+  line.setAttribute('opacity', type === 'flow' ? '0.45' : type === 'gap' ? '0.6' : '0.5');
+  edgeGroup.appendChild(line);
+});
+
+// Draw nodes
+const tooltip = document.getElementById('tooltip');
+const nodeDescs = {
+  forma:   'Central entity. All systems surround Forma Medical with zero confirmed integrations.',
+  qbd:     'QuickBooks Desktop · ERP backbone. In active transition. Build gate — no automation until ERP confirmed.',
+  sheets:  'Google Sheets · Active CRM. Manually updated weekly. Google API ready.',
+  dropbox: 'Dropbox · Strategic document asset. No AI connectivity. Dropbox API available.',
+  gmail:   'Gmail · Order-to-cash trigger via case sheets. Andrew understated its importance.',
+  qms:     'FDA QMS · Compliance backbone. Platform unnamed. Does NOT connect to ERP.',
+  excel:   'Excel · Multiple uses: inventory + customer tracking. Scope unclear — may be separate files.',
+  bill:    'Bill.com · AP and payment processing. Not discussed in discovery. Role vs. QB unclear.',
+  adobe:   'Adobe Sign · Contract management. Integration scope not discussed.',
+  grok:    'Grok (xAI) · Andrew\'s primary AI. No API integration path found — architectural constraint.',
+  gemini:  'Google Gemini · Andrew\'s parallel analysis tool. Google API available.',
+  claude:  'Claude · Team tool. Claude.ai connector integrations available.',
+  odoo:    'Odoo · ERP Option A. Implementation started then paused. "Huge lift."',
+  impl:    'Implantbase · Leading inventory candidate. API completely unverified — critical gap.',
+  qbo:     'QB Online Enterprise · Introduced by Marc in discovery. Andrew unaware it existed. Not yet evaluated.',
+  surgery: '⚠ UNNAMED SYSTEM · Critical weekly data source for Andrew\'s AI review. Platform unknown.',
+  tray:    '⚠ Tray Locator · Physical tray tracking outside ERP. Platform unknown.',
+  netsuite:'NetSuite · Rejected. Custom coding quoted at $150K+.',
+  nutshell:'Nutshell CRM · Abandoned due to non-adoption. Led to Google Sheets.',
+};
+
+nodes.forEach(n => {
+  const g = document.createElementNS(ns, 'g');
+  g.style.cursor = 'pointer';
+
+  // Outer glow ring for unknowns
+  if (n.type === 'unknown') {
+    const glow = document.createElementNS(ns, 'circle');
+    glow.setAttribute('cx', n.x); glow.setAttribute('cy', n.y);
+    glow.setAttribute('r', n.r + 8);
+    glow.setAttribute('fill', 'none');
+    glow.setAttribute('stroke', n.ring);
+    glow.setAttribute('stroke-width', '1');
+    glow.setAttribute('opacity', '0.3');
+    glow.style.animation = `pulse-${n.id} 2s infinite`;
+    g.appendChild(glow);
+  }
+
+  // Circle bg
+  const circ = document.createElementNS(ns, 'circle');
+  circ.setAttribute('cx', n.x); circ.setAttribute('cy', n.y);
+  circ.setAttribute('r', n.r);
+  const bgOpacity = n.type === 'center' ? '0.15' : '0.08';
+  circ.setAttribute('fill', n.ring);
+  circ.setAttribute('opacity', bgOpacity);
+  g.appendChild(circ);
+
+  // Circle border
+  const border = document.createElementNS(ns, 'circle');
+  border.setAttribute('cx', n.x); border.setAttribute('cy', n.y);
+  border.setAttribute('r', n.r);
+  border.setAttribute('fill', 'none');
+  border.setAttribute('stroke', n.ring);
+  border.setAttribute('stroke-width', n.type === 'center' ? '2' : '1.5');
+  border.setAttribute('opacity', n.type === 'rejected' ? '0.3' : '0.7');
+  if (n.type === 'center') border.setAttribute('filter', 'url(#glow)');
+  g.appendChild(border);
+
+  // Label lines
+  const lines = n.label.split('\n');
+  if (lines.length === 1) {
+    const txt = document.createElementNS(ns, 'text');
+    txt.setAttribute('x', n.x); txt.setAttribute('y', n.y + 4);
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('fill', n.type === 'rejected' ? '#536880' : n.color);
+    txt.setAttribute('font-size', n.type === 'center' ? '11' : '9');
+    txt.setAttribute('font-weight', n.type === 'center' ? '600' : '500');
+    txt.setAttribute('font-family', "'IBM Plex Sans', sans-serif");
+    txt.textContent = n.label;
+    g.appendChild(txt);
+  } else {
+    lines.forEach((line, i) => {
+      const txt = document.createElementNS(ns, 'text');
+      txt.setAttribute('x', n.x);
+      txt.setAttribute('y', n.y + (i - (lines.length - 1) / 2) * 11 + 4);
+      txt.setAttribute('text-anchor', 'middle');
+      txt.setAttribute('fill', n.type === 'rejected' ? '#536880' : n.color);
+      txt.setAttribute('font-size', '9');
+      txt.setAttribute('font-weight', '500');
+      txt.setAttribute('font-family', "'IBM Plex Sans', sans-serif");
+      txt.textContent = line;
+      g.appendChild(txt);
+    });
+  }
+
+  // Hover tooltip
+  g.addEventListener('mouseenter', (e) => {
+    const desc = nodeDescs[n.id] || '';
+    tooltip.innerHTML = `<strong>${n.label.replace('\n', ' ')}</strong>${desc}`;
+    tooltip.style.opacity = '1';
+  });
+  g.addEventListener('mousemove', (e) => {
+    tooltip.style.left = (e.clientX + 14) + 'px';
+    tooltip.style.top  = (e.clientY - 10) + 'px';
+  });
+  g.addEventListener('mouseleave', () => {
+    tooltip.style.opacity = '0';
+  });
+
+  svg.appendChild(g);
+});
+
+// Pulse animation for unknowns via CSS injection
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes pulseRing {
+    0%, 100% { opacity: 0.3; r: inherit; }
+    50% { opacity: 0.6; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

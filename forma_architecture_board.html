@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — BI Architecture Board</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0f11;
+  --surface: #15171a;
+  --surface2: #1c1f24;
+  --surface3: #22262d;
+  --border: rgba(255,255,255,0.07);
+  --border-mid: rgba(255,255,255,0.13);
+  --text: #e8eaed;
+  --text2: #8b9099;
+  --text3: #555b64;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+
+  --teal: #00d4a0; --teal-dim: rgba(0,212,160,0.12); --teal-border: rgba(0,212,160,0.3);
+  --amber: #f0a500; --amber-dim: rgba(240,165,0,0.12); --amber-border: rgba(240,165,0,0.3);
+  --red: #ff4d4d; --red-dim: rgba(255,77,77,0.1); --red-border: rgba(255,77,77,0.3);
+  --blue: #4da6ff; --blue-dim: rgba(77,166,255,0.12); --blue-border: rgba(77,166,255,0.3);
+  --purple: #b06aff; --purple-dim: rgba(176,106,255,0.12); --purple-border: rgba(176,106,255,0.3);
+  --gray-dim: rgba(255,255,255,0.04);
+
+  --band1: #4da6ff;
+  --band2: #00d4a0;
+  --band3: #b06aff;
+  --band4: #f0a500;
+  --band5: #ff6b6b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  font-family: var(--sans);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── LAYOUT ── */
+.app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column;
+  padding: 0;
+}
+.sidebar-header {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+.sidebar-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.sidebar-sub {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 3px;
+}
+
+.nav-section { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.nav-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 6px 18px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 12px;
+  color: var(--text2);
+}
+.nav-item:hover { background: var(--gray-dim); color: var(--text); }
+.nav-item.active { background: rgba(255,255,255,0.05); color: var(--text); }
+.nav-dot {
+  width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0;
+}
+.nav-badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.status-section { padding: 12px 18px; margin-top: auto; border-top: 1px solid var(--border); }
+.status-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text3); margin-bottom: 6px; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ── MAIN ── */
+.main { overflow-y: auto; }
+
+.top-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(8px);
+}
+.top-bar-left { display: flex; align-items: center; gap: 16px; }
+.top-bar-title { font-size: 15px; font-weight: 600; }
+.top-bar-meta { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.status-banner {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--red-dim); border: 1px solid var(--red-border);
+  border-radius: 4px; padding: 4px 10px;
+  font-size: 11px; color: var(--red);
+  font-family: var(--mono);
+}
+.status-banner .pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.content { padding: 24px 28px 60px; }
+
+/* ── BAND ── */
+.band {
+  margin-bottom: 16px;
+  border: 1px solid var(--border-mid);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  animation: fadeUp 0.4s ease both;
+}
+.band:nth-child(1){animation-delay:0.05s}
+.band:nth-child(2){animation-delay:0.1s}
+.band:nth-child(3){animation-delay:0.15s}
+.band:nth-child(4){animation-delay:0.2s}
+.band:nth-child(5){animation-delay:0.25s}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(12px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+.band-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.band-header:hover { background: rgba(255,255,255,0.02); }
+
+.band-header-left { display: flex; align-items: center; gap: 12px; }
+.band-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.band-title { font-size: 13px; font-weight: 600; }
+.band-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+.band-header-right { display: flex; align-items: center; gap: 8px; }
+.band-tag {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.08em; padding: 3px 8px; border-radius: 3px;
+  text-transform: uppercase;
+}
+.chevron {
+  font-size: 14px; color: var(--text3);
+  transition: transform 0.25s;
+}
+.band.collapsed .chevron { transform: rotate(-90deg); }
+
+.band-body { padding: 16px 18px; }
+.band.collapsed .band-body { display: none; }
+
+/* ── BLOCKED BANNER ── */
+.blocked-banner {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--red-dim); border: 1px solid var(--red-border);
+  border-radius: 6px; padding: 8px 12px; margin-bottom: 14px;
+  font-size: 11px; color: var(--red);
+}
+.warn-banner {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--amber-dim); border: 1px solid var(--amber-border);
+  border-radius: 6px; padding: 8px 12px; margin-bottom: 14px;
+  font-size: 11px; color: var(--amber);
+}
+.info-banner {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--blue-dim); border: 1px solid var(--blue-border);
+  border-radius: 6px; padding: 8px 12px; margin-bottom: 14px;
+  font-size: 11px; color: var(--blue);
+}
+
+/* ── NODES / CHIPS ── */
+.node-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.node {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 30px; padding: 0 10px;
+  border-radius: 5px; font-size: 11px; font-weight: 500;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.node:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.node-sys { background: var(--teal-dim); border-color: var(--teal-border); color: var(--teal); }
+.node-manual { background: var(--amber-dim); border-color: var(--amber-border); color: var(--amber); }
+.node-gap { background: var(--red-dim); border-color: var(--red-border); color: var(--red); border-style: dashed; }
+.node-ai { background: var(--purple-dim); border-color: var(--purple-border); color: var(--purple); }
+.node-decision { background: var(--blue-dim); border-color: var(--blue-border); color: var(--blue); }
+.node-gate { background: rgba(255,107,107,0.15); border-color: rgba(255,107,107,0.4); color: #ff6b6b; font-weight: 600; }
+.arr { color: var(--text3); font-size: 16px; margin: 0 2px; }
+
+/* ── PATHS GRID ── */
+.paths-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-top: 10px;
+}
+.path-card {
+  background: var(--surface2);
+  border: 1px solid var(--border-mid);
+  border-radius: 8px; padding: 14px;
+}
+.path-card-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.path-badge {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.1em; padding: 3px 8px; border-radius: 3px;
+  text-transform: uppercase;
+}
+.path-title { font-size: 12px; font-weight: 600; }
+.path-desc { font-size: 11px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
+
+.pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.pros, .cons {
+  padding: 8px 10px; border-radius: 6px; font-size: 11px;
+}
+.pros { background: var(--teal-dim); border: 1px solid var(--teal-border); }
+.cons { background: var(--red-dim); border: 1px solid var(--red-border); }
+.pros-title { font-weight: 600; color: var(--teal); margin-bottom: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+.cons-title { font-weight: 600; color: var(--red); margin-bottom: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+.pc-item { display: flex; gap: 5px; color: var(--text2); margin-bottom: 3px; line-height: 1.4; }
+.pc-icon { flex-shrink: 0; }
+
+/* ── SYSTEM GRID ── */
+.sys-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px;
+  margin-top: 10px;
+}
+.sys-card {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: default;
+}
+.sys-card:hover { border-color: var(--border-mid); background: var(--surface3); }
+.sys-name { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+.sys-cat { font-size: 10px; color: var(--text3); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.sys-status { font-size: 10px; color: var(--text2); line-height: 1.4; }
+.sys-flag { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 3px; margin-top: 4px; font-weight: 600; font-family: var(--mono); }
+
+/* ── INTELLIGENCE LAYER ── */
+.intel-flow {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+}
+.intel-step {
+  display: flex; align-items: stretch; width: 100%;
+}
+.intel-connector {
+  width: 32px; display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0;
+}
+.intel-connector-line { flex: 1; width: 1px; background: var(--border-mid); margin: 0 auto; }
+.intel-connector-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin: 4px 0; border: 2px solid; }
+.intel-card {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 10px 12px; margin-bottom: 8px;
+  transition: border-color 0.2s;
+}
+.intel-card:hover { border-color: var(--border-mid); }
+.intel-card-title { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.intel-card-body { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.human-gate {
+  background: rgba(255,107,107,0.08);
+  border: 1px solid rgba(255,107,107,0.35);
+  border-radius: 7px; padding: 10px 12px; margin-bottom: 8px;
+  width: calc(100% - 32px); margin-left: 32px;
+}
+.human-gate-title { font-size: 12px; font-weight: 700; color: #ff6b6b; margin-bottom: 3px; }
+.human-gate-body { font-size: 11px; color: var(--text2); }
+
+/* ── TIERS ── */
+.tiers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.tier-card {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px;
+  position: relative; overflow: hidden;
+}
+.tier-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.tier-1::before { background: var(--band4); }
+.tier-2::before { background: var(--band2); }
+.tier-3::before { background: var(--band1); }
+.tier-num {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 4px;
+}
+.tier-name { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.tier-item { font-size: 11px; color: var(--text2); padding: 2px 0; display: flex; gap: 5px; }
+.tier-icon { flex-shrink: 0; }
+
+/* ── OUTPUTS TABLE ── */
+.output-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.output-table th {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3);
+  text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border-mid);
+}
+.output-table td {
+  padding: 10px 10px; border-bottom: 1px solid var(--border);
+  font-size: 11px; color: var(--text2); vertical-align: top;
+}
+.output-table tr:hover td { background: rgba(255,255,255,0.02); }
+.output-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.output-desc { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* ── DECISION GATES PANEL ── */
+.gates-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px; margin-top: 10px;
+}
+.gate-card {
+  background: var(--red-dim); border: 1px solid var(--red-border);
+  border-radius: 7px; padding: 10px 12px;
+}
+.gate-title { font-size: 11px; font-weight: 600; color: var(--red); margin-bottom: 4px; }
+.gate-body { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* ── LEGEND ── */
+.legend-bar {
+  display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 18px;
+  padding: 10px 14px; background: var(--surface2); border-radius: 7px;
+  border: 1px solid var(--border);
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--text3); }
+.legend-chip {
+  height: 18px; padding: 0 8px; border-radius: 4px; font-size: 9px; font-weight: 600;
+  display: flex; align-items: center; border: 1px solid;
+}
+
+/* ── MODULAR LEGEND ── */
+.modular-row {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;
+}
+.mod-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; padding: 3px 8px; border-radius: 4px;
+  font-family: var(--mono);
+}
+.mod-chip.erp { background: var(--amber-dim); border: 1px solid var(--amber-border); color: var(--amber); }
+.mod-chip.agnostic { background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal); }
+
+/* ── SHARED REQUIREMENTS ── */
+.req-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin-top: 10px;
+}
+.req-item {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px;
+}
+.req-title { font-size: 11px; font-weight: 600; margin-bottom: 3px; }
+.req-body { font-size: 11px; color: var(--text2); line-height: 1.4; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-mid); }
+
+/* ── THEMES MAP ── */
+.b1 { --accent: var(--band1); }
+.b2 { --accent: var(--band2); }
+.b3 { --accent: var(--band3); }
+.b4 { --accent: var(--band4); }
+.b5 { --accent: var(--band5); }
+
+.band-header { border-left: 3px solid var(--accent, var(--border)); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Plus 1 Technology</div>
+      <div class="sidebar-title">Forma Medical</div>
+      <div class="sidebar-sub">BI Architecture Board · March 2026</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Architecture Bands</div>
+      <div class="nav-item active" onclick="scrollTo('band1')">
+        <div class="nav-dot" style="background:#4da6ff;border-radius:2px"></div>
+        <span>Data Sources</span>
+        <span class="nav-badge" style="background:rgba(77,166,255,0.15);color:#4da6ff">B1</span>
+      </div>
+      <div class="nav-item" onclick="scrollTo('band2')">
+        <div class="nav-dot" style="background:#00d4a0;border-radius:2px"></div>
+        <span>Integration Layer</span>
+        <span class="nav-badge" style="background:rgba(0,212,160,0.15);color:#00d4a0">B2</span>
+      </div>
+      <div class="nav-item" onclick="scrollTo('band3')">
+        <div class="nav-dot" style="background:#b06aff;border-radius:2px"></div>
+        <span>Intelligence Layer</span>
+        <span class="nav-badge" style="background:rgba(176,106,255,0.15);color:#b06aff">B3</span>
+      </div>
+      <div class="nav-item" onclick="scrollTo('band4')">
+        <div class="nav-dot" style="background:#f0a500;border-radius:2px"></div>
+        <span>Permissions</span>
+        <span class="nav-badge" style="background:rgba(240,165,0,0.15);color:#f0a500">B4</span>
+      </div>
+      <div class="nav-item" onclick="scrollTo('band5')">
+        <div class="nav-dot" style="background:#ff6b6b;border-radius:2px"></div>
+        <span>Output Layer</span>
+        <span class="nav-badge" style="background:rgba(255,107,107,0.15);color:#ff6b6b">B5</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Decision Gates</div>
+      <div class="nav-item" onclick="scrollTo('gates')">
+        <div class="nav-dot" style="background:#ff4d4d;border-radius:2px"></div>
+        <span>ERP Direction</span>
+        <span class="nav-badge" style="background:var(--red-dim);color:var(--red)">🔴</span>
+      </div>
+      <div class="nav-item" onclick="scrollTo('gates')">
+        <div class="nav-dot" style="background:#ff4d4d;border-radius:2px"></div>
+        <span>Implant Base API</span>
+        <span class="nav-badge" style="background:var(--red-dim);color:var(--red)">🔴</span>
+      </div>
+      <div class="nav-item" onclick="scrollTo('gates')">
+        <div class="nav-dot" style="background:#ff4d4d;border-radius:2px"></div>
+        <span>Permission Tiers</span>
+        <span class="nav-badge" style="background:var(--red-dim);color:var(--red)">🔴</span>
+      </div>
+      <div class="nav-item" onclick="scrollTo('gates')">
+        <div class="nav-dot" style="background:#ff4d4d;border-radius:2px"></div>
+        <span>Surgery System</span>
+        <span class="nav-badge" style="background:var(--red-dim);color:var(--red)">🔴</span>
+      </div>
+      <div class="nav-item" onclick="scrollTo('gates')">
+        <div class="nav-dot" style="background:#ff4d4d;border-radius:2px"></div>
+        <span>Output Requirements</span>
+        <span class="nav-badge" style="background:var(--red-dim);color:var(--red)">🔴</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Status</div>
+    </div>
+
+    <div class="status-section">
+      <div class="status-item"><div class="status-dot" style="background:#00d4a0"></div>Working draft — in progress</div>
+      <div class="status-item"><div class="status-dot" style="background:#f0a500"></div>ERP: Path not finalized</div>
+      <div class="status-item"><div class="status-dot" style="background:#ff4d4d"></div>Brain dump pending</div>
+      <div class="status-item"><div class="status-dot" style="background:#ff4d4d"></div>Do not automate ERP layer</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <div>
+          <div class="top-bar-title">Technical Solution Design — Architecture</div>
+          <div class="top-bar-meta">Board 6 · Client: Forma Medical · Prepared by Plus 1 Technology</div>
+        </div>
+      </div>
+      <div class="status-banner">
+        <div class="pulse"></div>
+        Working Draft — Not Confirmed Until Validated With Client
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- LEGEND -->
+      <div class="legend-bar">
+        <div class="legend-item">
+          <div class="legend-chip" style="background:var(--teal-dim);border-color:var(--teal-border);color:var(--teal)">SYS</div>
+          System / connected
+        </div>
+        <div class="legend-item">
+          <div class="legend-chip" style="background:var(--amber-dim);border-color:var(--amber-border);color:var(--amber)">MAN</div>
+          Manual step
+        </div>
+        <div class="legend-item">
+          <div class="legend-chip" style="background:var(--red-dim);border-color:var(--red-border);color:var(--red);border-style:dashed">GAP</div>
+          Gap / not verified
+        </div>
+        <div class="legend-item">
+          <div class="legend-chip" style="background:var(--purple-dim);border-color:var(--purple-border);color:var(--purple)">AI</div>
+          AI layer
+        </div>
+        <div class="legend-item">
+          <div class="legend-chip" style="background:rgba(255,107,107,0.15);border-color:rgba(255,107,107,0.4);color:#ff6b6b">GATE</div>
+          Human gate
+        </div>
+        <div class="legend-item">
+          <div class="legend-chip" style="background:var(--blue-dim);border-color:var(--blue-border);color:var(--blue)">DEC</div>
+          Decision / branch
+        </div>
+      </div>
+
+      <!-- ═══ BAND 1 ═══ -->
+      <div class="band b1" id="band1">
+        <div class="band-header" onclick="toggleBand(this)">
+          <div class="band-header-left">
+            <div class="band-num" style="background:rgba(77,166,255,0.12);color:#4da6ff">B1</div>
+            <div>
+              <div class="band-title">Data Sources Layer</div>
+              <div class="band-sub">All current and future source systems feeding the intelligence layer</div>
+            </div>
+          </div>
+          <div class="band-header-right">
+            <span class="band-tag" style="background:rgba(77,166,255,0.12);color:#4da6ff">Active</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="band-body">
+          <div class="info-banner">ℹ️ <span>This layer shows where data currently lives. Integration readiness varies significantly by source. ERP sources are in active transition.</span></div>
+
+          <div class="sys-grid">
+            <div class="sys-card">
+              <div class="sys-cat">ERP / Accounting</div>
+              <div class="sys-name">QuickBooks Desktop</div>
+              <div class="sys-status">Active. Hosted on remote server. Complex consignment inventory. Difficult to integrate.</div>
+              <span class="sys-flag" style="background:var(--amber-dim);border:1px solid var(--amber-border);color:var(--amber)">REPLACING</span>
+            </div>
+            <div class="sys-card">
+              <div class="sys-cat">ERP (Option A)</div>
+              <div class="sys-name">Odoo</div>
+              <div class="sys-status">Implementation started, paused. Open-source. Concerns about future flexibility.</div>
+              <span class="sys-flag" style="background:var(--blue-dim);border:1px solid var(--blue-border);color:var(--blue)">IN EVAL</span>
+            </div>
+            <div class="sys-card">
+              <div class="sys-cat">ERP (Option B)</div>
+              <div class="sys-name">QB Online Enterprise</div>
+              <div class="sys-status">Introduced on call — Andrew unaware. Easier integration path than Desktop. Under review.</div>
+              <span class="sys-flag" style="background:var(--blue-dim);border:1px solid var(--blue-border);color:var(--blue)">IN EVAL</span>
+            </div>
+            <div class="sys-card">
+              <div class="sys-cat">Inventory (Niche)</div>
+              <div class="sys-name">Implant Base</div>
+              <div class="sys-status">Leading candidate for ortho consignment inventory. API capability NOT VERIFIED.</div>
+              <span class="sys-flag" style="background:var(--red-dim);border:1px solid var(--red-border);color:var(--red)">NOT VERIFIED</span>
+            </div>
+            <div class="sys-card">
+              <div class="sys-cat">CRM</div>
+              <div class="sys-name">Google Sheets</div>
+              <div class="sys-status">Active CRM. 2 employees manage 45 distributors. Weekly manual updates. Working today.</div>
+              <span class="sys-flag" style="background:var(--teal-dim);border:1px solid var(--teal-border);color:var(--teal)">ACTIVE</span>
+            </div>
+            <div class="sys-card">
+              <div class="sys-cat">File Management</div>
+              <div class="sys-name">Dropbox</div>
+              <div class="sys-status">"Ridiculously organized." Strategic asset. SOPs, pricing, account files. High BI value.</div>
+              <span class="sys-flag" style="background:var(--teal-dim);border:1px solid var(--teal-border);color:var(--teal)">HIGH PRIORITY</span>
+            </div>
+            <div class="sys-card">
+              <div class="sys-cat">Communications</div>
+              <div class="sys-name">Gmail</div>
+              <div class="sys-status">Case sheets arrive here — actual order-to-cash trigger. Andrew rated as "bonus" but critical operationally.</div>
+              <span class="sys-flag" style="background:var(--amber-dim);border:1px solid var(--amber-border);color:var(--amber)">SCOPE CONFLICT</span>
+            </div>
+            <div class="sys-card">
+              <div class="sys-cat">Surgery Tracking</div>
+              <div class="sys-name">Unknown System</div>
+              <div class="sys-status">Andrew references weekly surgery + cohort data from "another system." Platform never named.</div>
+              <span class="sys-flag" style="background:var(--red-dim);border:1px solid var(--red-border);color:var(--red)">UNIDENTIFIED</span>
+            </div>
+            <div class="sys-card">
+              <div class="sys-cat">Compliance</div>
+              <div class="sys-name">QMS (FDA)</div>
+              <div class="sys-status">Active. Non-negotiable for FDA. "Just a checkbox." Siloed from ERP by design. Do not disrupt.</div>
+              <span class="sys-flag" style="background:var(--surface3);border:1px solid var(--border);color:var(--text3)">ISOLATE</span>
+            </div>
+            <div class="sys-card">
+              <div class="sys-cat">AI / Strategy</div>
+              <div class="sys-name">Grok · Gemini · Claude</div>
+              <div class="sys-status">Multi-model strategy. Andrew uses Grok + Gemini. Team uses Claude. No Grok API path found.</div>
+              <span class="sys-flag" style="background:var(--purple-dim);border:1px solid var(--purple-border);color:var(--purple)">MULTI-MODEL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ BAND 2 ═══ -->
+      <div class="band b2" id="band2">
+        <div class="band-header" onclick="toggleBand(this)">
+          <div class="band-header-left">
+            <div class="band-num" style="background:rgba(0,212,160,0.12);color:#00d4a0">B2</div>
+            <div>
+              <div class="band-title">Integration & Connectivity Layer</div>
+              <div class="band-sub">How source systems connect to the intelligence layer — two paths under evaluation</div>
+            </div>
+          </div>
+          <div class="band-header-right">
+            <span class="band-tag" style="background:rgba(255,77,77,0.12);color:#ff4d4d">PARTIALLY BLOCKED</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="band-body">
+          <div class="blocked-banner">🔴 <strong>DECISION GATE:</strong> ERP direction must be confirmed before this band is finalized. Do not build integrations tied to the ERP layer until the path is resolved.</div>
+
+          <div class="paths-grid">
+            <!-- PATH A -->
+            <div class="path-card">
+              <div class="path-card-header">
+                <span class="path-badge" style="background:rgba(0,212,160,0.15);color:#00d4a0">Path A</span>
+                <span class="path-title">API-Connect Existing Tools</span>
+              </div>
+              <div class="path-desc">Connect current and future source systems directly into a central orchestration layer. Preserve tool flexibility and support future swaps by replacing connectors — not rebuilding the whole stack. Best fit for Andrew's "sit on top of whatever ERP is" vision.</div>
+
+              <div style="margin-bottom:10px">
+                <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Current-state manual flows</div>
+                <div class="node-row">
+                  <span class="node node-manual">QB Desktop</span><span class="arr">→</span>
+                  <span class="node node-manual">Manual extract</span><span class="arr">→</span>
+                  <span class="node node-ai">AI prompt</span>
+                </div>
+                <div class="node-row">
+                  <span class="node node-manual">Google Sheets</span><span class="arr">→</span>
+                  <span class="node node-manual">Manual extract</span><span class="arr">→</span>
+                  <span class="node node-ai">AI prompt</span>
+                </div>
+                <div class="node-row">
+                  <span class="node node-manual">Dropbox</span><span class="arr">→</span>
+                  <span class="node node-manual">Manual lookup only</span>
+                </div>
+              </div>
+
+              <div style="margin-bottom:10px">
+                <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Target-state API flows</div>
+                <div class="node-row">
+                  <span class="node node-sys">ERP (future)</span><span class="arr">→</span>
+                  <span class="node node-sys">Connector / API</span><span class="arr">→</span>
+                  <span class="node node-ai">Orchestration Hub</span>
+                </div>
+                <div class="node-row">
+                  <span class="node node-sys">Google Sheets</span><span class="arr">→</span>
+                  <span class="node node-sys">Google API</span><span class="arr">→</span>
+                  <span class="node node-ai">Orchestration Hub</span>
+                </div>
+                <div class="node-row">
+                  <span class="node node-sys">Dropbox</span><span class="arr">→</span>
+                  <span class="node node-sys">Dropbox API</span><span class="arr">→</span>
+                  <span class="node node-ai">Orchestration Hub</span>
+                </div>
+                <div class="node-row">
+                  <span class="node node-gap">Implant Base API</span><span class="arr">→</span>
+                  <span class="node node-gap">NOT VERIFIED</span>
+                </div>
+                <div class="node-row">
+                  <span class="node node-gap">Surgery system</span><span class="arr">→</span>
+                  <span class="node node-gap">UNIDENTIFIED</span>
+                </div>
+              </div>
+
+              <div class="pros-cons">
+                <div class="pros">
+                  <div class="pros-title">✓ Pros</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Preserves what works operationally</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>No vendor lock-in</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Supports future tool swaps</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Aligns with Andrew's flexibility goal</div>
+                </div>
+                <div class="cons">
+                  <div class="cons-title">✗ Cons</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>More connectors to maintain</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>QB Desktop integration painful</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Implant Base API unknown</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Surgery system is a major gap</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PATH B -->
+            <div class="path-card">
+              <div class="path-card-header">
+                <span class="path-badge" style="background:rgba(77,166,255,0.15);color:#4da6ff">Path B</span>
+                <span class="path-title">Consolidate into Primary Hub</span>
+              </div>
+              <div class="path-desc">Move CRM / management / operational coordination into a single platform first — ClickUp was the most concrete example discussed — then connect remaining systems (especially ERP) into that hub via API.</div>
+
+              <div style="margin-bottom:10px">
+                <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">ClickUp hub capabilities confirmed</div>
+                <div class="node-row">
+                  <span class="node node-sys">Google / Microsoft / Dropbox</span><span class="arr">→</span>
+                  <span class="node node-sys">ClickUp</span>
+                </div>
+                <div class="node-row">
+                  <span class="node node-sys">QuickBooks</span><span class="arr">⇄</span>
+                  <span class="node node-sys">ClickUp (bi-directional sync ✓)</span>
+                </div>
+                <div class="node-row">
+                  <span class="node node-ai">AI agents + dashboards + automations</span><span class="arr">→</span>
+                  <span class="node node-sys">ClickUp</span>
+                </div>
+              </div>
+
+              <div style="margin-bottom:10px">
+                <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Other candidates evaluated</div>
+                <div class="node-row">
+                  <span class="node node-decision">Go High Level</span>
+                  <span class="node node-decision">HubSpot</span>
+                  <span class="node node-decision">Salesforce</span>
+                  <span class="node node-decision">Odoo (broader)</span>
+                </div>
+              </div>
+
+              <div class="pros-cons">
+                <div class="pros">
+                  <div class="pros-title">✓ Pros</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>More data in one place</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Cleaner search + dashboard UX</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>May reduce spreadsheet sprawl</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>ClickUp can do "90% of it"</div>
+                </div>
+                <div class="cons">
+                  <div class="cons-title">✗ Cons</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Creates platform dependency</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Still requires ERP API</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Field adoption risk</div>
+                  <div class="pc-item"><span class="pc-icon">·</span>Platform not yet selected</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SHARED REQUIREMENTS -->
+          <div style="margin-top:14px">
+            <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">Shared Architectural Requirements (Both Paths)</div>
+            <div class="req-grid">
+              <div class="req-item"><div class="req-title">Modular & Flexible</div><div class="req-body">Must tolerate ERP swaps and tool changes without full rebuilds</div></div>
+              <div class="req-item"><div class="req-title">Low-friction Field Workflow</div><div class="req-body">Preserve rep simplicity — prior CRM failure is the reference</div></div>
+              <div class="req-item"><div class="req-title">Layered Permissions</div><div class="req-body">Required before broad access — architecture changes based on tier design</div></div>
+              <div class="req-item"><div class="req-title">QMS / Compliance Safe</div><div class="req-body">FDA quality system must not be disrupted under any path</div></div>
+              <div class="req-item"><div class="req-title">Multi-Model AI Support</div><div class="req-body">Architecture must preserve Grok + Gemini + Claude parallel analysis</div></div>
+              <div class="req-item"><div class="req-title">Workflow Brain Dump First</div><div class="req-body">No integration design until Andrew's process map is received and reviewed</div></div>
+            </div>
+          </div>
+
+          <!-- MODULAR SWAP LEGEND -->
+          <div style="margin-top:14px">
+            <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Modular Swap Legend</div>
+            <div class="modular-row">
+              <span class="mod-chip agnostic">🟢 ERP-Agnostic: Google Sheets · Dropbox · Gmail · AI layer · Dashboards · Permissions</span>
+              <span class="mod-chip erp">🟠 ERP-Dependent: Inventory feed · COGS · Invoice/PO sync · HCAR pull logic</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ BAND 3 ═══ -->
+      <div class="band b3" id="band3">
+        <div class="band-header" onclick="toggleBand(this)">
+          <div class="band-header-left">
+            <div class="band-num" style="background:rgba(176,106,255,0.12);color:#b06aff">B3</div>
+            <div>
+              <div class="band-title">Intelligence Layer</div>
+              <div class="band-sub">Automated data aggregation → prompt assembly → multi-model routing → synthesis → human review</div>
+            </div>
+          </div>
+          <div class="band-header-right">
+            <span class="band-tag" style="background:rgba(176,106,255,0.12);color:#b06aff">Design Ready</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="band-body">
+          <div class="info-banner">ℹ️ This layer automates Andrew's current weekly manual process. All outputs pass through a mandatory human review gate before any action.</div>
+
+          <div style="display:grid;grid-template-columns:1fr 300px;gap:16px">
+            <div>
+              <!-- FLOW -->
+              <div class="node-row" style="margin-bottom:14px">
+                <span class="node node-sys">Scheduled Pull (all sources)</span>
+                <span class="arr">→</span>
+                <span class="node node-ai">Data Aggregation Agent</span>
+                <span class="arr">→</span>
+                <span class="node node-ai">Normalize & Context Build</span>
+              </div>
+              <div class="node-row" style="margin-bottom:8px">
+                <span class="arr" style="margin-left:0">↓</span>
+              </div>
+              <div class="node-row" style="margin-bottom:14px">
+                <span class="node node-ai">Prompt Assembly Engine</span>
+                <span style="font-size:11px;color:var(--text3);margin:0 8px">(Replaces Andrew's manual prompt building)</span>
+              </div>
+              <div class="node-row" style="margin-bottom:8px">
+                <span class="arr" style="margin-left:0">↓</span>
+              </div>
+              <div class="node-row" style="margin-bottom:14px">
+                <span class="node node-ai">Multi-Model Router</span>
+                <span class="arr">→</span>
+                <span class="node node-gap">Grok (no API path 🔴)</span>
+                <span class="arr">+</span>
+                <span class="node node-ai">Gemini ✓</span>
+                <span class="arr">+</span>
+                <span class="node node-ai">Claude ✓</span>
+              </div>
+              <div class="node-row" style="margin-bottom:8px">
+                <span class="arr" style="margin-left:0">↓</span>
+              </div>
+              <div class="node-row" style="margin-bottom:14px">
+                <span class="node node-ai">Synthesis Engine</span>
+                <span style="font-size:11px;color:var(--text3);margin:0 8px">Consensus detection · Conflict flagging · Insight summary</span>
+              </div>
+              <div class="node-row" style="margin-bottom:8px">
+                <span class="arr" style="margin-left:0">↓</span>
+              </div>
+              <div style="background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.35);border-radius:7px;padding:10px 14px;margin-bottom:12px">
+                <div style="font-size:12px;font-weight:700;color:#ff6b6b;margin-bottom:3px">⛔ MANDATORY HUMAN REVIEW GATE</div>
+                <div style="font-size:11px;color:var(--text2)">All AI outputs reviewed by leadership before any action is taken. Required in a medical device business context. Medical compliance sensitivity. Strategic decisions require oversight.</div>
+              </div>
+              <div class="node-row" style="margin-bottom:8px">
+                <span class="arr" style="margin-left:0">↓</span>
+              </div>
+              <div class="node-row" style="margin-bottom:14px">
+                <span class="node node-sys">Observability Log</span>
+                <span style="font-size:11px;color:var(--text3);margin:0 8px">Input snapshot · Prompt version · Model outputs · Human decision · Timestamp</span>
+              </div>
+              <div class="node-row" style="margin-bottom:8px">
+                <span class="arr" style="margin-left:0">↓</span>
+              </div>
+              <div class="node-row">
+                <span class="node node-ai">Scenario Modeling Engine</span>
+                <span class="arr">+</span>
+                <span class="node node-ai">Decision Signal Generator</span>
+                <span class="arr">→</span>
+                <span class="node node-sys">Output Layer (B5)</span>
+              </div>
+            </div>
+
+            <!-- SCENARIOS PANEL -->
+            <div>
+              <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">Scenario Modeling Inputs</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div class="req-item"><div class="req-title">Rep Onboarding Scenarios</div><div class="req-body">Stage 3 reps across territories, factor attrition</div></div>
+                <div class="req-item"><div class="req-title">Territory Expansion</div><div class="req-body">Deployment planning with revenue projections</div></div>
+                <div class="req-item"><div class="req-title">Distributor Attrition</div><div class="req-body">Model churn risk + margin impact</div></div>
+                <div class="req-item"><div class="req-title">Investment Decisions</div><div class="req-body">Hiring, CapEx, inventory expansion</div></div>
+                <div class="req-item"><div class="req-title">Inventory Forecasting</div><div class="req-body">SKU velocity + demand modeling</div></div>
+              </div>
+              <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin:12px 0 8px">Prompt Template Library</div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <div class="node node-ai" style="justify-content:flex-start">Weekly Executive Review</div>
+                <div class="node node-ai" style="justify-content:flex-start">Sales Performance Analysis</div>
+                <div class="node node-ai" style="justify-content:flex-start">Inventory Forecast Prompt</div>
+                <div class="node node-ai" style="justify-content:flex-start">Scenario Modeling Prompt</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ BAND 4 ═══ -->
+      <div class="band b4" id="band4">
+        <div class="band-header" onclick="toggleBand(this)">
+          <div class="band-header-left">
+            <div class="band-num" style="background:rgba(240,165,0,0.12);color:#f0a500">B4</div>
+            <div>
+              <div class="band-title">Permission & Access Layer</div>
+              <div class="band-sub">Three conceptual tiers — proposed by Andrew, not yet confirmed</div>
+            </div>
+          </div>
+          <div class="band-header-right">
+            <span class="band-tag" style="background:rgba(240,165,0,0.12);color:#f0a500">Conceptual / Blocked</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="band-body">
+          <div class="warn-banner">⚠️ Andrew said "I'm making these up" — exact users, field-level access, and data boundaries require confirmation. This band cannot be finalized until permission definitions are approved by the client.</div>
+
+          <div class="tiers-grid">
+            <div class="tier-card tier-1">
+              <div class="tier-num">Tier 1</div>
+              <div class="tier-name">Leadership / Full Access</div>
+              <div class="tier-item"><span class="tier-icon">·</span>P&L / Balance Sheet / Financials</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Full inventory visibility</div>
+              <div class="tier-item"><span class="tier-icon">·</span>CRM + account data</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Dropbox / company knowledge</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Strategic AI outputs</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Scenario modeling workspace</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Cross-system analytics</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Multi-model decision support</div>
+              <div style="margin-top:8px;font-size:10px;color:var(--text3)">Audience: Andrew + leadership team <span style="color:var(--red)">[members NOT VERIFIED]</span></div>
+            </div>
+            <div class="tier-card tier-2">
+              <div class="tier-num">Tier 2</div>
+              <div class="tier-name">Back Office / Finance / Internal Ops</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Financial dashboards</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Inventory metrics</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Operational dashboards</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Order / invoice / A/R / A/P</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Internal workflow intelligence</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Operations-focused AI outputs</div>
+              <div class="tier-item" style="color:var(--red)"><span class="tier-icon">✗</span>No executive AI strategy layer</div>
+              <div class="tier-item" style="color:var(--red)"><span class="tier-icon">✗</span>No scenario modeling</div>
+              <div style="margin-top:8px;font-size:10px;color:var(--text3)">Audience: Finance, ops, admin <span style="color:var(--red)">[roles NOT VERIFIED]</span></div>
+            </div>
+            <div class="tier-card tier-3">
+              <div class="tier-num">Tier 3</div>
+              <div class="tier-name">Sales-Facing / Commercial Access</div>
+              <div class="tier-item"><span class="tier-icon">·</span>CRM / account visibility</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Territory / surgeon views</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Sales activity summary</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Account history + context</div>
+              <div class="tier-item"><span class="tier-icon">·</span>Read-only commercial intel</div>
+              <div class="tier-item" style="color:var(--red)"><span class="tier-icon">✗</span>No financial data</div>
+              <div class="tier-item" style="color:var(--red)"><span class="tier-icon">✗</span>No inventory detail (reps text/call)</div>
+              <div class="tier-item" style="color:var(--red)"><span class="tier-icon">✗</span>No AI strategy outputs</div>
+              <div style="margin-top:8px;font-size:10px;color:var(--text3)">Audience: W-2 sales, possibly 1099 <span style="color:var(--red)">[NOT VERIFIED]</span></div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--text2)">
+            <strong style="color:var(--text)">Access Design Rules:</strong> Least privilege · Role-based access · Sensitive financial data stays segmented · Strategic AI outputs not broadly visible · QMS/compliance data must not be disrupted · Architecture must support segmented experiences
+          </div>
+
+          <div class="gates-grid" style="margin-top:12px">
+            <div class="gate-card"><div class="gate-title">Exact users in each tier</div><div class="gate-body">NOT VERIFIED — membership list not defined</div></div>
+            <div class="gate-card"><div class="gate-title">Territory-limited sales access?</div><div class="gate-body">Whether salespeople see only their own region is unresolved</div></div>
+            <div class="gate-card"><div class="gate-title">Ops: inventory + quality together?</div><div class="gate-body">Combined vs separate views for operations not decided</div></div>
+            <div class="gate-card"><div class="gate-title">Which AI outputs below Tier 1?</div><div class="gate-body">Exposure of AI insights to Tier 2/3 not defined</div></div>
+            <div class="gate-card"><div class="gate-title">External distributor access?</div><div class="gate-body">Whether 1099s get any direct access is unresolved</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ BAND 5 ═══ -->
+      <div class="band b5" id="band5">
+        <div class="band-header" onclick="toggleBand(this)">
+          <div class="band-header-left">
+            <div class="band-num" style="background:rgba(255,107,107,0.12);color:#ff6b6b">B5</div>
+            <div>
+              <div class="band-title">Output Layer</div>
+              <div class="band-sub">Intelligence products delivered per permission tier — target state / draft</div>
+            </div>
+          </div>
+          <div class="band-header-right">
+            <span class="band-tag" style="background:rgba(255,107,107,0.12);color:#ff6b6b">Needs Validation</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="band-body">
+          <div class="warn-banner">⚠️ Output expectations were discussed but not finalized. Marc asked Andrew directly what questions he wants answered — this is still an open item. All outputs below are draft and must be validated with Andrew.</div>
+
+          <table class="output-table">
+            <thead>
+              <tr>
+                <th>Output</th>
+                <th>Audience</th>
+                <th>Frequency</th>
+                <th>Contents</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="output-name">Automated Weekly BI Review</div>
+                  <div class="output-desc">Replaces Andrew's current manual weekly AI process</div>
+                </td>
+                <td><span class="node node-manual" style="height:22px;font-size:10px">Tier 1</span></td>
+                <td>Weekly</td>
+                <td>P&L summary · CRM · Surgery/cohort · Sales regions · Targets · Cross-model synthesis · Anomaly flags</td>
+                <td><span class="sys-flag" style="background:var(--amber-dim);border:1px solid var(--amber-border);color:var(--amber)">Draft</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="output-name">Scenario Modeling Workspace</div>
+                  <div class="output-desc">Strategic simulation for leadership decisions</div>
+                </td>
+                <td><span class="node node-manual" style="height:22px;font-size:10px">Tier 1</span></td>
+                <td>On-demand</td>
+                <td>Rep onboarding · Territory planning · Attrition modeling · Investment decisions · Revenue projection · Risk factors</td>
+                <td><span class="sys-flag" style="background:var(--amber-dim);border:1px solid var(--amber-border);color:var(--amber)">Draft</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="output-name">Operational Metrics Dashboard</div>
+                  <div class="output-desc">Back-office visibility into orders, inventory, workflow</div>
+                </td>
+                <td><span class="node node-sys" style="height:22px;font-size:10px">Tier 2</span></td>
+                <td>Daily / Real-time</td>
+                <td>Order/invoice/payment status · Inventory metrics · Workflow exceptions · Reconciliation items · Operational KPIs</td>
+                <td><span class="sys-flag" style="background:var(--red-dim);border:1px solid var(--red-border);color:var(--red)">Inferred</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="output-name">Territory / Account View</div>
+                  <div class="output-desc">Sales-facing commercial intelligence</div>
+                </td>
+                <td><span class="node node-decision" style="height:22px;font-size:10px">Tier 3</span></td>
+                <td>Real-time / Weekly</td>
+                <td>Account visibility · Surgeon prioritization · Sales activity · Territory performance · Target tracking · CRM context</td>
+                <td><span class="sys-flag" style="background:var(--amber-dim);border:1px solid var(--amber-border);color:var(--amber)">Draft</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="output-name">Searchable Knowledge Layer</div>
+                  <div class="output-desc">Dropbox-aware answers — SOPs, pricing, account files</div>
+                </td>
+                <td><span class="node node-manual" style="height:22px;font-size:10px">Tier 1–2</span></td>
+                <td>On-demand</td>
+                <td>Dropbox-grounded Q&A · SOP lookup · Pricing / account file retrieval · Document-aware responses · Policy retrieval</td>
+                <td><span class="sys-flag" style="background:var(--amber-dim);border:1px solid var(--amber-border);color:var(--amber)">Draft</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="output-name">Alert & Exception Signals</div>
+                  <div class="output-desc">Event-driven operational flags</div>
+                </td>
+                <td><span class="node node-manual" style="height:22px;font-size:10px">Tier 1–2</span></td>
+                <td>Event-driven</td>
+                <td>Inventory thresholds · Data gaps · Workflow anomalies · Out-of-pattern trends · Missing weekly inputs</td>
+                <td><span class="sys-flag" style="background:var(--red-dim);border:1px solid var(--red-border);color:var(--red)">Inferred</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="blocked-banner" style="margin-top:14px">
+            🔴 <strong>Outputs Still Need Definition:</strong> Exact weekly report contents · Exact operational KPIs · Exact sales view needs · Inventory alert logic · Which outputs are dashboards vs AI answers vs reports — all pending documentation with Andrew
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ DECISION GATES ═══ -->
+      <div id="gates" style="margin-top:24px">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">🔴 Decision Gates Blocking Final Architecture</div>
+        <div class="gates-grid">
+          <div class="gate-card">
+            <div class="gate-title">ERP Direction</div>
+            <div class="gate-body">Odoo vs QB Online + Implant Base. Not finalized. Integration architecture depends on this. Do not build ERP-layer automation until resolved.</div>
+          </div>
+          <div class="gate-card">
+            <div class="gate-title">Implant Base API</div>
+            <div class="gate-body">Leading inventory candidate. API capability NOT VERIFIED. Required for consignment BI design.</div>
+          </div>
+          <div class="gate-card">
+            <div class="gate-title">Surgery Tracking System</div>
+            <div class="gate-body">Andrew references a separate surgery/cohort tracking system weekly. Platform has never been identified. Major gap.</div>
+          </div>
+          <div class="gate-card">
+            <div class="gate-title">Permission Tiers</div>
+            <div class="gate-body">Three tiers proposed conceptually by Andrew. Exact users, roles, and field-level access not defined. Architecture changes based on this.</div>
+          </div>
+          <div class="gate-card">
+            <div class="gate-title">Output Requirements</div>
+            <div class="gate-body">Marc asked directly what reports and questions Andrew wants answered. Not yet documented. Required before intelligence layer is designed.</div>
+          </div>
+          <div class="gate-card">
+            <div class="gate-title">Workflow Brain Dump</div>
+            <div class="gate-body">Andrew committed to providing this. No integration design begins until brain dump is received and reviewed by the team.</div>
+          </div>
+          <div class="gate-card">
+            <div class="gate-title">Grok Integration Path</div>
+            <div class="gate-body">Andrew uses Grok heavily. No API path identified by Jessica. Deferred — must be resolved for multi-model router design.</div>
+          </div>
+          <div class="gate-card">
+            <div class="gate-title">Tray Locator Platform</div>
+            <div class="gate-body">Physical kit tracking exists outside ERP. Platform never identified. Required for consignment reconciliation BI design.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main><!-- /main -->
+
+</div><!-- /app -->
+
+<script>
+function toggleBand(header) {
+  const band = header.closest('.band');
+  band.classList.toggle('collapsed');
+}
+
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // highlight briefly
+    el.style.borderColor = 'rgba(255,255,255,0.3)';
+    setTimeout(() => { el.style.borderColor = ''; el.style.transition = 'border-color 0.5s'; }, 800);
+  }
+  // update active state
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+// track scroll position for sidebar
+const main = document.querySelector('.main');
+const bands = ['band1','band2','band3','band4','band5'];
+main.addEventListener('scroll', () => {
+  const scrollTop = main.scrollTop + 120;
+  let active = 'band1';
+  bands.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= scrollTop) active = id;
+  });
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach((item, i) => {
+    if (i < bands.length) {
+      item.classList.toggle('active', bands[i] === active);
+    }
+  });
+});
+</script>
+
+</body>
+</html>

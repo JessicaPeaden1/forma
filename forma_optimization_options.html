@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — Optimization Options Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500;600&family=Instrument+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #0d1117;
+  --ink-2: #1c2433;
+  --ink-3: #2a3547;
+  --surface: #f5f3ee;
+  --surface-raised: #ffffff;
+  --border: #ddd9d0;
+  --border-mid: #c8c2b8;
+  --text: #1a1816;
+  --text-2: #4a4640;
+  --text-3: #7a7470;
+  --accent: #c8460e;
+  --accent-bg: rgba(200,70,14,0.08);
+  --accent-border: rgba(200,70,14,0.25);
+  --teal: #0e7a6e;
+  --teal-bg: rgba(14,122,110,0.08);
+  --teal-border: rgba(14,122,110,0.25);
+  --gold: #9a6f00;
+  --gold-bg: rgba(154,111,0,0.08);
+  --gold-border: rgba(154,111,0,0.25);
+  --blue: #1a4d8a;
+  --blue-bg: rgba(26,77,138,0.08);
+  --blue-border: rgba(26,77,138,0.25);
+  --warn: #7a2e0e;
+  --warn-bg: rgba(122,46,14,0.07);
+  --warn-border: rgba(122,46,14,0.2);
+  --ff-display: 'Syne', sans-serif;
+  --ff-body: 'Instrument Sans', sans-serif;
+  --ff-mono: 'Instrument Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ff-body);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── TOP HEADER ── */
+.site-header {
+  background: var(--ink);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.site-header .brand {
+  font-family: var(--ff-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0.9;
+}
+.site-header .meta {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.04em;
+}
+.site-header .badge {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  background: rgba(200,70,14,0.25);
+  color: #ff8c6b;
+  border: 1px solid rgba(200,70,14,0.4);
+  border-radius: 4px;
+  padding: 3px 8px;
+  letter-spacing: 0.08em;
+}
+
+/* ── HERO ── */
+.hero {
+  background: var(--ink);
+  padding: 64px 40px 56px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 340px; height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,70,14,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 30%;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14,122,110,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-eyebrow::before { content: '//'; opacity: 0.5; }
+.hero h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  max-width: 700px;
+  margin-bottom: 20px;
+}
+.hero h1 span { color: var(--accent); }
+.hero p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.55);
+  max-width: 600px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hero-stat .n {
+  font-family: var(--ff-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+.hero-stat .l {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── NAV TABS ── */
+.tab-bar {
+  background: var(--surface-raised);
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  gap: 0;
+  padding: 0 40px;
+  overflow-x: auto;
+  position: sticky;
+  top: 56px;
+  z-index: 100;
+}
+.tab {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  padding: 14px 20px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: all 0.15s;
+  letter-spacing: 0.01em;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+/* ── MAIN LAYOUT ── */
+.main { max-width: 1200px; margin: 0 auto; padding: 40px 40px 80px; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.section-header-left {}
+.section-eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 6px;
+}
+.section-title {
+  font-family: var(--ff-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.section-desc {
+  font-size: 14px;
+  color: var(--text-2);
+  margin-top: 8px;
+  max-width: 580px;
+}
+
+/* ── CARDS & GRIDS ── */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
+
+.card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+.card.accent { border-color: var(--accent-border); background: var(--accent-bg); }
+.card.teal { border-color: var(--teal-border); background: var(--teal-bg); }
+.card.gold { border-color: var(--gold-border); background: var(--gold-bg); }
+.card.blue { border-color: var(--blue-border); background: var(--blue-bg); }
+.card.warn { border-color: var(--warn-border); background: var(--warn-bg); }
+.card.ink { background: var(--ink-2); border-color: var(--ink-3); color: rgba(255,255,255,0.85); }
+
+.card-tag {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.card-tag.accent { color: var(--accent); background: none; border: none; }
+.card-tag.teal { color: var(--teal); background: none; border: none; }
+.card-tag.gold { color: var(--gold); background: none; border: none; }
+.card-tag.blue { color: var(--blue); background: none; border: none; }
+.card-tag.red { color: #b91c1c; background: none; border: none; }
+
+.card-title {
+  font-family: var(--ff-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.card p { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.card.ink p { color: rgba(255,255,255,0.55); }
+
+/* ── OPTION CARDS ── */
+.option-card {
+  background: var(--surface-raised);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  transition: border-color 0.2s;
+}
+.option-card:hover { border-color: var(--border-mid); }
+.option-card.opt-1 { --opt-color: var(--accent); --opt-bg: var(--accent-bg); --opt-border: var(--accent-border); }
+.option-card.opt-2 { --opt-color: var(--teal); --opt-bg: var(--teal-bg); --opt-border: var(--teal-border); }
+.option-card.opt-3 { --opt-color: var(--gold); --opt-bg: var(--gold-bg); --opt-border: var(--gold-border); }
+
+.option-header {
+  background: var(--opt-bg);
+  border-bottom: 1px solid var(--opt-border);
+  padding: 24px 28px;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+.option-num {
+  font-family: var(--ff-display);
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--opt-color);
+  line-height: 1;
+  opacity: 0.25;
+  flex-shrink: 0;
+  letter-spacing: -0.04em;
+}
+.option-header-text {}
+.option-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--opt-color);
+  margin-bottom: 6px;
+}
+.option-title {
+  font-family: var(--ff-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.option-tagline {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+  max-width: 600px;
+}
+.option-body { padding: 28px; }
+
+/* ── PHASE TIMELINE ── */
+.phase-list { display: flex; flex-direction: column; gap: 12px; }
+.phase {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.phase-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--opt-bg, var(--accent-bg));
+  border: 1px solid var(--opt-border, var(--accent-border));
+  color: var(--opt-color, var(--accent));
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-content {}
+.phase-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.phase-desc {
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+/* ── SIGNAL ITEMS ── */
+.signal-list { display: flex; flex-direction: column; gap: 10px; }
+.signal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.signal-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+.signal-text { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+.signal-text strong { color: var(--text); font-weight: 600; }
+
+/* ── CONSTRAINT CHIPS ── */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.chip {
+  font-family: var(--ff-mono);
+  font-size: 10.5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+.chip.green { background: rgba(14,122,110,0.1); color: var(--teal); border: 1px solid var(--teal-border); }
+.chip.amber { background: rgba(154,111,0,0.1); color: var(--gold); border: 1px solid var(--gold-border); }
+.chip.red { background: rgba(122,46,14,0.1); color: var(--warn); border: 1px solid var(--warn-border); }
+.chip.neutral { background: rgba(0,0,0,0.05); color: var(--text-3); border: 1px solid var(--border); }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead tr { background: var(--ink-2); color: rgba(255,255,255,0.8); }
+thead th {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 12px 16px;
+  text-align: left;
+  white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr:hover { background: rgba(0,0,0,0.02); }
+tbody td { padding: 12px 16px; color: var(--text-2); vertical-align: top; }
+tbody td:first-child { color: var(--text); font-weight: 500; }
+.dot-green { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); display: inline-block; }
+.dot-amber { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); display: inline-block; }
+.dot-red { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+
+/* ── DIVIDER ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+/* ── ALERT BOX ── */
+.alert {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.alert.warn { background: var(--warn-bg); border: 1px solid var(--warn-border); }
+.alert.info { background: var(--blue-bg); border: 1px solid var(--blue-border); }
+.alert.success { background: var(--teal-bg); border: 1px solid var(--teal-border); }
+.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.alert-text { font-size: 13px; line-height: 1.6; }
+.alert.warn .alert-text { color: var(--warn); }
+.alert.info .alert-text { color: var(--blue); }
+.alert.success .alert-text { color: var(--teal); }
+.alert-text strong { font-weight: 600; }
+
+/* ── COMPARISON ROWS ── */
+.compare-grid { display: grid; grid-template-columns: 200px repeat(3, 1fr); gap: 0; margin-bottom: 24px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.compare-header { background: var(--ink-2); padding: 14px 16px; }
+.compare-header.opt-1 { background: var(--accent-bg); border-left: 3px solid var(--accent); }
+.compare-header.opt-2 { background: var(--teal-bg); border-left: 3px solid var(--teal); }
+.compare-header.opt-3 { background: var(--gold-bg); border-left: 3px solid var(--gold); }
+.compare-header .ch-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 2px;
+}
+.compare-header.opt-1 .ch-label { color: var(--accent); }
+.compare-header.opt-2 .ch-label { color: var(--teal); }
+.compare-header.opt-3 .ch-label { color: var(--gold); }
+.compare-header .ch-name {
+  font-family: var(--ff-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.compare-header .ch-name.ink { color: rgba(255,255,255,0.8); }
+.compare-row { display: contents; }
+.compare-cell {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-2);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.compare-cell:first-child {
+  font-weight: 600;
+  color: var(--text);
+  background: rgba(0,0,0,0.015);
+  border-left: none;
+  font-size: 12px;
+}
+
+/* ── DETAIL COLLAPSIBLE ── */
+details { margin-bottom: 12px; }
+details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  transition: background 0.15s;
+}
+details > summary:hover { background: var(--surface-raised); }
+details > summary::after { content: '↓'; font-size: 12px; color: var(--text-3); }
+details[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none; }
+details[open] > summary::after { content: '↑'; }
+.details-body {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background: var(--surface-raised);
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+.details-body ul { padding-left: 18px; }
+.details-body li { margin-bottom: 6px; }
+
+/* ── SCORE BAR ── */
+.score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.score-label { font-size: 12px; color: var(--text-2); width: 140px; flex-shrink: 0; }
+.score-track { flex: 1; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.score-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+.score-val { font-family: var(--ff-mono); font-size: 11px; color: var(--text-3); width: 32px; text-align: right; flex-shrink: 0; }
+
+/* ── FOOTER ── */
+.page-footer {
+  background: var(--ink);
+  padding: 24px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-footer .f-brand {
+  font-family: var(--ff-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+.page-footer .f-note {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+}
+
+@media (max-width: 768px) {
+  .hero { padding: 40px 20px; }
+  .main { padding: 28px 20px 60px; }
+  .tab-bar { padding: 0 20px; }
+  .site-header { padding: 0 20px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .option-header { flex-direction: column; gap: 10px; }
+  .page-footer { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="brand">Forma Medical · Plus 1 Technology</div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="meta">Visual Board Review · March 2026</div>
+    <div class="badge">DRAFT — ERP TBD</div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Optimization Options Review</div>
+  <h1>Three Paths Forward<br>for <span>Forma Medical</span></h1>
+  <p>Cross-board synthesis of inventory, AI, architecture, and operations boards — distilled into three actionable implementation options aligned to Andrew's stated goals and current constraints.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="n">8</div><div class="l">Boards Reviewed</div></div>
+    <div class="hero-stat"><div class="n">7</div><div class="l">Pain Points Mapped</div></div>
+    <div class="hero-stat"><div class="n">3</div><div class="l">Options Developed</div></div>
+    <div class="hero-stat"><div class="n">0</div><div class="l">ERP-Layer Builds (yet)</div></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab active" onclick="showSection('overview')">Overview</button>
+  <button class="tab" onclick="showSection('signals')">Pain Points & Signals</button>
+  <button class="tab" onclick="showSection('option1')">Option 1 — Intelligence Layer</button>
+  <button class="tab" onclick="showSection('option2')">Option 2 — Inventory Automation</button>
+  <button class="tab" onclick="showSection('option3')">Option 3 — Full Operating System</button>
+  <button class="tab" onclick="showSection('compare')">Side-by-Side</button>
+  <button class="tab" onclick="showSection('constraints')">Constraints & Gates</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="section active">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="section-eyebrow">Board Synthesis</div>
+        <div class="section-title">What the Visual Boards Tell Us</div>
+        <div class="section-desc">A cross-board read of the eight interactive documents, mapped to Andrew's goals from discovery.</div>
+      </div>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-text"><strong>ERP Hold Active.</strong> No automation builds touching the ERP layer until Odoo vs. QB Online + Implantbase decision is confirmed. All three options are designed to remain valid regardless of which path is chosen.</div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card accent">
+        <div class="card-tag accent">Discovery Hub + AI Baseline</div>
+        <div class="card-title">Systems Are Fully Siloed</div>
+        <p>QuickBooks, Google Sheets, Dropbox, and AI tools operate with zero data connections. Andrew manually bridges all systems every week — a recurring, high-effort bottleneck.</p>
+      </div>
+      <div class="card teal">
+        <div class="card-tag teal">Inventory Boards (×2)</div>
+        <div class="card-title">Inventory Is the Core Risk</div>
+        <p>Kit dispatch is text/phone-only with no system acknowledgment. High-value orthopedic consignment assets move with zero digital traceability from request to return.</p>
+      </div>
+      <div class="card gold">
+        <div class="card-tag gold">Operating Model Blueprint</div>
+        <div class="card-title">Manual Reconciliation Loops</div>
+        <p>Finance, sales tracking, and cohort data are reconciled manually and asynchronously. Multiple "someone checks this later" moments flagged throughout the operating model.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card blue">
+        <div class="card-tag blue">Architecture Board</div>
+        <div class="card-title">BI Layer Is the Missing Link</div>
+        <p>The architecture board maps a clear vision: a modular intelligence layer sitting above ERP, CRM, and Dropbox. The connectors exist — the orchestration doesn't. Dropbox indexed for AI querying is the fastest win here.</p>
+      </div>
+      <div class="card ink">
+        <div class="card-tag" style="color:rgba(255,255,255,0.4);">AI Implementation Board</div>
+        <div class="card-title" style="color:#fff;">Multi-Model Workflow Is Manual</div>
+        <p>Andrew already runs Grok, Gemini, and Claude in parallel for major decisions. The workflow is sophisticated but entirely manual — prompt construction, data loading, and triangulation all happen by hand every single session.</p>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-eyebrow" style="margin-bottom:12px;">Andrew's Stated Goals — Discovery Alignment</div>
+    <div class="signal-list">
+      <div class="signal-item">
+        <div class="signal-icon">🧠</div>
+        <div class="signal-text"><strong>Business Brain / AI Strategy Advisor</strong> — "Something sitting on top of all this that understood our data and could just basically be a strategy advisor." → Addressed in Options 1 & 3.</div>
+      </div>
+      <div class="signal-item">
+        <div class="signal-icon">📦</div>
+        <div class="signal-text"><strong>Inventory Continuity</strong> — "These kits that we deliver to the hospital are extremely expensive and managing them is very, very critical." → Core focus of Option 2; integrated into Option 3.</div>
+      </div>
+      <div class="signal-item">
+        <div class="signal-icon">🔌</div>
+        <div class="signal-text"><strong>Modular Architecture</strong> — "I'd love for it to be flexible... when we switch, no big deal, right? We just plug the API into it." → Constraint applied to all three options.</div>
+      </div>
+      <div class="signal-item">
+        <div class="signal-icon">🚪</div>
+        <div class="signal-text"><strong>Exit Readiness</strong> — "The intention of this company is to grow it over the next five years and then also exit it." → Dropbox organization as documented asset; BI layer as due-diligence-ready intelligence.</div>
+      </div>
+      <div class="signal-item">
+        <div class="signal-icon">🔁</div>
+        <div class="signal-text"><strong>Weekly Review Automation</strong> — "Every week I run our P&L through AI... it's all very manual." → Highest-signal recurring automation target across all boards. Addressed in Options 1 & 3.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIGNALS -->
+  <section id="signals" class="section">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="section-eyebrow">Board Cross-Reference</div>
+        <div class="section-title">Pain Points & Automation Signals</div>
+        <div class="section-desc">Each signal identified across boards, mapped to its source, priority level, and ERP-dependency status.</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Signal / Pain Point</th>
+            <th>Source Board(s)</th>
+            <th>Priority</th>
+            <th>ERP-Dependent?</th>
+            <th>Buildable Now?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Weekly manual P&L + CRM + cohort → AI</td>
+            <td>AI Baseline, Discovery Hub, AI Impl. Board</td>
+            <td><span class="dot-red"></span> High</td>
+            <td>Partial (read-only)</td>
+            <td>✅ Yes — trigger templates, not ERP write</td>
+          </tr>
+          <tr>
+            <td>Kit/inventory request via text — no system record</td>
+            <td>Inventory Boards (×2), ERP Flow</td>
+            <td><span class="dot-red"></span> High</td>
+            <td>Yes — ERP/Implantbase destination</td>
+            <td>⚠️ Partial — log layer now, full integration post-ERP</td>
+          </tr>
+          <tr>
+            <td>Dropbox not indexed or AI-queryable</td>
+            <td>Architecture Board, Discovery Hub</td>
+            <td><span class="dot-red"></span> High</td>
+            <td>No</td>
+            <td>✅ Yes — no ERP involvement</td>
+          </tr>
+          <tr>
+            <td>Multi-model AI review is fully manual</td>
+            <td>AI Baseline, AI Impl. Board, Discovery Hub</td>
+            <td><span class="dot-amber"></span> Medium-High</td>
+            <td>No</td>
+            <td>✅ Yes — prompt templating + routing</td>
+          </tr>
+          <tr>
+            <td>Sales rep activity logging → Google Sheets (2 humans)</td>
+            <td>Discovery Hub, Operating Model</td>
+            <td><span class="dot-amber"></span> Medium</td>
+            <td>No</td>
+            <td>✅ Yes — structured intake form or voice log</td>
+          </tr>
+          <tr>
+            <td>Manual weekly cohort + sales vs. target pull</td>
+            <td>Operating Model, AI Impl. Board</td>
+            <td><span class="dot-amber"></span> Medium-High</td>
+            <td>Partial</td>
+            <td>✅ Yes — Sheets automation, ERP read optional</td>
+          </tr>
+          <tr>
+            <td>No formal project management / task tracking</td>
+            <td>Discovery Hub, Open Questions</td>
+            <td><span class="dot-amber"></span> Medium</td>
+            <td>No</td>
+            <td>✅ Yes — ClickUp setup independent of ERP</td>
+          </tr>
+          <tr>
+            <td>SKU reorder analysis is manual / Excel-based</td>
+            <td>Inventory Boards, ERP Flow</td>
+            <td><span class="dot-amber"></span> Medium</td>
+            <td>Yes — ERP source of truth</td>
+            <td>⚠️ After ERP — design now, build post-decision</td>
+          </tr>
+          <tr>
+            <td>No three-tier permission model implemented</td>
+            <td>Architecture Board, Discovery Hub</td>
+            <td><span class="dot-green"></span> Low-Medium</td>
+            <td>No</td>
+            <td>✅ Yes — ClickUp or BI layer roles</td>
+          </tr>
+          <tr>
+            <td>Grok API integration gap</td>
+            <td>AI Baseline, Open Questions</td>
+            <td><span class="dot-green"></span> Low</td>
+            <td>No</td>
+            <td>⚠️ Research required — NOT VERIFIED</td>
+          </tr>
+          <tr>
+            <td>Inventory serialization (future)</td>
+            <td>Operating Model, Inventory Boards</td>
+            <td><span class="dot-green"></span> Future</td>
+            <td>Yes</td>
+            <td>❌ Post-ERP — design only now</td>
+          </tr>
+          <tr>
+            <td>Email as marginal integration</td>
+            <td>Discovery Hub</td>
+            <td><span class="dot-green"></span> Low</td>
+            <td>No</td>
+            <td>✅ Bonus — not priority</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert info">
+      <div class="alert-icon">ℹ️</div>
+      <div class="alert-text"><strong>Key finding:</strong> 7 of the 12 signals are buildable right now with no ERP dependency. The highest-priority work — Dropbox indexing, weekly review automation, and multi-model prompt routing — can begin immediately while ERP decision is pending.</div>
+    </div>
+  </section>
+
+  <!-- OPTION 1 -->
+  <section id="option1" class="section">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="section-eyebrow">Option 1 of 3</div>
+        <div class="section-title">The Intelligence Layer</div>
+        <div class="section-desc">Build Andrew's "business brain" first — automate the weekly review cycle and make Dropbox AI-queryable.</div>
+      </div>
+    </div>
+
+    <div class="option-card opt-1">
+      <div class="option-header">
+        <div class="option-num">01</div>
+        <div class="option-header-text">
+          <div class="option-label">Option 1 · Lower Risk · Highest Immediate ROI for Andrew</div>
+          <div class="option-title">Build the Business Brain First</div>
+          <div class="option-tagline">Before any ERP migration, before any field changes — automate the weekly intelligence cycle Andrew already runs manually. Connect Dropbox to AI querying. Template the multi-model decision workflow. Give Andrew his strategy advisor now, built on what's already working.</div>
+        </div>
+      </div>
+      <div class="option-body">
+
+        <div class="grid-2" style="margin-bottom:24px;">
+          <div>
+            <div class="card-tag accent" style="margin-bottom:12px;">What Gets Built</div>
+            <div class="phase-list" style="--opt-bg:var(--accent-bg);--opt-border:var(--accent-border);--opt-color:var(--accent);">
+              <div class="phase">
+                <div class="phase-num">1</div>
+                <div class="phase-content">
+                  <div class="phase-name">Dropbox AI Index</div>
+                  <div class="phase-desc">Index Forma's Dropbox folder tree so Claude (or a configured AI layer) can search, retrieve, and summarize documents on demand. Andrew described this as a major asset — make it queryable.</div>
+                </div>
+              </div>
+              <div class="phase">
+                <div class="phase-num">2</div>
+                <div class="phase-content">
+                  <div class="phase-name">Weekly Review Automation</div>
+                  <div class="phase-desc">Scheduled trigger pulls current P&L export, CRM summary from Sheets, and cohort data — packages into a structured prompt delivered to Claude and Gemini simultaneously. Andrew reviews outputs, not raw data.</div>
+                </div>
+              </div>
+              <div class="phase">
+                <div class="phase-num">3</div>
+                <div class="phase-content">
+                  <div class="phase-name">Multi-Model Decision Templates</div>
+                  <div class="phase-desc">Pre-built prompt templates for recurring decision types (territory expansion, rep onboarding, cohort analysis). Andrew selects a template, fills inputs, and the system routes to 2–3 models and returns triangulated output.</div>
+                </div>
+              </div>
+              <div class="phase">
+                <div class="phase-num">4</div>
+                <div class="phase-content">
+                  <div class="phase-name">ClickUp as Project Hub</div>
+                  <div class="phase-desc">Stand up ClickUp with three permission tiers (leadership / back-office / sales-read). Establishes project management and creates the foundation for future workflow integration.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card-tag accent" style="margin-bottom:12px;">Why This Path</div>
+            <div class="signal-list">
+              <div class="signal-item">
+                <div class="signal-icon">⚡</div>
+                <div class="signal-text"><strong>Zero ERP dependency</strong> — everything in this option builds above the ERP layer. No risk from the pending decision.</div>
+              </div>
+              <div class="signal-item">
+                <div class="signal-icon">🎯</div>
+                <div class="signal-text"><strong>Directly addresses Andrew's #1 stated pain</strong> — the weekly manual review cycle is the highest-frequency, highest-effort bottleneck.</div>
+              </div>
+              <div class="signal-item">
+                <div class="signal-icon">📂</div>
+                <div class="signal-text"><strong>Unlocks existing asset</strong> — Dropbox is already "ridiculously organized." Indexing it costs low effort but has high strategic value.</div>
+              </div>
+              <div class="signal-item">
+                <div class="signal-icon">🚪</div>
+                <div class="signal-text"><strong>Exit-ready intelligence</strong> — a documented, queryable business brain is a differentiator for future acquisition due diligence.</div>
+              </div>
+              <div class="signal-item">
+                <div class="signal-icon">🧩</div>
+                <div class="signal-text"><strong>Modular by design</strong> — built as an API-connected layer. ERP swap later = swap one connector, not rebuild the brain.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-tag accent">Timeline Estimate</div>
+            <div class="card-title">4–6 Weeks</div>
+            <p>Dropbox indexing (1–2 wks) → Weekly review automation (1–2 wks) → Multi-model templates (1 wk) → ClickUp setup (1 wk). Parallel tracks possible.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag accent">Tools Involved</div>
+            <div class="card-title">Claude API · Dropbox · Make/n8n · ClickUp</div>
+            <p>Gemini stays as-is for Andrew's personal use. Grok remains manual (API gap — NOT VERIFIED). Google Sheets read-only integration for Sheets CRM data pull.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag accent">Field Team Impact</div>
+            <div class="card-title">Zero</div>
+            <p>No changes to how sales reps operate. No new tools for the field. All changes affect Andrew and back-office only. This respects the rep compliance constraint explicitly.</p>
+          </div>
+        </div>
+
+        <div class="card-tag accent" style="margin-bottom:12px;">Fit Scores</div>
+        <div class="score-row"><div class="score-label">ERP Safety</div><div class="score-track"><div class="score-fill" style="width:100%;background:var(--teal);"></div></div><div class="score-val">10/10</div></div>
+        <div class="score-row"><div class="score-label">Speed to Value</div><div class="score-track"><div class="score-fill" style="width:90%;background:var(--teal);"></div></div><div class="score-val">9/10</div></div>
+        <div class="score-row"><div class="score-label">Inventory Coverage</div><div class="score-track"><div class="score-fill" style="width:20%;background:var(--accent);"></div></div><div class="score-val">2/10</div></div>
+        <div class="score-row"><div class="score-label">Andrew Goal Alignment</div><div class="score-track"><div class="score-fill" style="width:85%;background:var(--teal);"></div></div><div class="score-val">8.5/10</div></div>
+        <div class="score-row"><div class="score-label">Field Team Disruption</div><div class="score-track"><div class="score-fill" style="width:5%;background:var(--teal);"></div></div><div class="score-val">0/10</div></div>
+
+        <div class="chip-row" style="margin-top:16px;">
+          <div class="chip green">✓ Zero ERP dependency</div>
+          <div class="chip green">✓ Builds now</div>
+          <div class="chip green">✓ No field disruption</div>
+          <div class="chip amber">⚠ Inventory gap remains</div>
+          <div class="chip amber">⚠ Grok API unresolved</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPTION 2 -->
+  <section id="option2" class="section">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="section-eyebrow">Option 2 of 3</div>
+        <div class="section-title">Inventory Process Automation</div>
+        <div class="section-desc">Tackle the highest operational risk area — consignment kit tracking — with a digital layer that sits above whatever ERP is chosen.</div>
+      </div>
+    </div>
+
+    <div class="option-card opt-2">
+      <div class="option-header">
+        <div class="option-num">02</div>
+        <div class="option-header-text">
+          <div class="option-label">Option 2 · Highest Operational Impact · Moderate ERP Dependency</div>
+          <div class="option-title">Digitize the Inventory Handoff</div>
+          <div class="option-tagline">Replace the text/phone kit request system with a structured digital workflow — a request layer that creates a paper trail, sends confirmations, and prepares a clean data handoff to whichever ERP is selected. Pairs with velocity-based restock intelligence as a second phase.</div>
+        </div>
+      </div>
+      <div class="option-body">
+
+        <div class="alert warn">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-text"><strong>ERP Constraint Active.</strong> Phase 1 (request logging layer) can build now. Phase 2 (ERP write-back and restock triggers) must wait for ERP confirmation. Design Phase 2 now; build after decision.</div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:24px;">
+          <div>
+            <div class="card-tag teal" style="margin-bottom:12px;">What Gets Built</div>
+            <div class="phase-list" style="--opt-bg:var(--teal-bg);--opt-border:var(--teal-border);--opt-color:var(--teal);">
+              <div class="phase">
+                <div class="phase-num">1</div>
+                <div class="phase-content">
+                  <div class="phase-name">Kit Request Digital Layer (Phase 1 — Build Now)</div>
+                  <div class="phase-desc">Structured form (ClickUp, web form, or mobile) replaces the text/phone request. Rep submits: surgeon name, hospital, date, set list. System auto-confirms receipt, logs request with timestamp, notifies ops team. No ERP write — just a log.</div>
+                </div>
+              </div>
+              <div class="phase">
+                <div class="phase-num">2</div>
+                <div class="phase-content">
+                  <div class="phase-name">Packing List Automation (Phase 1)</div>
+                  <div class="phase-desc">Once kit request is logged, system auto-generates a packing checklist for ops from the request data. Eliminates manual packing list creation — one of the top manual pain points in the inventory boards.</div>
+                </div>
+              </div>
+              <div class="phase">
+                <div class="phase-num">3</div>
+                <div class="phase-content">
+                  <div class="phase-name">ERP Write-Back + Inventory Sync (Phase 2 — Post ERP Decision)</div>
+                  <div class="phase-desc">Kit dispatch confirmed in the request layer triggers a record in Odoo or Implantbase. Return logging closes the loop. Design the data model now; build the connector after ERP is selected — NOT VERIFIED until platform confirmed.</div>
+                </div>
+              </div>
+              <div class="phase">
+                <div class="phase-num">4</div>
+                <div class="phase-content">
+                  <div class="phase-name">Velocity-Based Restock Intelligence (Phase 2)</div>
+                  <div class="phase-desc">AI layer reads dispatch history to flag SKUs approaching depletion. Surfaces reorder recommendations before manual check would catch them. Replaces the current Excel-based SKU reorder analysis.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card-tag teal" style="margin-bottom:12px;">Why This Path</div>
+            <div class="signal-list">
+              <div class="signal-item">
+                <div class="signal-icon">🏥</div>
+                <div class="signal-text"><strong>Highest operational risk item</strong> — high-value orthopedic consignment assets moving with zero digital traceability is the most dangerous gap in the current state.</div>
+              </div>
+              <div class="signal-item">
+                <div class="signal-icon">📋</div>
+                <div class="signal-text"><strong>Inventory board consensus</strong> — both inventory board variants flag kit request and packing list creation as top manual pain points. This directly targets both.</div>
+              </div>
+              <div class="signal-item">
+                <div class="signal-icon">🔧</div>
+                <div class="signal-text"><strong>ERP-agnostic Phase 1</strong> — the request log layer and packing automation don't care which ERP is selected. They capture data in a clean format ready for any destination.</div>
+              </div>
+              <div class="signal-item">
+                <div class="signal-icon">📈</div>
+                <div class="signal-text"><strong>Sets up future serialization</strong> — the operating model notes "inventory not serialized now but maybe in future." This request layer is the foundation that makes serialization possible.</div>
+              </div>
+              <div class="signal-item">
+                <div class="signal-icon">👥</div>
+                <div class="signal-text"><strong>Low-friction for reps</strong> — a simple structured form with auto-confirmation is likely more rep-friendly than the current text-and-hope system. But field change tolerance is low — must validate with reps before build.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-tag teal">Timeline Estimate</div>
+            <div class="card-title">Phase 1: 3–5 Weeks<br>Phase 2: Post-ERP</div>
+            <p>Request form + packing automation (3–5 wks). ERP write-back design (parallel). Phase 2 build begins after ERP go/no-go gate.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag teal">Tools Involved</div>
+            <div class="card-title">ClickUp · Make/n8n · Implantbase (Phase 2) · Odoo (Phase 2)</div>
+            <p>Phase 1 is ClickUp + automation platform only. Phase 2 tool list depends on ERP selection — <span style="color:var(--warn);">NOT VERIFIED</span> until Implantbase or Odoo confirmed.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag teal">Field Team Impact</div>
+            <div class="card-title">Moderate</div>
+            <p>Reps replace a text with a form submission. Must be mobile-first and dead simple. High risk of non-adoption if friction is greater than current text method. Requires rep pilot before full rollout.</p>
+          </div>
+        </div>
+
+        <div class="card-tag teal" style="margin-bottom:12px;">Fit Scores</div>
+        <div class="score-row"><div class="score-label">ERP Safety</div><div class="score-track"><div class="score-fill" style="width:55%;background:var(--gold);"></div></div><div class="score-val">5.5/10</div></div>
+        <div class="score-row"><div class="score-label">Speed to Value (P1)</div><div class="score-track"><div class="score-fill" style="width:75%;background:var(--teal);"></div></div><div class="score-val">7.5/10</div></div>
+        <div class="score-row"><div class="score-label">Inventory Coverage</div><div class="score-track"><div class="score-fill" style="width:90%;background:var(--teal);"></div></div><div class="score-val">9/10</div></div>
+        <div class="score-row"><div class="score-label">Andrew Goal Alignment</div><div class="score-track"><div class="score-fill" style="width:75%;background:var(--teal);"></div></div><div class="score-val">7.5/10</div></div>
+        <div class="score-row"><div class="score-label">Field Team Disruption</div><div class="score-track"><div class="score-fill" style="width:45%;background:var(--gold);"></div></div><div class="score-val">4.5/10</div></div>
+
+        <div class="chip-row" style="margin-top:16px;">
+          <div class="chip green">✓ Phase 1 builds now</div>
+          <div class="chip green">✓ Highest risk coverage</div>
+          <div class="chip green">✓ ERP-agnostic data model</div>
+          <div class="chip amber">⚠ Phase 2 blocked on ERP</div>
+          <div class="chip amber">⚠ Field adoption risk</div>
+          <div class="chip red">✗ Implantbase not verified</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPTION 3 -->
+  <section id="option3" class="section">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="section-eyebrow">Option 3 of 3</div>
+        <div class="section-title">Full Operating System Rebuild</div>
+        <div class="section-desc">Combine Options 1 and 2 into a sequenced build that delivers the business brain now, digitizes inventory in parallel, and lays a modular foundation for the full BI architecture.</div>
+      </div>
+    </div>
+
+    <div class="option-card opt-3">
+      <div class="option-header">
+        <div class="option-num">03</div>
+        <div class="option-header-text">
+          <div class="option-label">Option 3 · Highest Scope · Aligned to 5-Year Exit Goal</div>
+          <div class="option-title">Rebuild the Operating System in Phases</div>
+          <div class="option-tagline">A sequenced, phased rebuild that starts with the highest-ROI items (intelligence layer + kit request digitization), builds toward full BI architecture, and is designed from day one to accommodate ERP migration without rebuilding the AI layer above it.</div>
+        </div>
+      </div>
+      <div class="option-body">
+
+        <div class="alert success">
+          <div class="alert-icon">✅</div>
+          <div class="alert-text"><strong>Recommended for Andrew's 5-year exit goal.</strong> This is the path that builds something acquirers will recognize — organized data, documented processes, a queryable business brain, and modular architecture. It's also the most work and requires the most sequencing discipline.</div>
+        </div>
+
+        <div class="card-tag gold" style="margin-bottom:16px;">Three-Phase Build Sequence</div>
+
+        <div class="card gold" style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-family:var(--ff-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);background:var(--gold-bg);border:1px solid var(--gold-border);padding:3px 10px;border-radius:20px;">Phase A · Weeks 1–6</div>
+            <div style="font-size:12px;color:var(--text-3);">Zero ERP dependency</div>
+          </div>
+          <div class="card-title">Intelligence Layer + Kit Request Log</div>
+          <p style="margin-bottom:10px;">Simultaneously: Dropbox indexing, weekly review automation, multi-model templates (from Option 1) + Kit request digital form, packing list automation (Phase 1 from Option 2). ClickUp stood up with permission tiers as the central hub.</p>
+          <div class="chip-row">
+            <div class="chip green">Dropbox AI Index</div>
+            <div class="chip green">Weekly Review Automation</div>
+            <div class="chip green">Decision Templates</div>
+            <div class="chip green">Kit Request Form</div>
+            <div class="chip green">Packing List Automation</div>
+            <div class="chip green">ClickUp Hub</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;border-color:var(--gold-border);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-family:var(--ff-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);background:var(--gold-bg);border:1px solid var(--gold-border);padding:3px 10px;border-radius:20px;">Phase B · Post-ERP Go/No-Go</div>
+            <div style="font-size:12px;color:var(--text-3);">ERP connector layer</div>
+          </div>
+          <div class="card-title">ERP Integration + Inventory Intelligence</div>
+          <p style="margin-bottom:10px;">After ERP decision is confirmed: Connect ERP to BI layer via modular API connector. Enable ERP write-back from kit request system. Add velocity-based restock intelligence. Connect P&L pull from QB Online / Odoo directly (replacing manual export). Cohort and sales vs. target dashboard built on live data.</p>
+          <div class="chip-row">
+            <div class="chip amber">ERP Connector (post-decision)</div>
+            <div class="chip amber">Live P&L Feed</div>
+            <div class="chip amber">Restock Intelligence</div>
+            <div class="chip amber">Sales Dashboard (live)</div>
+          </div>
+        </div>
+
+        <div class="card ink" style="margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-family:var(--ff-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);padding:3px 10px;border-radius:20px;">Phase C · 6–12 Months</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.3);">Full BI architecture</div>
+          </div>
+          <div class="card-title" style="color:#fff;">Full Business Brain — The Strategy Advisor</div>
+          <p style="margin-bottom:10px;">Andrew's stated vision: something sitting on top of all systems that fully understands the business and answers strategic questions. Phase C stitches the intelligence layer, ERP data, CRM, and Dropbox into a unified query interface. Multi-model routing formalized. Permission-gated access for 3 tiers. Exit-ready business intelligence package.</p>
+          <div class="chip-row">
+            <div class="chip neutral">Unified Query Interface</div>
+            <div class="chip neutral">3-Tier Gated Access</div>
+            <div class="chip neutral">Multi-Model Routing (formal)</div>
+            <div class="chip neutral">Exit-Ready BI Package</div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-tag gold">Timeline Estimate</div>
+            <div class="card-title">Phase A: 6 Wks<br>Phase B: Post-ERP<br>Phase C: 6–12 Mo</div>
+            <p>This is a roadmap, not a sprint. Phase A delivers value immediately. Phases B and C are gated and sequenced. Client sign-off required at each gate.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag gold">Tools Involved</div>
+            <div class="card-title">Full Stack</div>
+            <p>Phase A: Claude API, Dropbox, Make/n8n, ClickUp, Google Sheets. Phase B: + ERP connector (TBD). Phase C: + BI layer orchestration, permission gateway, multi-model router.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag gold">Field Team Impact</div>
+            <div class="card-title">Phased / Low-to-Moderate</div>
+            <p>Phase A: zero field impact. Phase B: kit request form for reps (pilot required). Phase C: read-only access tier for sales. Paced rollout respects adoption constraint.</p>
+          </div>
+        </div>
+
+        <div class="card-tag gold" style="margin-bottom:12px;">Fit Scores</div>
+        <div class="score-row"><div class="score-label">ERP Safety</div><div class="score-track"><div class="score-fill" style="width:80%;background:var(--teal);"></div></div><div class="score-val">8/10</div></div>
+        <div class="score-row"><div class="score-label">Speed to Value (P.A)</div><div class="score-track"><div class="score-fill" style="width:85%;background:var(--teal);"></div></div><div class="score-val">8.5/10</div></div>
+        <div class="score-row"><div class="score-label">Inventory Coverage</div><div class="score-track"><div class="score-fill" style="width:90%;background:var(--teal);"></div></div><div class="score-val">9/10</div></div>
+        <div class="score-row"><div class="score-label">Andrew Goal Alignment</div><div class="score-track"><div class="score-fill" style="width:97%;background:var(--teal);"></div></div><div class="score-val">9.7/10</div></div>
+        <div class="score-row"><div class="score-label">Field Team Disruption (P.A)</div><div class="score-track"><div class="score-fill" style="width:8%;background:var(--teal);"></div></div><div class="score-val">0.8/10</div></div>
+        <div class="score-row"><div class="score-label">Implementation Complexity</div><div class="score-track"><div class="score-fill" style="width:85%;background:var(--accent);"></div></div><div class="score-val">High</div></div>
+
+        <div class="chip-row" style="margin-top:16px;">
+          <div class="chip green">✓ Highest goal coverage</div>
+          <div class="chip green">✓ Exit-ready by design</div>
+          <div class="chip green">✓ Modular — ERP-swap safe</div>
+          <div class="chip green">✓ Phase A starts now</div>
+          <div class="chip amber">⚠ Requires phasing discipline</div>
+          <div class="chip amber">⚠ Phase B gated on ERP</div>
+          <div class="chip amber">⚠ Highest ongoing commitment</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section id="compare" class="section">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="section-eyebrow">Side-by-Side</div>
+        <div class="section-title">Option Comparison</div>
+        <div class="section-desc">All three options evaluated across the same dimensions, aligned to Forma's constraints and goals.</div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-header" style="background:var(--ink-2);">
+        <div class="ch-label" style="color:rgba(255,255,255,0.4);">Dimension</div>
+        <div class="ch-name ink">Evaluation Criteria</div>
+      </div>
+      <div class="compare-header opt-1">
+        <div class="ch-label">Option 1</div>
+        <div class="ch-name">Intelligence Layer</div>
+      </div>
+      <div class="compare-header opt-2">
+        <div class="ch-label">Option 2</div>
+        <div class="ch-name">Inventory Automation</div>
+      </div>
+      <div class="compare-header opt-3">
+        <div class="ch-label">Option 3</div>
+        <div class="ch-name">Full Operating System</div>
+      </div>
+
+      <div class="compare-row">
+        <div class="compare-cell">ERP Hold Impact</div>
+        <div class="compare-cell">✅ Zero — 100% above ERP layer</div>
+        <div class="compare-cell">⚠️ Phase 1 safe; Phase 2 blocked until ERP confirmed</div>
+        <div class="compare-cell">⚠️ Phase A safe; Phase B gated on ERP decision</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Time to First Value</div>
+        <div class="compare-cell">4–6 weeks, full delivery</div>
+        <div class="compare-cell">3–5 weeks (Phase 1 only)</div>
+        <div class="compare-cell">4–6 weeks (Phase A); ongoing roadmap after</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Addresses Andrew's Weekly Review Pain</div>
+        <div class="compare-cell">✅ Core focus</div>
+        <div class="compare-cell">❌ Not addressed</div>
+        <div class="compare-cell">✅ Phase A core focus</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Addresses Inventory / Consignment Risk</div>
+        <div class="compare-cell">❌ Not addressed</div>
+        <div class="compare-cell">✅ Core focus</div>
+        <div class="compare-cell">✅ Phase A (logging); Phase B (full)</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Dropbox AI Indexing</div>
+        <div class="compare-cell">✅ Included</div>
+        <div class="compare-cell">❌ Not included</div>
+        <div class="compare-cell">✅ Phase A included</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Multi-Model Decision Templates</div>
+        <div class="compare-cell">✅ Included</div>
+        <div class="compare-cell">❌ Not included</div>
+        <div class="compare-cell">✅ Phase A included</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Field Rep Change Required</div>
+        <div class="compare-cell">✅ None</div>
+        <div class="compare-cell">⚠️ New form replaces text (pilot required)</div>
+        <div class="compare-cell">⚠️ Phase B only; zero in Phase A</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Modular / ERP-Swap Safe</div>
+        <div class="compare-cell">✅ By design</div>
+        <div class="compare-cell">✅ Phase 1 yes; Phase 2 connector is swappable</div>
+        <div class="compare-cell">✅ Core architecture principle</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Exit / Acquisition Readiness</div>
+        <div class="compare-cell">⚠️ Contributes (queryable Dropbox, BI layer)</div>
+        <div class="compare-cell">⚠️ Contributes (inventory traceability)</div>
+        <div class="compare-cell">✅ Purpose-built for due diligence readiness</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">ClickUp Project Hub</div>
+        <div class="compare-cell">✅ Included</div>
+        <div class="compare-cell">✅ Included</div>
+        <div class="compare-cell">✅ Central hub from Phase A</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Implementation Complexity</div>
+        <div class="compare-cell">Low–Medium</div>
+        <div class="compare-cell">Medium (Phase 1) / High (Phase 2)</div>
+        <div class="compare-cell">High (overall) / Low (Phase A)</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell">Best Fit For</div>
+        <div class="compare-cell">Andrew's immediate pain; fastest ROI; safest start</div>
+        <div class="compare-cell">Ops risk reduction; inventory continuity requirement</div>
+        <div class="compare-cell">5-year exit goal; full transformation commitment</div>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <div class="alert-icon">💡</div>
+      <div class="alert-text"><strong>Recommendation framing for Andrew:</strong> Option 1 and Option 3 Phase A are nearly identical in the first 6 weeks. Presenting Option 3 as the roadmap with Option 1 as the first milestone may be the clearest way to frame a recommendation that respects both the immediate opportunity and the long-term vision.</div>
+    </div>
+  </section>
+
+  <!-- CONSTRAINTS -->
+  <section id="constraints" class="section">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="section-eyebrow">Implementation Standards</div>
+        <div class="section-title">Constraints, Gates & Open Questions</div>
+        <div class="section-desc">Non-negotiables, human approval gates, and unresolved items that must be confirmed before build work proceeds.</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="card-tag red" style="margin-bottom:12px;">Hard Constraints (Non-Negotiable)</div>
+        <div class="signal-list">
+          <div class="signal-item">
+            <div class="signal-icon">🛑</div>
+            <div class="signal-text"><strong>No ERP-layer automation until ERP decision confirmed.</strong> Odoo vs. QB Online + Implantbase is unresolved. All ERP-touching builds are in design-only mode.</div>
+          </div>
+          <div class="signal-item">
+            <div class="signal-icon">🛑</div>
+            <div class="signal-text"><strong>FDA Quality Management System is out of scope.</strong> No integrations, no disruptions, no assumptions. It is a compliance checkbox — not an AI integration target.</div>
+          </div>
+          <div class="signal-item">
+            <div class="signal-icon">🛑</div>
+            <div class="signal-text"><strong>Sales rep change tolerance is extremely low.</strong> Any field-facing change requires a pilot before rollout. The prior CRM failure is a live precedent.</div>
+          </div>
+          <div class="signal-item">
+            <div class="signal-icon">🛑</div>
+            <div class="signal-text"><strong>All AI outputs reviewed before action.</strong> "AI assists; humans decide" is the operating standard across all three options. No autonomous write-backs or decisions without human approval gate.</div>
+          </div>
+          <div class="signal-item">
+            <div class="signal-icon">🛑</div>
+            <div class="signal-text"><strong>Architecture must be modular.</strong> No single-platform lock-in. Every connector should be swappable without rebuilding the intelligence layer above it.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card-tag gold" style="margin-bottom:12px;">Human Approval Gates</div>
+        <div class="signal-list">
+          <div class="signal-item">
+            <div class="signal-icon">🔐</div>
+            <div class="signal-text"><strong>ERP Go/No-Go Gate</strong> — Client confirmation of Odoo vs. QB Online + Implantbase before any Phase 2 / Phase B builds begin. This is the critical sequencing gate for Options 2 and 3.</div>
+          </div>
+          <div class="signal-item">
+            <div class="signal-icon">🔐</div>
+            <div class="signal-text"><strong>Current-State Sign-Off</strong> — Architecture before automation. Full current-state documentation and client review before any workflow builds begin. Andrew's workflow brain dump is the prerequisite.</div>
+          </div>
+          <div class="signal-item">
+            <div class="signal-icon">🔐</div>
+            <div class="signal-text"><strong>Field Tool Pilot Gate</strong> — Any rep-facing tool (kit request form, activity logging) must complete a limited pilot and receive explicit client sign-off before org-wide rollout.</div>
+          </div>
+          <div class="signal-item">
+            <div class="signal-icon">🔐</div>
+            <div class="signal-text"><strong>Inventory Process Sign-Off</strong> — Given the medical device context, any changes to inventory data or field mappings require explicit client approval. No assumptions on SKU, lot, or consignment data structures.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="card-tag" style="color:var(--text-3);margin-bottom:12px;font-family:var(--ff-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;">Open Questions — NOT VERIFIED</div>
+    <details>
+      <summary>Implantbase API capabilities and data model</summary>
+      <div class="details-body">Not yet contracted. Phase 2 (Options 2 and 3) depends on what Implantbase exposes via API. Specifically: kit dispatch write, inventory level read, SKU/lot tracking fields, and consignment return logging. Must be verified before any Phase 2 design is finalized.</div>
+    </details>
+    <details>
+      <summary>Odoo inventory module compatibility with Forma's orthopedic workflows</summary>
+      <div class="details-body">Odoo was deemed "a huge lift and very challenging to modify in the future" during discovery. If Odoo is selected, the extent to which it can handle consignment kit workflows without heavy customization must be confirmed before architecture design. The $150K NetSuite customization is the cautionary benchmark.</div>
+    </details>
+    <details>
+      <summary>Grok (xAI) API integration path</summary>
+      <div class="details-body">Jessica confirmed no known platform integration with Grok exists. Andrew uses it heavily. If a multi-model routing system is built (Option 1 or 3), Grok's availability via API must be verified. If unavailable, the multi-model template system routes to Claude and Gemini only, with Grok remaining a manual addition.</div>
+    </details>
+    <details>
+      <summary>Barcode / scanning compatibility for inventory</summary>
+      <div class="details-body">Flagged in the Open Questions tracker as unresolved. If inventory serialization is a future goal (noted in Operating Model as "maybe in future"), any request logging layer built in Phase 1 should be designed with barcode-compatible fields — but confirmed field structure requires client input first.</div>
+    </details>
+    <details>
+      <summary>Exact outputs for AI-assisted strategy (from Open Questions Tracker)</summary>
+      <div class="details-body">The AI Implementation Board flags "exact outputs for AI-assisted strategy?" as an open item. Before multi-model templates are finalized (Option 1 / Option 3 Phase A), Andrew should define the specific deliverable format for each decision type — e.g., rep onboarding scenario: what does a "good output" look like?</div>
+    </details>
+    <details>
+      <summary>QuickBooks Online Enterprise integration depth</summary>
+      <div class="details-body">Marc introduced QB Online Enterprise as a new option during discovery. Andrew was unaware of it. Its API exposure, inventory handling, and bi-directional sync capability with ClickUp are noted but NOT VERIFIED. If this path is selected, a formal capability audit is needed before any connector design.</div>
+    </details>
+
+    <hr class="divider">
+
+    <div class="alert success">
+      <div class="alert-icon">✅</div>
+      <div class="alert-text"><strong>Next Steps (all three options):</strong> (1) Andrew completes workflow brain dump. (2) Jessica + Marc review and produce scoping document with two architecture paths. (3) ERP decision confirmed by client. (4) Phase A / Option 1 builds begin. (5) Follow-up working session — not another discovery call.</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <div class="f-brand">Plus 1 Technology × Forma Medical</div>
+  <div class="f-note">Prepared by Jessica Peaden · AI Implementation Engineer · March 2026 · Draft — Internal Use</div>
+</footer>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  const map = { overview: 0, signals: 1, option1: 2, option2: 3, option3: 4, compare: 5, constraints: 6 };
+  tabs[map[id]].classList.add('active');
+  document.querySelector('.main').scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

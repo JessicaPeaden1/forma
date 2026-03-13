@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — Discovery Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --surface-warm: #faf8f5;
+    --border: #e8e3dc;
+    --border-light: #f0ece5;
+    --text: #1c1a17;
+    --text-mid: #4a4540;
+    --text-muted: #8a837a;
+    --text-faint: #b5afa8;
+
+    --teal: #1a7a6e;
+    --teal-light: #e8f5f3;
+    --teal-border: rgba(26,122,110,0.25);
+
+    --amber: #b5620a;
+    --amber-light: #fef3e2;
+    --amber-border: rgba(181,98,10,0.25);
+
+    --blue: #2b5bbf;
+    --blue-light: #eef2fc;
+    --blue-border: rgba(43,91,191,0.25);
+
+    --purple: #6b45a8;
+    --purple-light: #f2eefa;
+    --purple-border: rgba(107,69,168,0.25);
+
+    --red: #c0392b;
+    --red-light: #fdecea;
+    --red-border: rgba(192,57,43,0.25);
+
+    --green: #1e7e4a;
+    --green-light: #e8f7ef;
+    --green-border: rgba(30,126,74,0.25);
+
+    --gold: #c9922a;
+    --gold-light: #fdf6e8;
+    --gold-border: rgba(201,146,42,0.28);
+
+    --orange: #c4570a;
+    --orange-light: #fef0e0;
+
+    --sidebar-w: 244px;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; font-size: 14px; line-height: 1.65; }
+
+  /* ─── SIDEBAR ─── */
+  aside { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
+  .sb-brand { padding: 22px 20px 18px; border-bottom: 1px solid var(--border); }
+  .sb-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
+  .sb-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.25; }
+  .sb-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+  .sb-section { padding: 14px 12px 6px; }
+  .sb-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); padding: 0 8px 6px; }
+  .sb-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; color: var(--text-mid); font-size: 12.5px; font-weight: 400; transition: all 0.14s; border: none; background: none; width: 100%; text-align: left; line-height: 1.3; }
+  .sb-item:hover { background: var(--bg); color: var(--text); }
+  .sb-item.active { background: var(--teal-light); color: var(--teal); font-weight: 500; }
+  .sb-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .d-gray { background: var(--text-faint); }
+  .d-teal { background: var(--teal); }
+  .d-blue { background: var(--blue); }
+  .d-amber { background: var(--amber); }
+  .d-purple { background: var(--purple); }
+  .d-red { background: var(--red); }
+  .d-green { background: var(--green); }
+  .d-gold { background: var(--gold); }
+  .sb-badge { margin-left: auto; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; white-space: nowrap; }
+  .badge-warn { background: var(--red-light); color: var(--red); }
+  .badge-info { background: var(--blue-light); color: var(--blue); }
+  .badge-ok { background: var(--green-light); color: var(--green); }
+  .sb-footer { margin-top: auto; padding: 14px 18px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+  .sb-footer strong { color: var(--text-mid); font-weight: 500; }
+
+  /* ─── MAIN ─── */
+  main { flex: 1; overflow-y: auto; padding: 36px 40px; }
+  .frame { display: none; }
+  .frame.active { display: block; }
+  .frame-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin-bottom: 8px; }
+  .frame-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; color: var(--text); line-height: 1.2; margin-bottom: 8px; }
+  .frame-desc { font-size: 13.5px; color: var(--text-mid); max-width: 720px; line-height: 1.7; margin-bottom: 28px; }
+
+  /* ─── LAYOUT ─── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+  .four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin-bottom: 18px; }
+  .divider { height: 1px; background: var(--border-light); margin: 20px 0; }
+  .section-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-light); }
+
+  /* ─── CARDS ─── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+  .card.teal { border-left: 4px solid var(--teal); }
+  .card.blue { border-left: 4px solid var(--blue); }
+  .card.amber { border-left: 4px solid var(--amber); }
+  .card.red { border-left: 4px solid var(--red); }
+  .card.green { border-left: 4px solid var(--green); }
+  .card.purple { border-left: 4px solid var(--purple); }
+  .card.gold { border-left: 4px solid var(--gold); }
+  .card-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+  .card-label.teal { color: var(--teal); }
+  .card-label.blue { color: var(--blue); }
+  .card-label.amber { color: var(--amber); }
+  .card-label.red { color: var(--red); }
+  .card-label.green { color: var(--green); }
+  .card-label.purple { color: var(--purple); }
+  .card-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 5px; line-height: 1.25; }
+  .card-sub { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; }
+
+  .inner-box { background: var(--surface-warm); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 13px 15px; }
+  .inner-box.teal { background: var(--teal-light); border-color: var(--teal-border); }
+  .inner-box.blue { background: var(--blue-light); border-color: var(--blue-border); }
+  .inner-box.amber { background: var(--amber-light); border-color: var(--amber-border); }
+  .inner-box.red { background: var(--red-light); border-color: var(--red-border); }
+  .inner-box.green { background: var(--green-light); border-color: var(--green-border); }
+  .inner-box.gold { background: var(--gold-light); border-color: var(--gold-border); }
+
+  .stat-num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 12px; color: var(--text-muted); }
+
+  .dot-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .dot-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: var(--text-mid); line-height: 1.5; }
+  .dot-list li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; margin-top: 6px; }
+  .dot-list.teal li::before { background: var(--teal); }
+  .dot-list.blue li::before { background: var(--blue); }
+  .dot-list.amber li::before { background: var(--amber); }
+  .dot-list.red li::before { background: var(--red); }
+  .dot-list.green li::before { background: var(--green); }
+
+  .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; border: 1px solid; white-space: nowrap; }
+  .tag-teal { background: var(--teal-light); color: var(--teal); border-color: var(--teal-border); }
+  .tag-blue { background: var(--blue-light); color: var(--blue); border-color: var(--blue-border); }
+  .tag-amber { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
+  .tag-red { background: var(--red-light); color: var(--red); border-color: var(--red-border); }
+  .tag-green { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
+  .tag-purple { background: var(--purple-light); color: var(--purple); border-color: var(--purple-border); }
+  .tag-gray { background: var(--bg); color: var(--text-muted); border-color: var(--border); }
+  .tag-gold { background: var(--gold-light); color: var(--gold); border-color: var(--gold-border); }
+
+  .note-block { background: var(--surface-warm); border: 1px solid var(--border); border-left: 3px solid var(--amber); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 12.5px; color: var(--text-mid); line-height: 1.6; margin-bottom: 16px; }
+  .note-block strong { color: var(--text); font-weight: 600; }
+  .note-block.red { border-left-color: var(--red); }
+  .note-block.teal { border-left-color: var(--teal); }
+
+  .unverified { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 3px; background: rgba(192,57,43,0.08); color: var(--red); border: 1px solid rgba(192,57,43,0.2); vertical-align: middle; margin-left: 4px; }
+
+  /* ─── FLOW ─── */
+  .flow-wrap { display: flex; flex-direction: column; margin-bottom: 18px; }
+  .flow-row { display: flex; align-items: flex-start; gap: 14px; }
+  .flow-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .flow-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .flow-line { width: 1px; flex: 1; min-height: 14px; background: var(--border); margin: 2px 0; }
+  .flow-body { flex: 1; padding-bottom: 14px; }
+  .flow-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .flow-desc { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+  .flow-gap { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; background: var(--red-light); color: var(--red); border: 1px solid var(--red-border); }
+  .flow-manual { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; background: var(--amber-light); color: var(--amber); border: 1px solid var(--amber-border); }
+  .flow-gate { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; background: var(--blue-light); color: var(--blue); border: 1px solid var(--blue-border); }
+  .flow-constraint { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; background: var(--purple-light); color: var(--purple); border: 1px solid var(--purple-border); }
+
+  /* ─── TECH STACK TABLE ─── */
+  .stack-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; font-size: 12.5px; margin-bottom: 16px; }
+  .stack-table th { background: var(--surface-warm); padding: 10px 14px; font-weight: 600; color: var(--text-mid); text-align: left; font-size: 11px; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); }
+  .stack-table td { padding: 11px 14px; border-bottom: 1px solid var(--border-light); color: var(--text-mid); vertical-align: top; line-height: 1.5; }
+  .stack-table tr:last-child td { border-bottom: none; }
+  .stack-table td:first-child { font-weight: 600; color: var(--text); min-width: 140px; }
+
+  /* ─── OPEN QUESTIONS ─── */
+  .q-filters { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .q-filter { font-size: 11.5px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: pointer; transition: all 0.14s; }
+  .q-filter:hover { background: var(--bg); }
+  .q-filter.active-f { background: var(--teal-light); color: var(--teal); border-color: var(--teal-border); }
+  .q-grid { display: flex; flex-direction: column; gap: 10px; }
+  .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; cursor: pointer; transition: border-color 0.14s; }
+  .q-card:hover { border-color: var(--teal-border); }
+  .q-card.hidden { display: none; }
+  .q-header { display: flex; align-items: flex-start; gap: 12px; }
+  .q-num { font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500; color: var(--text-faint); flex-shrink: 0; min-width: 24px; }
+  .q-text { font-size: 13.5px; font-weight: 500; color: var(--text); line-height: 1.5; flex: 1; }
+  .q-meta { display: flex; gap: 8px; margin-top: 8px; margin-left: 36px; flex-wrap: wrap; align-items: center; }
+  .q-why { font-size: 12px; color: var(--text-muted); margin-top: 8px; margin-left: 36px; line-height: 1.5; display: none; }
+  .q-card.expanded .q-why { display: block; }
+
+  /* ─── OPERATING MODEL STAGES ─── */
+  .stage-grid { display: grid; grid-template-columns: 120px repeat(5, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 18px; font-size: 12px; }
+  .sg-cell { background: var(--surface); padding: 10px 12px; vertical-align: top; line-height: 1.5; }
+  .sg-header { background: var(--surface-warm); font-weight: 600; color: var(--text-mid); font-size: 11px; text-align: center; }
+  .sg-row-label { background: var(--surface-warm); font-weight: 600; color: var(--text); font-size: 11.5px; display: flex; align-items: center; }
+  .sg-cell ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .sg-cell li { font-size: 11.5px; color: var(--text-mid); line-height: 1.4; padding-left: 10px; position: relative; }
+  .sg-cell li::before { content: '·'; position: absolute; left: 0; color: var(--text-faint); }
+  .sg-flag { display: inline-block; font-size: 10px; margin-top: 4px; padding: 2px 6px; border-radius: 3px; }
+  .sg-flag.red { background: var(--red-light); color: var(--red); }
+  .sg-flag.amber { background: var(--amber-light); color: var(--amber); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="sb-brand">
+    <div class="sb-eyebrow">Plus 1 Technology</div>
+    <div class="sb-title">Forma Medical<br>Discovery Findings</div>
+    <div class="sb-sub">March 2026 · Current State Assessment</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Sections</div>
+    <button class="sb-item active" onclick="show('summary')">
+      <span class="sb-dot d-gray"></span>Summary
+    </button>
+    <button class="sb-item" onclick="show('techstack')">
+      <span class="sb-dot d-blue"></span>Tech Stack
+    </button>
+    <button class="sb-item" onclick="show('erpflow')">
+      <span class="sb-dot d-amber"></span>ERP Flow
+    </button>
+    <button class="sb-item" onclick="show('opmodel')">
+      <span class="sb-dot d-teal"></span>Operating Model
+    </button>
+    <button class="sb-item" onclick="show('aibaseline')">
+      <span class="sb-dot d-purple"></span>AI Baseline
+    </button>
+    <button class="sb-item" onclick="show('inventory')">
+      <span class="sb-dot d-red"></span>Inventory
+    </button>
+    <button class="sb-item" onclick="show('openq')">
+      <span class="sb-dot d-gold"></span>What We Need From You
+      <span class="sb-badge badge-warn">14 open</span>
+    </button>
+  </div>
+
+  <div class="sb-footer">
+    <strong>Prepared by:</strong> Jessica Peaden<br>
+    <strong>Plus 1 Technology</strong><br>
+    <strong>Client:</strong> Forma Medical · Andrew Davison
+  </div>
+</aside>
+
+<main>
+
+  <!-- ══ SUMMARY ══ -->
+  <div id="summary" class="frame active">
+    <div class="frame-eyebrow">Forma Medical · Current State</div>
+    <div class="frame-title">Discovery Findings</div>
+    <div class="frame-desc">What we mapped across your business — tech stack, ERP process, operating model, AI usage, and inventory. This document is your current-state baseline. It's the foundation everything else is built on.</div>
+
+    <div class="four-col">
+      <div class="card teal">
+        <div class="card-label teal">Systems Mapped</div>
+        <div class="stat-num" style="color:var(--teal)">9</div>
+        <div class="stat-label">Active tools across ops, finance & sales</div>
+      </div>
+      <div class="card red">
+        <div class="card-label red">Integrations Today</div>
+        <div class="stat-num" style="color:var(--red)">0</div>
+        <div class="stat-label">Zero confirmed data flows between any systems</div>
+      </div>
+      <div class="card amber">
+        <div class="card-label amber">Manual Processes</div>
+        <div class="stat-num" style="color:var(--amber)">100%</div>
+        <div class="stat-label">Every AI analysis is built by hand, every week</div>
+      </div>
+      <div class="card purple">
+        <div class="card-label purple">AI Models in Use</div>
+        <div class="stat-num" style="color:var(--purple)">3</div>
+        <div class="stat-label">Grok · Gemini · Claude — all disconnected</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title">What We Found</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="inner-box red">
+            <div class="card-label red">Biggest Pain</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">The Weekly Review is 100% Manual</div>
+            <div class="card-sub">Every week, P&L, CRM, surgery data, and cohort data are pulled from separate systems and pasted into AI models by hand. No automation exists at any step of this cycle.</div>
+          </div>
+          <div class="inner-box amber">
+            <div class="card-label amber">Core Constraint</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">ERP Decision Pending — Blocks Architecture</div>
+            <div class="card-sub">QuickBooks Desktop is the current ERP. The direction — Odoo, QB Online, or a QB + Implantbase split — must be confirmed before any ERP-layer automation can be designed.</div>
+          </div>
+          <div class="inner-box teal">
+            <div class="card-label teal">Clear Strength</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Dropbox is a Strategic Asset — Not Yet Connected</div>
+            <div class="card-sub">Highly organized file structure across SOPs, contracts, pricing, and ops docs. Once indexed, this becomes the first layer of the AI knowledge base.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Where the Gaps Are</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="inner-box" style="display:flex;gap:10px;align-items:flex-start;">
+            <span style="font-size:16px;flex-shrink:0;">🔴</span>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text);">No data flows between any systems</div><div class="card-sub" style="font-size:12px;">QB Desktop, Google Sheets, Dropbox, Gmail, and QMS are all completely siloed from each other and from AI.</div></div>
+          </div>
+          <div class="inner-box" style="display:flex;gap:10px;align-items:flex-start;">
+            <span style="font-size:16px;flex-shrink:0;">🔴</span>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text);">Surgery tracking system is unidentified</div><div class="card-sub" style="font-size:12px;">Used as a primary weekly data input — platform, format, and integration capability are completely unknown.</div></div>
+          </div>
+          <div class="inner-box" style="display:flex;gap:10px;align-items:flex-start;">
+            <span style="font-size:16px;flex-shrink:0;">🟠</span>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text);">Tray Locator is outside the ERP</div><div class="card-sub" style="font-size:12px;">Physical kit tracking runs in a separate system. Platform unknown. Millions in field inventory managed outside the core data layer.</div></div>
+          </div>
+          <div class="inner-box" style="display:flex;gap:10px;align-items:flex-start;">
+            <span style="font-size:16px;flex-shrink:0;">🟠</span>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text);">AI has no live data access — ever</div><div class="card-sub" style="font-size:12px;">Every analysis is only as current as the last manual pull. No scheduled or triggered analysis exists anywhere in the workflow.</div></div>
+          </div>
+          <div class="inner-box" style="display:flex;gap:10px;align-items:flex-start;">
+            <span style="font-size:16px;flex-shrink:0;">🟡</span>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text);">CRM lives in Google Sheets — by necessity</div><div class="card-sub" style="font-size:12px;">Prior CRM failed due to non-adoption. 2 staff manually aggregate 45 rep inputs every week. Not scalable at growth pace.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">The Goal — Andrew's Own Words</div>
+    <div class="card gold" style="padding:22px 24px;">
+      <div class="card-label" style="color:var(--gold);margin-bottom:10px;">Stated Objective</div>
+      <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:300;font-style:italic;color:var(--text);line-height:1.6;max-width:640px;">"Not a chatbot — a business brain that understands all company data and can answer strategic questions without manual data loading."</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:10px;">— Andrew Davison, Forma Medical</div>
+    </div>
+  </div>
+
+  <!-- ══ TECH STACK ══ -->
+  <div id="techstack" class="frame">
+    <div class="frame-eyebrow">Current State · Systems</div>
+    <div class="frame-title">Technology Stack</div>
+    <div class="frame-desc">All active systems across operations, finance, and sales — as mapped during discovery. Zero confirmed integrations exist between any of these tools today.</div>
+
+    <div class="note-block red">
+      <strong>⚠ Zero Integrations:</strong> Every system operates independently. Data moves between them only through manual copy-paste, email forwarding, or human re-entry. This is the root cause of the weekly manual review burden.
+    </div>
+
+    <div class="section-title">Active Systems</div>
+    <table class="stack-table">
+      <thead>
+        <tr>
+          <th>System</th>
+          <th>Category</th>
+          <th>What It Holds</th>
+          <th>Integration Status</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>QuickBooks Desktop</td>
+          <td><span class="tag tag-amber">ERP / Finance</span></td>
+          <td>Inventory asset tracking, Sales Orders, A/P, A/R, COGS, multi-site consignment</td>
+          <td><span class="tag tag-red">No Integration</span></td>
+          <td>Core system. Hosted on remote server — adds friction. In transition — ERP direction TBD. No automation until path confirmed.</td>
+        </tr>
+        <tr>
+          <td>Google Sheets (CRM)</td>
+          <td><span class="tag tag-blue">CRM / Sales</span></td>
+          <td>Reps, surgeons, territories, surgery pipeline, weekly sales targets, cohort tracking</td>
+          <td><span class="tag tag-red">No Integration</span></td>
+          <td>Replaced prior CRM after adoption failure. 2 staff aggregate 45 rep inputs weekly. Google API available for future automation.</td>
+        </tr>
+        <tr>
+          <td>Dropbox</td>
+          <td><span class="tag tag-teal">Document Management</span></td>
+          <td>SOPs, pricing files, contracts, account info, ops documentation — highly organized</td>
+          <td><span class="tag tag-amber">Not Yet Connected</span></td>
+          <td>Strategic asset. Dropbox API available. Priority connection for AI knowledge layer — once indexed, becomes the business brain's foundation.</td>
+        </tr>
+        <tr>
+          <td>Gmail</td>
+          <td><span class="tag tag-teal">Operations Trigger</span></td>
+          <td>Case sheets from reps, hospital POs — entry point for the entire order-to-cash cycle</td>
+          <td><span class="tag tag-red">No Integration</span></td>
+          <td>Gmail is the structural trigger for billing. Case sheets arrive here and are manually entered into ERP. Gmail API available.</td>
+        </tr>
+        <tr>
+          <td>Excel</td>
+          <td><span class="tag tag-gray">Supplemental</span></td>
+          <td>Inventory tracking + customer tracking (may be separate files — scope unclear)</td>
+          <td><span class="tag tag-red">No Integration</span></td>
+          <td>Two distinct uses identified. Content and overlap with QB Desktop / Google Sheets must be clarified before integration design. <span class="unverified">CLARIFY SCOPE</span></td>
+        </tr>
+        <tr>
+          <td>Bill.com</td>
+          <td><span class="tag tag-blue">Finance / AP</span></td>
+          <td>Accounts payable, bill payment processing</td>
+          <td><span class="tag tag-red">No Integration</span></td>
+          <td>Confirmed on tech stack. Exact role vs. QuickBooks Desktop in AP workflow not yet documented. Relationship must be confirmed.</td>
+        </tr>
+        <tr>
+          <td>Adobe Sign</td>
+          <td><span class="tag tag-gray">Contracts</span></td>
+          <td>Electronic contract signing and management</td>
+          <td><span class="tag tag-red">No Integration</span></td>
+          <td>Confirmed on tech stack. Integration scope not in scope for current phase. Likely unchanged in future state.</td>
+        </tr>
+        <tr>
+          <td>QMS (FDA)</td>
+          <td><span class="tag tag-red">Quality / Compliance</span></td>
+          <td>Receiving, inspection, and packaging records — FDA required</td>
+          <td><span class="tag tag-red">Permanently Siloed</span></td>
+          <td>FDA compliance system. QMS and ERP are permanently separate by design — quality records never reach financial records. Not in scope for AI integration. Must not be disrupted.</td>
+        </tr>
+        <tr>
+          <td>Zoom + Otter.ai</td>
+          <td><span class="tag tag-gray">Meetings</span></td>
+          <td>Video conferencing and meeting transcription</td>
+          <td><span class="tag tag-gray">Out of Scope</span></td>
+          <td>Standard tools. No integration requirements identified.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-title">AI Tools in Active Use</div>
+    <div class="three-col">
+      <div class="card purple">
+        <div class="card-label purple">Primary Strategic Model</div>
+        <div class="card-title">Grok</div>
+        <div class="card-sub">Andrew's primary model for strategy and decision-making. Multi-model convergence is deliberate. No known API integration path — key constraint for automation architecture.</div>
+      </div>
+      <div class="card teal">
+        <div class="card-label teal">Primary Analysis Model</div>
+        <div class="card-title">Gemini</div>
+        <div class="card-sub">Used heavily for data analysis. The baseline AI conversation used as a starting benchmark came from Gemini. Multi-model approach is intentional to reduce bias.</div>
+      </div>
+      <div class="card blue">
+        <div class="card-label blue">Team + Connector Tasks</div>
+        <div class="card-title">Claude</div>
+        <div class="card-sub">Used across the team. Has connector integrations available — advantage over Grok and Gemini for platform integration work. Well-suited for pipeline automation.</div>
+      </div>
+    </div>
+
+    <div class="section-title">Unknown / Unidentified Systems</div>
+    <div class="two-col">
+      <div class="card red">
+        <div class="card-label red">Platform Unknown — Critical</div>
+        <div class="card-title">Surgery Tracking System</div>
+        <div class="card-sub">Andrew references this weekly as a primary data source. Tracks per-surgery details and customer cohorts. The platform has never been identified. BI layer cannot be designed until this source is confirmed.</div>
+      </div>
+      <div class="card red">
+        <div class="card-label red">Platform Unknown — Critical</div>
+        <div class="card-title">Tray Locator</div>
+        <div class="card-sub">Tracks physical tray and kit locations in the field — outside the ERP entirely. Platform unknown. Millions in consignment inventory depend on this system. Must be identified before integration design.</div>
+      </div>
+    </div>
+
+    <div class="section-title">ERP Transition Options Under Evaluation</div>
+    <div class="three-col">
+      <div class="card amber">
+        <div class="card-label amber">Option A — Paused</div>
+        <div class="card-title">Odoo</div>
+        <div class="card-sub">Open-source ERP. Implementation began, then paused. Considered a significant migration lift. Better for integrations than some alternatives. Still on the table.</div>
+      </div>
+      <div class="card teal">
+        <div class="card-label teal">Option B — Leading</div>
+        <div class="card-title">QB Online + Implantbase</div>
+        <div class="card-sub">Split approach: QB Online handles accounting, Implantbase handles ortho-specific inventory and consignment. Andrew's current lean. Implantbase API depth not yet verified. <span class="unverified">NOT VERIFIED</span></div>
+      </div>
+      <div class="card blue">
+        <div class="card-label blue">Option C — New</div>
+        <div class="card-title">QB Online Enterprise</div>
+        <div class="card-sub">Introduced during discovery. Released less than a year ago — potentially easier to integrate than QB Desktop. Requires evaluation against Forma's non-standard inventory requirements.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ERP FLOW ══ -->
+  <div id="erpflow" class="frame">
+    <div class="frame-eyebrow">Current State · Process</div>
+    <div class="frame-title">ERP Flow</div>
+    <div class="frame-desc">The end-to-end process as it runs today — from ordering inventory through billing and reporting. Every step highlighted in amber is manual. Every flag is a gap that needs to be addressed before or during the ERP transition.</div>
+
+    <div class="note-block red">
+      <strong>⚑ Build Gate:</strong> No automation should be built on the ERP layer until the platform decision (Odoo vs. QB Online + Implantbase vs. QB Online Enterprise) is confirmed. All architecture must stay modular until that decision lands.
+    </div>
+
+    <div class="section-title">Stage 1 — Ordering &amp; Receiving Inventory</div>
+    <div class="flow-wrap">
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--teal)">1</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Analyze Inventory Position <span class="flow-manual">MANUAL</span></div>
+          <div class="flow-desc">Ops reviews stock levels manually. No automated reorder trigger exists. AI-assisted forecasting is planned but not yet in place.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--teal)">2</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Place PO with Vendor <span class="flow-manual">MANUAL</span></div>
+          <div class="flow-desc">Vendor A (direct manufacturer) or Vendor B+C (manufacturer → cleaning/sterilization → Forma). PO placed manually in QB Desktop.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--teal)">3</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Receive, Inspect &amp; Package <span class="flow-constraint">QMS SILOED</span></div>
+          <div class="flow-desc">Parts received from vendor. Inspection and packaging logged in QMS (FDA-required). <strong>QMS and ERP records never share data</strong> — permanently siloed by design. Vendor C cleaning/sterilization charges are excluded from COGS and must be preserved in any ERP migration.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--teal)">4</div></div>
+        <div class="flow-body">
+          <div class="flow-title">Record Inventory Asset <span class="flow-constraint">⚑ CRITICAL RULE</span></div>
+          <div class="flow-desc">Inventory enters ERP as an asset at HCAR. <strong>Vendor invoice → A/P → Cash payment → (+) Inventory Asset.</strong> This timing rule is non-standard and must be preserved in any ERP migration.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Stage 2 — Set Build &amp; Field Deployment</div>
+    <div class="flow-wrap">
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--blue)">1</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Assemble Tray Using Variable BOM <span class="flow-gap">GAP</span></div>
+          <div class="flow-desc">Tray configurations are not fixed. Each tray uses a variable BOM — most standard ERPs assume fixed BOMs and will fail to handle this correctly. Must be explicitly configured in any new ERP. <span class="unverified">NOT VERIFIED: current assembly process</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--blue)">2</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Transfer HCAR → Field Inventory (ERP) <span class="flow-constraint">⚑ TIMING RULE</span></div>
+          <div class="flow-desc">Inventory moves from warehouse to field (consignment). ERP records the transfer. Inventory asset value is held on books throughout field deployment until surgery occurs.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--blue)">3</div></div>
+        <div class="flow-body">
+          <div class="flow-title">Update Tray Locator <span class="flow-gap">PLATFORM UNKNOWN</span></div>
+          <div class="flow-desc">Physical tray location tracked in a separate system outside the ERP. Return and reconciliation process undocumented. Tray Locator platform must be identified before any integration design.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Stage 3 — Surgery &amp; Case Documentation</div>
+    <div class="flow-wrap">
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--purple)">1</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Rep Completes Case Sheet <span class="flow-manual">MANUAL — PAPER</span></div>
+          <div class="flow-desc">1099 sales rep is present in OR. Post-surgery, rep manually completes a paper case sheet capturing: Distributor · Surgeon · Indication · Pricing Strategy · First-time user · Hospital/ASC.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--purple)">2</div></div>
+        <div class="flow-body">
+          <div class="flow-title">Rep Emails Case Sheet to Forma via Gmail <span class="flow-gate">ORDER-TO-CASH TRIGGER</span></div>
+          <div class="flow-desc">Gmail is the structural entry point for the entire billing cycle. Case sheet is unstructured free-form data — staff manually interpret it to create the Sales Order. Errors here directly impact inventory accuracy and billing.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Stage 4 — Sales Order Creation &amp; Restock</div>
+    <div class="flow-wrap">
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--amber)">1</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Manually Create Sales Order in QB Desktop <span class="flow-manual">MANUAL</span></div>
+          <div class="flow-desc">Staff reads the emailed case sheet and manually creates the Sales Order in QB Desktop. No automated data transfer.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--amber)">2</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Inventory Pulls at Sales Order <span class="flow-constraint">⚑ CRITICAL RULE</span></div>
+          <div class="flow-desc"><strong>Inventory deduction must happen at Sales Order — not at invoice.</strong> This is non-standard. Any ERP migration that defaults to invoice-time inventory pulls will produce incorrect financials. Must be explicitly preserved.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--amber)">3</div></div>
+        <div class="flow-body">
+          <div class="flow-title">Generate Packing List &amp; Send Restock <span class="flow-manual">MANUAL</span></div>
+          <div class="flow-desc">90%+ of restocks are 1:1 ratio (same items used → same items restocked). Exception logic for non-1:1 situations is not yet documented. <span class="unverified">NOT VERIFIED</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Stage 5 — Billing &amp; Financial Close</div>
+    <div class="flow-wrap">
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--red)">1</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Hospital Provides PO <span class="flow-gap">TIMING GAP</span></div>
+          <div class="flow-desc">Hospital PO arrives days or weeks after surgery — this gap drives the entire order-to-cash timing delay. Rep forwards PO to Forma ops. Channel not confirmed.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--red)">2</div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-title">Upload PO → Convert SO to Invoice <span class="flow-manual">MANUAL</span></div>
+          <div class="flow-desc">PO manually uploaded to ERP. Sales Order converted to invoice in QB Desktop. Invoice sent to hospital. A/R tracked in QB Desktop.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col"><div class="flow-num" style="background:var(--red)">3</div></div>
+        <div class="flow-body">
+          <div class="flow-title">Weekly Financial Review <span class="flow-manual">FULLY MANUAL</span></div>
+          <div class="flow-desc">Andrew manually reviews P&L, CRM data, surgery cohort data, and rep performance every week. All data pulled from separate systems. No centralized log. No automated aggregation. <strong>This is the highest-priority automation candidate.</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">ERP Migration — Must-Preserve Rules</div>
+    <div class="two-col">
+      <div class="inner-box red">
+        <div class="card-label red">Critical Accounting Rule</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px;">Inventory pulls at Sales Order — not Invoice</div>
+        <div class="card-sub">Non-standard behavior. Any new ERP that defaults to invoice-time inventory movement will generate incorrect financials. Must be explicitly configured from day one.</div>
+      </div>
+      <div class="inner-box red">
+        <div class="card-label red">Critical Cost Rule</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px;">Vendor C charges excluded from COGS</div>
+        <div class="card-sub">Cleaning, sterilization, and repackaging costs from Vendor C are treated as operating expenses — not COGS. This distinction must be preserved in chart of accounts and any ERP migration.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPERATING MODEL ══ -->
+  <div id="opmodel" class="frame">
+    <div class="frame-eyebrow">Current State · Lifecycle</div>
+    <div class="frame-title">Operating Model Blueprint</div>
+    <div class="frame-desc">How Forma's business actually operates — across every role and stage of the surgical case lifecycle. This map shows where work flows, where data handoffs break down, and where the highest-value automation signals sit.</div>
+
+    <div class="three-col" style="margin-bottom:20px;">
+      <div class="inner-box red"><div class="card-label red">Critical Risks</div><div class="stat-num" style="color:var(--red);font-size:24px;">4</div><div class="stat-label">Manual reconciliation gaps across billing & ops</div></div>
+      <div class="inner-box amber"><div class="card-label amber">ERP Constraints</div><div class="stat-num" style="color:var(--amber);font-size:24px;">2</div><div class="stat-label">Inventory timing rules that must survive any migration</div></div>
+      <div class="inner-box teal"><div class="card-label teal">Automation Signals</div><div class="stat-num" style="color:var(--teal);font-size:24px;">6</div><div class="stat-label">Repeatable manual steps ready for automation</div></div>
+    </div>
+
+    <div class="section-title">Lifecycle Stages × Roles</div>
+    <div class="stage-grid">
+      <div class="sg-cell sg-header">Role</div>
+      <div class="sg-cell sg-header">① Pre-Surgery</div>
+      <div class="sg-cell sg-header">② Surgery Day</div>
+      <div class="sg-cell sg-header">③ Post-Case</div>
+      <div class="sg-cell sg-header">④ Billing</div>
+      <div class="sg-cell sg-header">⑤ Reporting</div>
+
+      <div class="sg-cell sg-row-label">Hospital</div>
+      <div class="sg-cell"><ul><li>Schedules surgery</li><li>Coordinates with surgeon &amp; rep</li></ul></div>
+      <div class="sg-cell"><ul><li>Receives tray / implant kit</li><li>Procedure performed in OR</li></ul></div>
+      <div class="sg-cell"><ul><li>Provides PO — days or weeks later</li></ul><div class="sg-flag amber">⚠ PO timing gap drives entire billing delay</div></div>
+      <div class="sg-cell"><ul><li>Receives invoice from Forma</li><li>Processes payment per hospital A/P cycle</li></ul></div>
+      <div class="sg-cell"><ul><li>Surgeon relationship managed by rep</li></ul></div>
+
+      <div class="sg-cell sg-row-label">Rep / 1099 Distributor<br><span style="font-size:10px;color:var(--text-faint);">45 reps · 2 mgrs</span></div>
+      <div class="sg-cell"><ul><li>Requests tray via phone or text</li><li>No system confirmation received</li></ul><div class="sg-flag amber">⚠ Zero-friction required — field compliance is inconsistent</div></div>
+      <div class="sg-cell"><ul><li>Present in OR to support procedure</li><li>Manages surgeon relationship</li><li>Observes implant usage</li></ul></div>
+      <div class="sg-cell"><ul><li>Fills out case sheet</li><li>Emails to Forma ops via Gmail</li></ul><div class="sg-flag red">🔴 Order-to-cash trigger</div></div>
+      <div class="sg-cell"><ul><li>Obtains hospital PO</li><li>Forwards to Forma ops</li></ul></div>
+      <div class="sg-cell"><ul><li>Logs activity to Google Sheets CRM</li><li>2 staff aggregate 45 inputs weekly</li></ul><div class="sg-flag red">🔴 Manual transcription — no automated capture</div></div>
+
+      <div class="sg-cell sg-row-label">Forma Ops / Admin</div>
+      <div class="sg-cell"><ul><li>Prepares &amp; sterilizes trays</li><li>Ships inventory to field</li><li>Tracks consignment assets</li></ul></div>
+      <div class="sg-cell"><ul><li>Inventory deployed to field</li><li>Tray Locator updated (outside ERP)</li></ul><div class="sg-flag red">🔴 Tray Locator platform unknown</div></div>
+      <div class="sg-cell"><ul><li>Receives case sheet via Gmail</li><li>Manually creates Sales Order in ERP</li><li>Inventory deducted at SO creation</li></ul><div class="sg-flag amber">⚠ Gmail is the order-to-cash trigger</div></div>
+      <div class="sg-cell"><ul><li>Uploads hospital PO to ERP</li><li>SO → invoice conversion</li><li>Invoice sent to hospital</li></ul></div>
+      <div class="sg-cell"><ul><li>Andrew pulls P&amp;L + CRM + surgery data</li><li>Manually runs AI models in parallel</li></ul><div class="sg-flag red">🔴 Fully manual — no automated aggregation</div></div>
+
+      <div class="sg-cell sg-row-label">Finance</div>
+      <div class="sg-cell"><ul><li>Vendor A/P payments processed</li><li>Consignment asset recorded</li></ul></div>
+      <div class="sg-cell"><ul><li>Inventory asset value held on books</li><li>No financial event until case sheet received</li></ul></div>
+      <div class="sg-cell"><ul><li>Inventory deducted at SO creation</li></ul><div class="sg-flag amber">⚑ Pulls at Sales Order — NOT invoice</div></div>
+      <div class="sg-cell"><ul><li>Invoice sent · A/R tracked in QB</li><li>Multiple reconciliation loops</li></ul><div class="sg-flag red">🔴 No centralized reconciliation log</div></div>
+      <div class="sg-cell"><ul><li>Weekly P&amp;L reviewed manually</li><li>Cohort analysis — manual</li></ul></div>
+    </div>
+
+    <div class="section-title">Automation Signals — Highest Value First</div>
+    <div class="two-col">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card teal"><div class="card-label teal">Signal 1 — Highest Priority</div><div class="card-title" style="font-size:15px;">Weekly Review Automation</div><div class="card-sub">Same data, same questions, every week — pulled manually from 3+ sources. Fully automatable with existing tools, no ERP dependency.</div></div>
+        <div class="card teal"><div class="card-label teal">Signal 2</div><div class="card-title" style="font-size:15px;">CRM Data Aggregation</div><div class="card-sub">45 rep inputs aggregated manually each week by 2 staff. Automatable via Google Sheets API → structured export → AI summary.</div></div>
+        <div class="card blue"><div class="card-label blue">Signal 3</div><div class="card-title" style="font-size:15px;">Gmail Case Sheet Parsing</div><div class="card-sub">Unstructured email → manually interpreted → Sales Order. AI can parse case sheet fields and pre-populate the SO form, reducing errors and time.</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card blue"><div class="card-label blue">Signal 4</div><div class="card-title" style="font-size:15px;">Restock Trigger (90%+ 1:1)</div><div class="card-sub">90%+ of restocks are 1:1 ratio. Once SO is created, restock can be auto-triggered for standard cases with a human approval gate for exceptions.</div></div>
+        <div class="card amber"><div class="card-label amber">Signal 5 — ERP Dependent</div><div class="card-title" style="font-size:15px;">Inventory Reorder Forecasting</div><div class="card-sub">Velocity-based reorder predictions using historical usage data. Requires ERP decision and confirmed data schema before building.</div></div>
+        <div class="card amber"><div class="card-label amber">Signal 6 — ERP Dependent</div><div class="card-title" style="font-size:15px;">Cohort &amp; Territory Reporting</div><div class="card-sub">Automated cohort tracking and sales vs. targets — requires confirmed surgery tracking system identity and ERP direction.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ AI BASELINE ══ -->
+  <div id="aibaseline" class="frame">
+    <div class="frame-eyebrow">Current State · AI Usage</div>
+    <div class="frame-title">AI Baseline</div>
+    <div class="frame-desc">Where AI sits in the business today — what's working, what the gaps are, and where the opportunities are ranked by value and feasibility. This is the starting point for everything we build.</div>
+
+    <div class="four-col">
+      <div class="card teal"><div class="card-label teal">Models in Use</div><div class="stat-num" style="color:var(--teal)">3</div><div class="stat-label">Grok · Gemini · Claude</div></div>
+      <div class="card red"><div class="card-label red">Automated Integrations</div><div class="stat-num" style="color:var(--red)">0</div><div class="stat-label">All data entry is manual</div></div>
+      <div class="card amber"><div class="card-label amber">Memory Between Sessions</div><div class="stat-num" style="color:var(--amber)">0</div><div class="stat-label">Context reset every session</div></div>
+      <div class="card green"><div class="card-label green">Leadership Adoption</div><div class="stat-num" style="color:var(--green)">High</div><div class="stat-label">Rare for a company at this stage</div></div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title">What's Working</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div class="inner-box green">
+            <div class="card-label green">Strength</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Leadership-level AI adoption</div>
+            <div class="card-sub">Andrew uses AI weekly and has already built it into the operating rhythm. This is uncommon at this company size — it means the foundation is already there.</div>
+          </div>
+          <div class="inner-box green">
+            <div class="card-label green">Strength</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Intentional multi-model approach</div>
+            <div class="card-sub">Using Grok, Gemini, and Claude in parallel to cross-check decisions is a deliberate strategy — not a gap. This reduces bias and adds triangulation to high-stakes calls.</div>
+          </div>
+          <div class="inner-box green">
+            <div class="card-label green">Strength</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Dropbox is an indexed knowledge base waiting to happen</div>
+            <div class="card-sub">Highly organized file structure across the entire business. Once connected, this becomes the first layer of persistent AI memory — no new infrastructure needed.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Critical Gaps</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div class="inner-box red">
+            <div class="card-label red">Gap</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">No automation at any step</div>
+            <div class="card-sub">Every analysis requires manual data extraction, manual prompt construction, and manual model input. Nothing is scheduled. Nothing is triggered.</div>
+          </div>
+          <div class="inner-box red">
+            <div class="card-label red">Gap</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">No persistent memory — context resets every session</div>
+            <div class="card-sub">Business context must be re-explained to the AI from scratch every single week. There is no shared memory layer across sessions or across team members.</div>
+          </div>
+          <div class="inner-box amber">
+            <div class="card-label amber">Gap</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Prompt quality tied to Andrew's bandwidth</div>
+            <div class="card-sub">Prompts are built from scratch each time. Output quality depends entirely on how much time and focus Andrew has to construct a good prompt that week.</div>
+          </div>
+          <div class="inner-box amber">
+            <div class="card-label amber">Gap</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">No shared team layer</div>
+            <div class="card-sub">Team members use different models independently with no shared context or coordination. AI use is siloed to Andrew's workflow.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">The Weekly AI Process — As It Runs Today</div>
+    <div class="note-block red">
+      <strong>"Every week I run our P&L through AI, I run our CRM, I run every single... it's all very manual."</strong> — Andrew Davison. This is a fully manual, end-to-end process. No automation exists at any step.
+    </div>
+    <div class="flow-wrap">
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--text-faint)">1</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Pull P&L from QuickBooks Desktop <span class="flow-manual">MANUAL</span></div><div class="flow-desc">Manual export. No API or live connection available. Same task every week.</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--text-faint)">2</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Pull CRM Data from Google Sheets <span class="flow-manual">MANUAL</span></div><div class="flow-desc">Manually gathered each cycle. No automated export or scheduled pull exists.</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--red)">3</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Pull Surgery Tracking Data <span class="flow-gap">PLATFORM UNKNOWN</span></div><div class="flow-desc">Source system has never been identified. This is a recurring data gap in every weekly AI cycle.</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--text-faint)">4</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Manually Construct Prompt from Scratch <span class="flow-manual">MANUAL — NO TEMPLATES</span></div><div class="flow-desc">Andrew defines all inputs and desired outputs each time. No reusable templates. Output quality varies with available time and focus.</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--text-faint)">5</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Run Grok, Gemini, and Claude in Parallel <span class="flow-manual">MANUAL</span></div><div class="flow-desc">All three models run on the same data. Cross-model comparison is deliberate. All input/output is manual — no orchestration exists.</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--text-faint)">6</div></div><div class="flow-body"><div class="flow-title">Review All Outputs — Andrew Decides <span class="flow-gate">HUMAN IN LOOP</span></div><div class="flow-desc">AI informs the decision. Andrew reviews all outputs and takes action. This is intentional and correct. AI assists — humans decide.</div></div></div>
+    </div>
+
+    <div class="section-title">Opportunity Register — Ranked by Value &amp; Feasibility</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="card teal" style="display:grid;grid-template-columns:200px 1fr 120px;gap:16px;align-items:center;">
+        <div><div class="card-label teal">Priority 1 · No ERP Needed</div><div style="font-size:13.5px;font-weight:600;color:var(--text);">Weekly Review Automation</div></div>
+        <div class="card-sub">Auto-pull CRM + P&L data on a schedule. Pre-built prompt templates replace manual construction. Delivers 3–5 hours/week back to Andrew immediately.</div>
+        <div style="text-align:right;"><span class="tag tag-teal">Ready Now</span></div>
+      </div>
+      <div class="card teal" style="display:grid;grid-template-columns:200px 1fr 120px;gap:16px;align-items:center;">
+        <div><div class="card-label teal">Priority 2 · No ERP Needed</div><div style="font-size:13.5px;font-weight:600;color:var(--text);">Dropbox AI Index</div></div>
+        <div class="card-sub">Index Dropbox knowledge base into a vector database. AI retrieves documents, SOPs, and historical files on demand — no manual digging.</div>
+        <div style="text-align:right;"><span class="tag tag-teal">Ready Now</span></div>
+      </div>
+      <div class="card blue" style="display:grid;grid-template-columns:200px 1fr 120px;gap:16px;align-items:center;">
+        <div><div class="card-label blue">Priority 3</div><div style="font-size:13.5px;font-weight:600;color:var(--text);">Gmail Case Sheet Parser</div></div>
+        <div class="card-sub">AI reads incoming case sheet emails and extracts structured data — pre-populating Sales Order fields and reducing manual interpretation errors.</div>
+        <div style="text-align:right;"><span class="tag tag-blue">Ready Now</span></div>
+      </div>
+      <div class="card amber" style="display:grid;grid-template-columns:200px 1fr 120px;gap:16px;align-items:center;">
+        <div><div class="card-label amber">Priority 4 · ERP Dependent</div><div style="font-size:13.5px;font-weight:600;color:var(--text);">Inventory Reorder Forecasting</div></div>
+        <div class="card-sub">Velocity-based reorder predictions from ERP data. Automated restock triggers with human approval gate. Requires ERP decision first.</div>
+        <div style="text-align:right;"><span class="tag tag-amber">After ERP</span></div>
+      </div>
+      <div class="card amber" style="display:grid;grid-template-columns:200px 1fr 120px;gap:16px;align-items:center;">
+        <div><div class="card-label amber">Priority 5 · ERP Dependent</div><div style="font-size:13.5px;font-weight:600;color:var(--text);">Multi-Model Decision Reviews</div></div>
+        <div class="card-sub">Formalize Grok + Gemini + Claude parallel reviews for high-stakes decisions (territories, hiring, strategy). Orchestrated pipeline — human always decides.</div>
+        <div style="text-align:right;"><span class="tag tag-amber">Needs Grok API</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INVENTORY ══ -->
+  <div id="inventory" class="frame">
+    <div class="frame-eyebrow">Current State · Inventory</div>
+    <div class="frame-title">Inventory Deep Dive</div>
+    <div class="frame-desc">Forma's inventory is fundamentally non-standard. Six structural constraints make off-the-shelf ERP logic inadequate. Every system and integration decision flows from these constraints.</div>
+
+    <div class="note-block red">
+      <strong>"These kits that we deliver to the hospital are extremely expensive and managing them is very, very critical."</strong> — Andrew Davison. Inventory continuity is the core operational constraint. No automation changes to inventory flows until the ERP decision is confirmed and client sign-off is received.
+    </div>
+
+    <div class="section-title">Why Forma's Inventory Is Non-Standard</div>
+    <div class="three-col">
+      <div class="card red">
+        <div class="card-label red">Constraint 1</div>
+        <div class="card-title" style="font-size:15px;">Variable Bill of Materials</div>
+        <div class="card-sub">Tray configurations are not fixed. Each tray is assembled with a variable BOM. Most ERPs assume fixed BOMs per SKU — will fail without explicit configuration.</div>
+      </div>
+      <div class="card red">
+        <div class="card-label red">Constraint 2</div>
+        <div class="card-title" style="font-size:15px;">Consignment Model</div>
+        <div class="card-sub">Inventory deploys to the field before any sale occurs. The sale trigger (case sheet) happens post-surgery — potentially weeks after the inventory left the warehouse.</div>
+      </div>
+      <div class="card amber">
+        <div class="card-label amber">Constraint 3</div>
+        <div class="card-title" style="font-size:15px;">Multi-Site Asset Tracking</div>
+        <div class="card-sub">HCAR warehouse → Field → Hospital → Return. Millions in assets tracked across multiple locations simultaneously, with no single system owning the full picture.</div>
+      </div>
+      <div class="card red">
+        <div class="card-label red">Constraint 4 — Platform Unknown</div>
+        <div class="card-title" style="font-size:15px;">Tray Locator Outside ERP</div>
+        <div class="card-sub">Physical tray tracking runs in a completely separate system. Platform unidentified. Cannot be integrated until confirmed. This is a critical gap in the BI architecture.</div>
+      </div>
+      <div class="card amber">
+        <div class="card-label amber">Constraint 5</div>
+        <div class="card-title" style="font-size:15px;">No Serialization (Yet)</div>
+        <div class="card-sub">Inventory is not currently serialized. Lot numbers and expiration date tracking status is unconfirmed. Serialization is a future-state requirement. Compliance implications need to be validated.</div>
+      </div>
+      <div class="card amber">
+        <div class="card-label amber">Constraint 6 — By Design</div>
+        <div class="card-title" style="font-size:15px;">QMS / ERP Split</div>
+        <div class="card-sub">QMS records receipt and inspection (FDA-required). ERP records financial movement. These systems are permanently separate — quality records and financial records never share data. Do not disrupt.</div>
+      </div>
+    </div>
+
+    <div class="section-title">Where Inventory Data Lives Today</div>
+    <table class="stack-table">
+      <thead>
+        <tr><th>System</th><th>What Lives There</th><th>Status</th><th>Integration</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>QuickBooks Desktop</td><td>Inventory asset values, HCAR/field location moves, Sales Orders, invoices</td><td><span class="tag tag-amber">Primary ERP</span></td><td><span class="tag tag-red">Manual entry only</span></td></tr>
+        <tr><td>Tray Locator</td><td>Physical location tracking of assembled sets and trays in the field</td><td><span class="tag tag-red">Platform Unknown</span></td><td><span class="tag tag-red">None — fully siloed</span></td></tr>
+        <tr><td>QMS (FDA)</td><td>Receiving, inspection, and packaging records</td><td><span class="tag tag-amber">Active / Required</span></td><td><span class="tag tag-red">Permanently siloed</span></td></tr>
+        <tr><td>Excel</td><td>Supplemental inventory tracking — scope and content unclear</td><td><span class="tag tag-gray">Supplemental</span></td><td><span class="unverified">CLARIFY SCOPE</span></td></tr>
+        <tr><td>Gmail</td><td>Case sheets from reps — the trigger for inventory deduction at SO</td><td><span class="tag tag-teal">Entry Point</span></td><td><span class="tag tag-red">Manual interpretation</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-title">Inventory Lifecycle — 7 Phases</div>
+    <div class="flow-wrap">
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--teal)">1</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Planning &amp; Ordering</div><div class="flow-desc">Ops analyzes current stock. PO placed with vendor. <span class="flow-manual">Manual forecast — no automated trigger</span>. Vendor A (direct) or Vendor B+C (with sterilization step).</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--teal)">2</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Receiving</div><div class="flow-desc">Parts received. QMS logs inspection (FDA). ERP records inventory asset. <span class="flow-constraint">QMS and ERP are permanently separate — no data flows between them.</span></div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--teal)">3</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Tray / Set Creation</div><div class="flow-desc">Tray assembled using variable BOM. <span class="flow-gap">Variable BOM breaks standard ERP logic</span>. Must be custom-configured in any new ERP. Tray Locator updated (platform unknown).</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--blue)">4</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Field Deployment</div><div class="flow-desc">Inventory transfers HCAR → Field in ERP. Asset value held on books. No financial event until case sheet received after surgery. <span class="flow-manual">Tray Locator updated manually</span>.</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--blue)">5</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Surgery Usage</div><div class="flow-desc">Rep present in OR. Implant used. Rep manually completes case sheet post-surgery. No real-time data capture. Rep emails case sheet to Forma via Gmail.</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--amber)">6</div><div class="flow-line"></div></div><div class="flow-body"><div class="flow-title">Restock &amp; Revenue <span class="flow-constraint">⚑ CRITICAL TIMING RULE</span></div><div class="flow-desc">Case sheet received → Sales Order created manually → <strong>Inventory pulls at SO (not invoice)</strong>. 90%+ 1:1 restock generated and shipped. Distributor commission and royalty calculations triggered. SKU-level royalty tracking required — designing surgeon's own usage excluded per contract.</div></div></div>
+      <div class="flow-row"><div class="flow-col"><div class="flow-num" style="background:var(--red)">7</div></div><div class="flow-body"><div class="flow-title">Financial Close</div><div class="flow-desc">Hospital PO received (days/weeks later). PO uploaded to ERP. SO converted to invoice. A/R tracked in QB Desktop. Weekly financial review — fully manual. Multiple reconciliation loops with no centralized log.</div></div></div>
+    </div>
+
+    <div class="section-title">Royalty &amp; Commission Obligations</div>
+    <div class="two-col">
+      <div class="inner-box amber">
+        <div class="card-label amber">Contractual Obligation</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px;">SKU-Level Royalty Tracking</div>
+        <div class="card-sub">Quarterly royalty reports required at SKU level. The designing surgeon's own usage must be excluded. This is a contractual and compliance obligation requiring granular inventory attribution — any new ERP or BI layer must support this.</div>
+      </div>
+      <div class="inner-box amber">
+        <div class="card-label amber">Variable Commission Logic</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px;">Distributor Commission Rules</div>
+        <div class="card-sub">Variable commissions with accruals across 45 distributors. Exact calculation rules and accrual logic must be fully documented before any system handles this automatically.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPEN QUESTIONS ══ -->
+  <div id="openq" class="frame">
+    <div class="frame-eyebrow">Pre-Build Gate · Action Required</div>
+    <div class="frame-title">What We Need From You</div>
+    <div class="frame-desc">These are the open items that require your input before the corresponding design or build work can proceed. Nothing is assumed or inferred. Each question is tied to a specific architectural decision.</div>
+
+    <div class="three-col" style="margin-bottom:20px;">
+      <div class="inner-box red"><div class="card-label red">Critical — Blocks Architecture</div><div class="stat-num" style="color:var(--red);font-size:24px;">2</div><div class="stat-label">Must resolve before design begins</div></div>
+      <div class="inner-box amber"><div class="card-label amber">High — Blocks Build</div><div class="stat-num" style="color:var(--amber);font-size:24px;">6</div><div class="stat-label">Needed before corresponding workstream</div></div>
+      <div class="inner-box blue-light" style="background:var(--blue-light);border-color:var(--blue-border);"><div class="card-label blue">Medium — Needed for Detail</div><div class="stat-num" style="color:var(--blue);font-size:24px;">6</div><div class="stat-label">Required before detailed scoping</div></div>
+    </div>
+
+    <div class="note-block teal">
+      <strong>What can start now regardless:</strong> Weekly review automation, ClickUp setup, Dropbox indexing, and Gmail case sheet parser are all ERP-independent and can begin immediately — none of the questions below block these workstreams.
+    </div>
+
+    <div class="q-filters">
+      <button class="q-filter active-f" onclick="filterQ('all',this)">All (14)</button>
+      <button class="q-filter" onclick="filterQ('critical',this)">🔴 Critical (2)</button>
+      <button class="q-filter" onclick="filterQ('high',this)">🟠 High (6)</button>
+      <button class="q-filter" onclick="filterQ('medium',this)">🟡 Medium (6)</button>
+    </div>
+
+    <div class="q-grid" id="qgrid"></div>
+  </div>
+
+</main>
+
+<script>
+  // Navigation
+  function show(id) {
+    document.querySelectorAll('.frame').forEach(f => f.classList.remove('active'));
+    document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const ids = ['summary','techstack','erpflow','opmodel','aibaseline','inventory','openq'];
+    const idx = ids.indexOf(id);
+    const btns = document.querySelectorAll('.sb-item');
+    if (idx >= 0 && btns[idx]) btns[idx].classList.add('active');
+    document.querySelector('main').scrollTop = 0;
+  }
+
+  // Open Questions — client-facing only (Andrew as owner), filtered
+  const questions = [
+    { id:1, q:"What is the final ERP direction — Odoo, QB Online, QB Online Enterprise, or Implantbase hybrid?", why:"This is the single decision that unlocks all ERP-layer integration design. Every connector and architecture choice depends on this answer.", priority:"critical", area:"ERP Decision" },
+    { id:3, q:"What is the surgery tracking system you reference in your weekly review?", why:"You cite it as a primary weekly data source. We need the platform name, the data format, and whether it has an integration path before the BI layer can be designed.", priority:"critical", area:"Unknown Systems" },
+    { id:4, q:"What is the Tray Locator system — platform, format, and integration capability?", why:"Physical kit tracking is outside the ERP entirely. If this cannot connect, a critical operational data layer will be missing from the architecture.", priority:"high", area:"Unknown Systems" },
+    { id:5, q:"What are the exact data fields and metrics you pull every week for your weekly review?", why:"Required to build the automated weekly review workflow. Without the full schema — every field, every source — no data pipeline can be designed correctly.", priority:"high", area:"Reporting" },
+    { id:6, q:"What are the three permission tiers and who belongs to each?", why:"Access tiers determine what data the AI layer can surface and to whom. This must be defined before the BI architecture is scoped.", priority:"high", area:"Permissions" },
+    { id:7, q:"What is the full order-to-cash workflow — including exceptions, returns, and reconciliation?", why:"The high-value automation candidates are in this workflow. Exceptions and edge cases must be fully documented before any automation is designed around them.", priority:"high", area:"Process Workflow" },
+    { id:8, q:"What are the specific reports, dashboards, and strategic questions the system must be able to answer?", why:"The BI layer is built around the questions you need answered. Without this list, we're scoping the intelligence layer without a target.", priority:"high", area:"Reporting" },
+    { id:9, q:"What are the exact royalty calculation rules and commission logic for distributors?", why:"SKU-level royalties with surgeon exclusion logic and variable distributor commissions with accruals must be fully documented before any system handles them automatically.", priority:"high", area:"Finance" },
+    { id:10, q:"What is the exact role of Bill.com vs. QuickBooks Desktop in your AP workflow?", why:"Bill.com appears on the tech stack. If it is processing payments, it needs to be in the integration architecture. The handoff between the two must be documented.", priority:"medium", area:"Finance" },
+    { id:11, q:"What does 'Excel for inventory' and 'Excel for customer tracking' mean — are these separate files and what's in each?", why:"Multiple Excel uses are on the tech stack. We need to know what's in each file before we can decide what to migrate, consolidate, or connect.", priority:"medium", area:"Inventory" },
+    { id:12, q:"Are lot numbers and expiration dates currently tracked for inventory?", why:"Medical device implants typically require lot and expiration traceability. Current status is unconfirmed. If not tracked, this may be a compliance gap that needs to be addressed.", priority:"medium", area:"Inventory" },
+    { id:13, q:"What are the return, reconciliation, and exception-handling processes for inventory?", why:"Consignment environments have significant complexity in exception handling. None of this is documented yet and it contains important automation candidates.", priority:"medium", area:"Inventory" },
+    { id:14, q:"Will the field team need any direct inventory visibility in the future?", why:"This affects UX design and access tier assumptions. Even if reps don't need it today, future-state design should account for whether this will change.", priority:"medium", area:"Permissions" },
+    { id:16, q:"Is there any existing automation anywhere in the current workflow?", why:"We've assumed everything is manual based on the discovery session. If partial automations exist anywhere, we need to know about them before redesigning those workflows.", priority:"medium", area:"Process Workflow" },
+  ];
+
+  let activeFilter = 'all';
+
+  function renderQ() {
+    const grid = document.getElementById('qgrid');
+    grid.innerHTML = '';
+    const colorMap = { critical: 'red', high: 'amber', medium: 'blue' };
+    const labelMap = { critical: '🔴 Critical', high: '🟠 High', medium: '🟡 Medium' };
+    questions.forEach((q, i) => {
+      const show = activeFilter === 'all' || q.priority === activeFilter;
+      const div = document.createElement('div');
+      div.className = 'q-card' + (show ? '' : ' hidden');
+      div.innerHTML = `
+        <div class="q-header">
+          <div class="q-num">${String(i+1).padStart(2,'0')}</div>
+          <div>
+            <div class="q-text">${q.q}</div>
+            <div class="q-meta">
+              <span class="tag tag-${colorMap[q.priority]}">${labelMap[q.priority]}</span>
+              <span class="tag tag-gray">${q.area}</span>
+            </div>
+          </div>
+        </div>
+        <div class="q-why">→ <em>${q.why}</em></div>
+      `;
+      div.addEventListener('click', () => div.classList.toggle('expanded'));
+      grid.appendChild(div);
+    });
+  }
+
+  function filterQ(type, btn) {
+    activeFilter = type;
+    document.querySelectorAll('.q-filter').forEach(b => b.classList.remove('active-f'));
+    btn.classList.add('active-f');
+    document.querySelectorAll('.q-card').forEach(card => {
+      if (type === 'all') { card.classList.remove('hidden'); return; }
+      const tags = card.querySelectorAll('.tag');
+      const match = Array.from(tags).some(t => t.textContent.toLowerCase().includes(type));
+      card.classList.toggle('hidden', !match);
+    });
+  }
+
+  renderQ();
+</script>
+</body>
+</html>

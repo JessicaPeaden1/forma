@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — AI Implementation Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --surface-warm: #faf8f5;
+    --border: #e8e3dc;
+    --border-light: #f0ece5;
+    --text: #1c1a17;
+    --text-mid: #4a4540;
+    --text-muted: #8a837a;
+    --text-faint: #b5afa8;
+
+    --teal: #1a7a6e;
+    --teal-light: #e8f5f3;
+    --teal-mid: rgba(26,122,110,0.12);
+    --teal-border: rgba(26,122,110,0.25);
+
+    --amber: #b5620a;
+    --amber-light: #fef3e2;
+    --amber-mid: rgba(181,98,10,0.1);
+    --amber-border: rgba(181,98,10,0.25);
+
+    --blue: #2b5bbf;
+    --blue-light: #eef2fc;
+    --blue-mid: rgba(43,91,191,0.1);
+    --blue-border: rgba(43,91,191,0.25);
+
+    --purple: #6b45a8;
+    --purple-light: #f2eefa;
+    --purple-mid: rgba(107,69,168,0.1);
+    --purple-border: rgba(107,69,168,0.25);
+
+    --gold: #c9922a;
+    --gold-light: #fdf6e8;
+    --gold-mid: rgba(201,146,42,0.1);
+    --gold-border: rgba(201,146,42,0.28);
+
+    --red: #c0392b;
+    --red-light: #fdecea;
+    --green: #1e7e4a;
+    --green-light: #e8f7ef;
+
+    --sidebar-w: 248px;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  /* ─── SIDEBAR ─── */
+  aside {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sb-brand {
+    padding: 22px 20px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sb-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 4px;
+  }
+  .sb-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.25;
+  }
+  .sb-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .sb-section {
+    padding: 14px 12px 6px;
+  }
+  .sb-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding: 0 8px 6px;
+  }
+
+  .sb-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-mid);
+    font-size: 12.5px;
+    font-weight: 400;
+    transition: all 0.14s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    line-height: 1.3;
+  }
+  .sb-item:hover { background: var(--bg); color: var(--text); }
+  .sb-item.active { background: var(--teal-light); color: var(--teal); font-weight: 500; }
+
+  .sb-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .opt-1 { background: var(--teal); }
+  .opt-2 { background: var(--blue); }
+  .opt-3 { background: var(--amber); }
+  .opt-4 { background: var(--purple); }
+  .dot-gray { background: var(--text-faint); }
+
+  .sb-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .badge-quick { background: var(--teal-light); color: var(--teal); }
+  .badge-balanced { background: var(--blue-light); color: var(--blue); }
+  .badge-full { background: var(--amber-light); color: var(--amber); }
+  .badge-future { background: var(--purple-light); color: var(--purple); }
+  .badge-rec { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold-border); }
+
+  .sb-footer {
+    margin-top: auto;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .sb-footer strong { color: var(--text-mid); font-weight: 500; }
+
+  /* ─── MAIN ─── */
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 36px 40px;
+  }
+
+  .frame { display: none; }
+  .frame.active { display: block; }
+
+  .frame-header { margin-bottom: 28px; }
+  .frame-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .frame-title {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .frame-desc {
+    font-size: 13.5px;
+    color: var(--text-mid);
+    max-width: 700px;
+    line-height: 1.65;
+  }
+
+  /* ─── OVERVIEW TABLE ─── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    font-size: 13px;
+  }
+  .compare-table thead tr {
+    background: var(--surface-warm);
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table th {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--text-mid);
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+  .compare-table th:first-child { width: 160px; }
+  .compare-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td:first-child {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .col-1 { color: var(--teal) !important; font-weight: 500 !important; }
+  .col-2 { color: var(--blue) !important; font-weight: 500 !important; }
+  .col-3 { color: var(--amber) !important; font-weight: 500 !important; }
+  .col-4 { color: var(--purple) !important; font-weight: 500 !important; }
+
+  /* ─── OPTION CARDS ─── */
+  .opt-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    margin-bottom: 20px;
+  }
+  .opt-card.teal { border-left: 4px solid var(--teal); }
+  .opt-card.blue { border-left: 4px solid var(--blue); }
+  .opt-card.amber { border-left: 4px solid var(--amber); }
+  .opt-card.purple { border-left: 4px solid var(--purple); }
+
+  .opt-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .opt-num {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1;
+    color: var(--border);
+    flex-shrink: 0;
+  }
+  .opt-title-group { flex: 1; }
+  .opt-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .opt-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .opt-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .opt-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+
+  .chip-teal { background: var(--teal-light); color: var(--teal); border-color: var(--teal-border); }
+  .chip-blue { background: var(--blue-light); color: var(--blue); border-color: var(--blue-border); }
+  .chip-amber { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
+  .chip-purple { background: var(--purple-light); color: var(--purple); border-color: var(--purple-border); }
+  .chip-gold { background: var(--gold-light); color: var(--gold); border-color: var(--gold-border); }
+  .chip-red { background: var(--red-light); color: var(--red); border-color: rgba(192,57,43,0.25); }
+  .chip-green { background: var(--green-light); color: var(--green); border-color: rgba(30,126,74,0.25); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .inner-box {
+    background: var(--surface-warm);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .inner-box.teal-tint { background: var(--teal-light); border-color: var(--teal-border); }
+  .inner-box.blue-tint { background: var(--blue-light); border-color: var(--blue-border); }
+  .inner-box.amber-tint { background: var(--amber-light); border-color: var(--amber-border); }
+  .inner-box.purple-tint { background: var(--purple-light); border-color: var(--purple-border); }
+  .inner-box.gold-tint { background: var(--gold-light); border-color: var(--gold-border); }
+
+  .box-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .box-label.teal { color: var(--teal); }
+  .box-label.blue { color: var(--blue); }
+  .box-label.amber { color: var(--amber); }
+  .box-label.purple { color: var(--purple); }
+
+  .box-value {
+    font-size: 20px;
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+  .box-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  ul.dot-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  ul.dot-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+  ul.dot-list li::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+  ul.dot-list.teal li::before { background: var(--teal); }
+  ul.dot-list.blue li::before { background: var(--blue); }
+  ul.dot-list.amber li::before { background: var(--amber); }
+  ul.dot-list.purple li::before { background: var(--purple); }
+
+  .flow-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 18px;
+  }
+  .flow-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .flow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .flow-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .flow-line {
+    width: 1px;
+    flex: 1;
+    min-height: 16px;
+    background: var(--border);
+    margin: 2px 0;
+  }
+  .flow-body {
+    flex: 1;
+    padding-bottom: 16px;
+  }
+  .flow-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .flow-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .flow-gate {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: var(--amber-light);
+    color: var(--amber);
+    border: 1px solid var(--amber-border);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .flow-ai {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: var(--teal-light);
+    color: var(--teal);
+    border: 1px solid var(--teal-border);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .pro-item, .con-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 12.5px;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+  .pro-icon { color: var(--green); font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+  .con-icon { color: var(--red); font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .divider { height: 1px; background: var(--border-light); margin: 18px 0; }
+
+  .note-block {
+    background: var(--surface-warm);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--amber);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 12.5px;
+    color: var(--text-mid);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .note-block strong { color: var(--text); font-weight: 600; }
+
+  .unverified {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: rgba(192,57,43,0.08);
+    color: var(--red);
+    border: 1px solid rgba(192,57,43,0.2);
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+
+  /* ─── OVERVIEW / COMPARISON ─── */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .ov-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ov-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .ov-card.teal::before { background: var(--teal); }
+  .ov-card.blue::before { background: var(--blue); }
+  .ov-card.amber::before { background: var(--amber); }
+  .ov-card.purple::before { background: var(--purple); }
+
+  .ov-num {
+    font-family: 'Fraunces', serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .ov-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  .ov-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .ov-stat:last-child { border-bottom: none; }
+  .ov-stat strong { color: var(--text-mid); font-weight: 500; }
+
+  .ov-btn {
+    margin-top: 12px;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    text-align: center;
+    transition: opacity 0.15s;
+  }
+  .ov-btn:hover { opacity: 0.85; }
+  .ov-btn.teal { background: var(--teal-light); color: var(--teal); }
+  .ov-btn.blue { background: var(--blue-light); color: var(--blue); }
+  .ov-btn.amber { background: var(--amber-light); color: var(--amber); }
+  .ov-btn.purple { background: var(--purple-light); color: var(--purple); }
+
+  /* ─── RECOMMENDATION ─── */
+  .rec-banner {
+    background: var(--gold-light);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+  .rec-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .rec-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .rec-body {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.7;
+    max-width: 720px;
+  }
+
+  .timeline-wrap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .timeline-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .tl-phase {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+  }
+  .tl-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .tl-weeks {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .tl-items {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .tl-item {
+    font-size: 12px;
+    color: var(--text-mid);
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .tl-item::before {
+    content: '→';
+    color: var(--text-faint);
+    flex-shrink: 0;
+    font-size: 11px;
+    margin-top: 1px;
+  }
+
+  .blocker-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .blocker-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .blocker-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .blocker-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .blocker-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .roi-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    font-size: 12.5px;
+    margin-bottom: 20px;
+  }
+  .roi-table th {
+    background: var(--surface-warm);
+    padding: 10px 14px;
+    font-weight: 600;
+    color: var(--text-mid);
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border);
+  }
+  .roi-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-mid);
+  }
+  .roi-table tr:last-child td { border-bottom: none; }
+  .roi-table td:first-child { font-weight: 500; color: var(--text); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="sb-brand">
+    <div class="sb-eyebrow">Plus 1 Technology</div>
+    <div class="sb-title">Forma Medical<br>AI Implementation Options</div>
+    <div class="sb-sub">March 2026 · Pre-Build Phase</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Navigation</div>
+    <button class="sb-item active" onclick="show('overview')">
+      <span class="sb-dot dot-gray"></span>
+      Overview &amp; Comparison
+    </button>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Options</div>
+    <button class="sb-item" onclick="show('opt1')">
+      <span class="sb-dot opt-1"></span>
+      Option 1 — Quick Win
+      <span class="sb-badge badge-quick">4–6 wk</span>
+    </button>
+    <button class="sb-item" onclick="show('opt2')">
+      <span class="sb-dot opt-2"></span>
+      Option 2 — Balanced Build
+      <span class="sb-badge badge-balanced">8–12 wk</span>
+    </button>
+    <button class="sb-item" onclick="show('opt3')">
+      <span class="sb-dot opt-3"></span>
+      Option 3 — BI Foundation
+      <span class="sb-badge badge-full">12–16 wk</span>
+    </button>
+    <button class="sb-item" onclick="show('opt4')">
+      <span class="sb-dot opt-4"></span>
+      Option 4 — Full Build ★
+      <span class="sb-badge badge-rec">★ Recommended</span>
+    </button>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Guidance</div>
+    <button class="sb-item" onclick="show('rec')">
+      <span class="sb-dot dot-gray"></span>
+      Recommendation
+      <span class="sb-badge badge-rec">Jess Pick</span>
+    </button>
+    <button class="sb-item" onclick="show('blockers')">
+      <span class="sb-dot dot-gray"></span>
+      Open Blockers
+    </button>
+  </div>
+
+  <div class="sb-footer">
+    <strong>Owner:</strong> Jessica Peaden<br>
+    <strong>Client:</strong> Andrew Davison<br>
+    <strong>Status:</strong> Pre-build · For Review
+  </div>
+</aside>
+
+<main>
+
+  <!-- ══ OVERVIEW ══ -->
+  <div id="overview" class="frame active">
+    <div class="frame-header">
+      <div class="frame-eyebrow">Forma Medical · AI Readiness</div>
+      <div class="frame-title">Implementation Options at a Glance</div>
+      <div class="frame-desc">Four implementation paths — but they're not mutually exclusive. <strong>Option 4 includes everything in Options 1, 2, and 3</strong> as sequential build phases. Think of Options 1–3 as standalone alternatives if the full build isn't the right fit. All options maintain ERP modularity and human approval gates. No ERP-layer automations are triggered until the platform decision is confirmed.</div>
+    </div>
+
+    <div class="overview-grid">
+      <div class="ov-card teal">
+        <div class="ov-num">Option 1</div>
+        <div class="ov-title">Lightweight AI Overlay</div>
+        <div class="ov-stat"><span>Timeline</span><strong>4–6 weeks</strong></div>
+        <div class="ov-stat"><span>ROI</span><strong>2–3× Year 1</strong></div>
+        <div class="ov-stat"><span>Break-even</span><strong>3–4 months</strong></div>
+        <div class="ov-stat"><span>ERP Risk</span><strong>None</strong></div>
+        <button class="ov-btn teal" onclick="show('opt1')">View Details →</button>
+      </div>
+      <div class="ov-card blue">
+        <div class="ov-num">Option 2</div>
+        <div class="ov-title">Central Platform + AI</div>
+        <div class="ov-stat"><span>Timeline</span><strong>8–12 weeks</strong></div>
+        <div class="ov-stat"><span>ROI</span><strong>3–4× Year 1</strong></div>
+        <div class="ov-stat"><span>Break-even</span><strong>4–6 months</strong></div>
+        <div class="ov-stat"><span>ERP Risk</span><strong>Low</strong></div>
+        <button class="ov-btn blue" onclick="show('opt2')">View Details →</button>
+      </div>
+      <div class="ov-card amber">
+        <div class="ov-num">Option 3</div>
+        <div class="ov-title">Custom BI Foundation</div>
+        <div class="ov-stat"><span>Timeline</span><strong>12–16 weeks</strong></div>
+        <div class="ov-stat"><span>ROI</span><strong>4–5× Year 1</strong></div>
+        <div class="ov-stat"><span>Break-even</span><strong>6–8 months</strong></div>
+        <div class="ov-stat"><span>ERP Risk</span><strong>Medium</strong></div>
+        <button class="ov-btn amber" onclick="show('opt3')">View Details →</button>
+      </div>
+      <div class="ov-card purple">
+        <div class="ov-num">Option 4 ★</div>
+        <div class="ov-title">Full Build + ClickUp Hub</div>
+        <div class="ov-stat"><span>Timeline</span><strong>12–16 weeks</strong></div>
+        <div class="ov-stat"><span>ROI</span><strong>4–6× Year 1</strong></div>
+        <div class="ov-stat"><span>Break-even</span><strong>5–7 months</strong></div>
+        <div class="ov-stat"><span>ERP Risk</span><strong>Medium</strong></div>
+        <button class="ov-btn purple" onclick="show('opt4')">View Details →</button>
+      </div>
+    </div>
+
+    <div class="section-title">Side-by-Side Comparison</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Option 1 — Quick Win</th>
+          <th>Option 2 — Balanced</th>
+          <th>Option 3 — BI Only</th>
+          <th>Option 4 ★ — Full Build (Includes All)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Core Stack</td>
+          <td class="col-1">Zapier + Gemini/Claude<br>Current stack preserved</td>
+          <td class="col-2">ClickUp + Zapier<br>CRM migrated</td>
+          <td class="col-3">LangChain + Pinecone<br>Snowflake warehouse</td>
+          <td class="col-4">LangChain + ClickUp<br>Pinecone + Snowflake</td>
+        </tr>
+        <tr>
+          <td>Weekly Review Automation</td>
+          <td class="col-1">✓ Automated pull + prompt</td>
+          <td class="col-2">✓ ClickUp dashboards</td>
+          <td class="col-3">✓ Custom BI layer</td>
+          <td class="col-4">✓ Full pipeline + BI</td>
+        </tr>
+        <tr>
+          <td>CRM Migration</td>
+          <td class="col-1">✗ Stays in Google Sheets</td>
+          <td class="col-2">✓ Moved to ClickUp</td>
+          <td class="col-3">✗ BI layer only</td>
+          <td class="col-4">✓ ClickUp CRM + BI</td>
+        </tr>
+        <tr>
+          <td>Dropbox AI Index</td>
+          <td class="col-1">✓ Basic via Zapier</td>
+          <td class="col-2">✓ ClickUp integration</td>
+          <td class="col-3">✓ Full vector index</td>
+          <td class="col-4">✓ Full vector index</td>
+        </tr>
+        <tr>
+          <td>"Business Brain" Query</td>
+          <td class="col-1">✗ Not in scope</td>
+          <td class="col-2">⚠ Partial — ClickUp only</td>
+          <td class="col-3">✓ Full RAG layer</td>
+          <td class="col-4">✓ Full RAG + ClickUp</td>
+        </tr>
+        <tr>
+          <td>Multi-Model AI (Grok/Gemini/Claude)</td>
+          <td class="col-1">⚠ Manual Grok</td>
+          <td class="col-2">⚠ Manual Grok</td>
+          <td class="col-3">✓ Orchestrated</td>
+          <td class="col-4">✓ Orchestrated</td>
+        </tr>
+        <tr>
+          <td>Gmail Case Sheet Parser</td>
+          <td class="col-1">⚠ Basic extraction</td>
+          <td class="col-2">✓ ClickUp task auto-create</td>
+          <td class="col-3">✓ AI classification</td>
+          <td class="col-4">✓ AI classification</td>
+        </tr>
+        <tr>
+          <td>Inventory Forecasting</td>
+          <td class="col-1">⚠ Simulation only</td>
+          <td class="col-2">✓ ClickUp custom fields</td>
+          <td class="col-3">✓ Predictive in BI</td>
+          <td class="col-4">✓ Full forecasting</td>
+        </tr>
+        <tr>
+          <td>ERP-Ready Modular Design</td>
+          <td class="col-1">✓ Zapier reconfigure</td>
+          <td class="col-2">✓ ClickUp native APIs</td>
+          <td class="col-3">✓ Custom connectors</td>
+          <td class="col-4">✓ Custom + ClickUp</td>
+        </tr>
+        <tr>
+          <td>Annual Labor Savings (est.)</td>
+          <td class="col-1">~$20,800</td>
+          <td class="col-2">~$31,200</td>
+          <td class="col-3">~$49,400</td>
+          <td class="col-4">~$41,600–$52,000</td>
+        </tr>
+        <tr>
+          <td>Best For</td>
+          <td class="col-1">Immediate wins,<br>low risk appetite</td>
+          <td class="col-2">CRM fix + scalable ops,<br>mid risk</td>
+          <td class="col-3">Pure intelligence layer,<br>dev team needed</td>
+          <td class="col-4">Complete solution,<br>long-term investment</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note-block">
+      <strong>⚑ ERP Constraint Active:</strong> All options preserve modularity — zero ERP-layer automations until Andrew confirms Odoo vs. QB Online + Implantbase direction. ROI figures use industry benchmarks and are labeled as estimates; actuals depend on confirmed data schema from Andrew.
+    </div>
+  </div>
+
+  <!-- ══ OPTION 1 ══ -->
+  <div id="opt1" class="frame">
+    <div class="frame-header">
+      <div class="frame-eyebrow">Option 1 · Minimal Disruption</div>
+      <div class="frame-title">Lightweight AI Overlay on Existing Stack</div>
+      <div class="frame-desc">Layer automation and AI directly on the current tech stack — no migrations, no ERP changes. Focus on eliminating Andrew's most painful weekly manual work and preparing connectors for the eventual ERP transition.</div>
+    </div>
+
+    <div class="opt-meta">
+      <span class="meta-chip chip-teal">⏱ 4–6 Weeks</span>
+      <span class="meta-chip chip-green">✓ No ERP Risk</span>
+      <span class="meta-chip chip-gold">2–3× ROI Year 1</span>
+      <span class="meta-chip chip-teal">Break-even: 3–4 months</span>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title">Core Systems</div>
+        <div class="inner-box" style="margin-bottom:12px;">
+          <div class="box-label teal">AI Layer</div>
+          <ul class="dot-list teal">
+            <li>Google Gemini — primary analysis model</li>
+            <li>Claude — team tasks + connector integration</li>
+            <li>Grok — manual review (no API path yet)</li>
+            <li>Zapier — automation triggers and glue</li>
+          </ul>
+        </div>
+        <div class="inner-box">
+          <div class="box-label">Current Stack (Preserved)</div>
+          <ul class="dot-list">
+            <li>QuickBooks Desktop — ERP stays until decision</li>
+            <li>Google Sheets — CRM remains as-is</li>
+            <li>Dropbox — file indexing via API</li>
+            <li>Gmail — PO + case sheet extraction entry point</li>
+            <li>Airtable — lightweight inventory simulation <span class="unverified">NOT VERIFIED</span></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">ROI Breakdown</div>
+        <div class="three-col" style="grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="inner-box teal-tint">
+            <div class="box-label teal">Labor Savings</div>
+            <div class="box-value">$20,800</div>
+            <div class="box-sub">Annual est. (10 hrs/wk → 2 hrs)</div>
+          </div>
+          <div class="inner-box teal-tint">
+            <div class="box-label teal">Revenue Uplift</div>
+            <div class="box-value">$24,000</div>
+            <div class="box-sub">20% fewer inventory shortages</div>
+          </div>
+        </div>
+        <div class="inner-box" style="margin-top:10px;">
+          <div class="box-label">Assumptions</div>
+          <ul class="dot-list" style="font-size:11.5px;">
+            <li>45 distributors, 2 W2 employees</li>
+            <li>Manual weekly analysis: 10 hrs @ $50/hr</li>
+            <li>$10K/month lost from inventory shortages (benchmark)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">ERP Process Flow (with AI Overlay)</div>
+    <div class="flow-wrap">
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--teal)">1</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Analyze Inventory <span class="flow-ai">AI TRIGGER</span></div>
+          <div class="flow-desc">Weekly Zapier automation pulls Google Sheets velocity data + Dropbox historical files. Gemini runs reorder prediction (safety stock + forecast). Output emailed for review.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--teal)">2</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Place PO</div>
+          <div class="flow-desc">Manual entry in QuickBooks Desktop. AI suggests quantities via email notification based on Step 1 output. Human confirms before sending to vendor.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--teal)">3</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Vendor Processing (A/B/C) <span class="flow-ai">AI ASSIST</span></div>
+          <div class="flow-desc">Gmail API scans incoming invoices → auto-uploads to Dropbox. No vendor flow changes.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--teal)">4</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Receive / Inspect / Package</div>
+          <div class="flow-desc">QMS recording remains manual and siloed (FDA required). Gemini compares received quantities vs. predicted — flags discrepancies for ops review.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--teal)">5</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Invoice to A/P &amp; Pay</div>
+          <div class="flow-desc">Zapier sends COGS capture alert. Human sign-off required before payment processed in QuickBooks Desktop.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--teal)">6</div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Inventory Asset to HCAR <span class="flow-ai">AI ASSIST</span></div>
+          <div class="flow-desc">Airtable simulates multi-site tracking and syncs to Google Sheets for field visibility. Pre-ERP transition bridge only.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title">Pros &amp; Cons</div>
+    <div class="pros-cons">
+      <div>
+        <div class="box-label" style="margin-bottom:10px; color:var(--green)">Strengths</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="pro-item"><span class="pro-icon">✓</span>Lowest risk — no migrations, no stack changes</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Fastest time-to-value (4–6 weeks to live)</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Zapier connectors reuse in all future builds</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Fully ERP-agnostic — reconfigure when ready</div>
+        </div>
+      </div>
+      <div>
+        <div class="box-label" style="margin-bottom:10px; color:var(--red)">Limitations</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="con-item"><span class="con-icon">✗</span>Still manual-heavy for complex inventory</div>
+          <div class="con-item"><span class="con-icon">✗</span>No CRM migration — Google Sheets stays</div>
+          <div class="con-item"><span class="con-icon">✗</span>No "business brain" query layer</div>
+          <div class="con-item"><span class="con-icon">✗</span>Zapier dependency limits advanced AI logic</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPTION 2 ══ -->
+  <div id="opt2" class="frame">
+    <div class="frame-header">
+      <div class="frame-eyebrow">Option 2 · Balanced Rebuild</div>
+      <div class="frame-title">Central Platform Integration with AI</div>
+      <div class="frame-desc">Consolidate CRM and project management into ClickUp while layering AI for smarter ERP process simulations. Addresses the "CRM in a weird spot" problem and prepares a scalable base for future ERP migration — without touching the ERP yet.</div>
+    </div>
+
+    <div class="opt-meta">
+      <span class="meta-chip chip-blue">⏱ 8–12 Weeks</span>
+      <span class="meta-chip chip-green">✓ Low ERP Risk</span>
+      <span class="meta-chip chip-gold">3–4× ROI Year 1</span>
+      <span class="meta-chip chip-blue">Break-even: 4–6 months</span>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title">Core Systems</div>
+        <div class="inner-box" style="margin-bottom:12px;">
+          <div class="box-label blue">Central Hub</div>
+          <ul class="dot-list blue">
+            <li>ClickUp — CRM migration from Google Sheets; PM workflows, dashboards, goals; native AI add-ons</li>
+            <li>ClickUp custom fields for interim inventory simulation <span class="unverified">NOT VERIFIED: medical device fields</span></li>
+          </ul>
+        </div>
+        <div class="inner-box">
+          <div class="box-label">Integrations</div>
+          <ul class="dot-list">
+            <li>ClickUp APIs + Zapier → Gmail / Dropbox sync</li>
+            <li>Implantbase connector if selected (post ERP decision) <span class="unverified">NOT VERIFIED</span></li>
+            <li>QuickBooks Desktop interim via Zapier</li>
+            <li>Airtable for interim inventory database</li>
+            <li>Gemini primary + Claude team tasks</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">ROI Breakdown</div>
+        <div class="three-col" style="grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="inner-box blue-tint">
+            <div class="box-label blue">Labor Savings</div>
+            <div class="box-value">$31,200</div>
+            <div class="box-sub">Annual est. (15 hrs/wk → 3 hrs)</div>
+          </div>
+          <div class="inner-box blue-tint">
+            <div class="box-label blue">Cost Reduction</div>
+            <div class="box-value">$15,000</div>
+            <div class="box-sub">30% overstock reduction</div>
+          </div>
+        </div>
+        <div class="inner-box" style="margin-top:10px;">
+          <div class="box-label">Assumptions</div>
+          <ul class="dot-list" style="font-size:11.5px;">
+            <li>45 distributors sales tracking: 15 hrs/wk @ $50/hr</li>
+            <li>$50K annual holding cost (benchmark)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">ERP Process Flow (ClickUp-Centered)</div>
+    <div class="flow-wrap">
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--blue)">1</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Analyze Inventory in ClickUp <span class="flow-ai">AI TRIGGER</span></div>
+          <div class="flow-desc">ClickUp task automates pull from Dropbox/Google Sheets. Gemini + Claude run reorder analysis. Dashboard sign-off by ops before action.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--blue)">2</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Place PO via ClickUp Draft</div>
+          <div class="flow-desc">ClickUp generates PO draft task. Manual entry in QuickBooks Desktop until transition. AI quantity suggestion attached to task.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--blue)">3</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Vendor Processing <span class="flow-ai">AI ASSIST</span></div>
+          <div class="flow-desc">Gmail integration auto-creates ClickUp tasks for incoming invoices. AI categorizes vendor type (A/B/C) and routes for tracking.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--blue)">4</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Receive / Inspect / Package</div>
+          <div class="flow-desc">QMS siloed (FDA required). ClickUp logs inspection notes. AI flags anomalies vs. expected quantities.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--blue)">5</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Invoice to A/P &amp; Pay</div>
+          <div class="flow-desc">Zapier alerts in ClickUp. COGS tracked in ClickUp with human review and approval before QB Desktop entry.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--blue)">6</div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Inventory Asset to HCAR <span class="flow-ai">AI ASSIST</span></div>
+          <div class="flow-desc">ClickUp custom fields track multi-site consignment. AI forecasts field transfers. Post-ERP: ClickUp integrates directly with Odoo or QB Online + Implantbase.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title">Pros &amp; Cons</div>
+    <div class="pros-cons">
+      <div>
+        <div class="box-label" style="margin-bottom:10px; color:var(--green)">Strengths</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="pro-item"><span class="pro-icon">✓</span>Fixes "CRM in a weird spot" — structured data hub</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Scalable to 15 full-time sales reps</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Native ClickUp APIs simplify ERP transition</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Team adoption aided by ClickUp's familiar UI</div>
+        </div>
+      </div>
+      <div>
+        <div class="box-label" style="margin-bottom:10px; color:var(--red)">Limitations</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="con-item"><span class="con-icon">✗</span>CRM migration effort from Google Sheets</div>
+          <div class="con-item"><span class="con-icon">✗</span>ClickUp custom fields for med device unverified</div>
+          <div class="con-item"><span class="con-icon">✗</span>No persistent BI query layer — "brain" is partial</div>
+          <div class="con-item"><span class="con-icon">✗</span>Team learning curve</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPTION 3 ══ -->
+  <div id="opt3" class="frame">
+    <div class="frame-header">
+      <div class="frame-eyebrow">Option 3 · BI-First Architecture</div>
+      <div class="frame-title">Custom BI Layer with Full AI Intelligence</div>
+      <div class="frame-desc">Build a bespoke "business brain" that sits above all existing systems — a persistent intelligence layer that can answer strategic questions from indexed Dropbox data, CRM, and financials without manual loading. No ClickUp migration in this path; the BI layer is the hub.</div>
+    </div>
+
+    <div class="opt-meta">
+      <span class="meta-chip chip-amber">⏱ 12–16 Weeks</span>
+      <span class="meta-chip chip-red">⚠ Medium ERP Risk</span>
+      <span class="meta-chip chip-gold">4–5× ROI Year 1</span>
+      <span class="meta-chip chip-amber">Break-even: 6–8 months</span>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title">Core Systems</div>
+        <div class="inner-box" style="margin-bottom:12px;">
+          <div class="box-label amber">Custom BI Stack</div>
+          <ul class="dot-list amber">
+            <li>LangChain — multi-model orchestration (Gemini + Claude + Grok)</li>
+            <li>Pinecone — vector database for Dropbox + doc indexing</li>
+            <li>Snowflake — data warehouse for inventory simulations</li>
+            <li>Streamlit — custom dashboard interface</li>
+          </ul>
+        </div>
+        <div class="inner-box">
+          <div class="box-label">Integrations</div>
+          <ul class="dot-list">
+            <li>Gmail API — case sheet ingestion + classification</li>
+            <li>Dropbox API — full file indexing into Pinecone</li>
+            <li>Google Sheets API — CRM data pull (no migration)</li>
+            <li>Custom connectors → Odoo or QB Online + Implantbase post-decision <span class="unverified">NOT VERIFIED: Implantbase API depth</span></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">ROI Breakdown</div>
+        <div class="three-col" style="grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="inner-box amber-tint">
+            <div class="box-label amber">Labor Savings</div>
+            <div class="box-value">$49,400</div>
+            <div class="box-sub">Annual est. (20 hrs/wk → 1 hr)</div>
+          </div>
+          <div class="inner-box amber-tint">
+            <div class="box-label amber">Revenue Uplift</div>
+            <div class="box-value">$75,000</div>
+            <div class="box-sub">15% on ~$500K base revenue</div>
+          </div>
+        </div>
+        <div class="inner-box" style="margin-top:10px;">
+          <div class="box-label">Assumptions</div>
+          <ul class="dot-list" style="font-size:11.5px;">
+            <li>Full manual weekly process: 20 hrs/wk @ $50/hr</li>
+            <li>Revenue base: $500K; strategic decisions impact 15%</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">ERP Process Flow (BI-Layer Powered)</div>
+    <div class="flow-wrap">
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--amber)">1</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Analyze Inventory — Custom AI <span class="flow-ai">AI TRIGGER</span></div>
+          <div class="flow-desc">LangChain pulls from all sources. Multi-model (Gemini primary / Grok / Claude) predicts reorders. Output to Streamlit dashboard with human approval.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--amber)">2</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Place PO — AI-Generated Draft</div>
+          <div class="flow-desc">AI generates PO draft in custom interface. Manual entry in QuickBooks Desktop until ERP transition. Human confirms all quantities.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--amber)">3</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Vendor Processing <span class="flow-ai">AI ASSIST</span></div>
+          <div class="flow-desc">Gmail API ingestion with AI auto-classification by vendor type (A/B/C). Routes to BI layer for tracking and Dropbox archiving.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--amber)">4</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Receive / Inspect / Package</div>
+          <div class="flow-desc">AI compares received data vs. QMS logs (siloed input preserved). Flags discrepancies in Streamlit for human action.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--amber)">5</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Invoice to A/P &amp; Pay</div>
+          <div class="flow-desc">Automated COGS calculation in Snowflake. Human sign-off via Streamlit dashboard before QB Desktop entry.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--amber)">6</div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Inventory Asset to HCAR — BI Optimized <span class="flow-ai">AI ASSIST</span></div>
+          <div class="flow-desc">BI layer simulates consignment moves; AI optimizes field transfers and restock timing. Post-ERP: custom connectors to Odoo or Implantbase snap in without full rebuild.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title">Pros &amp; Cons</div>
+    <div class="pros-cons">
+      <div>
+        <div class="box-label" style="margin-bottom:10px; color:var(--green)">Strengths</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="pro-item"><span class="pro-icon">✓</span>Directly achieves "business brain" vision</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Handles complex consignment inventory logic</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Multi-model AI orchestration (Gemini + Claude + Grok)</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Modular — ERP swaps without full rebuild</div>
+        </div>
+      </div>
+      <div>
+        <div class="box-label" style="margin-bottom:10px; color:var(--red)">Limitations</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="con-item"><span class="con-icon">✗</span>No CRM migration — Google Sheets gap remains</div>
+          <div class="con-item"><span class="con-icon">✗</span>Requires dev team for custom build</div>
+          <div class="con-item"><span class="con-icon">✗</span>ERP blockers (#1 ERP decision, #3 surgery system) must resolve first</div>
+          <div class="con-item"><span class="con-icon">✗</span>Risk of over-engineering if ERP changes mid-build</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPTION 4 ══ -->
+  <div id="opt4" class="frame">
+    <div class="frame-header">
+      <div class="frame-eyebrow">Option 4 ★ · Full Build — Recommended</div>
+      <div class="frame-title">Custom BI Layer + ClickUp Hub — The Complete Solution</div>
+      <div class="frame-desc">The comprehensive path: ClickUp handles CRM and operational consolidation while a custom LangChain BI layer becomes the persistent intelligence engine. Andrew gets the "business brain" and a structured operational hub — without rigid lock-in to any single ERP. Designed for modularity from day one.</div>
+    </div>
+
+    <div class="opt-meta">
+      <span class="meta-chip chip-purple">⏱ 12–16 Weeks</span>
+      <span class="meta-chip chip-red">⚠ Medium ERP Risk</span>
+      <span class="meta-chip chip-gold">4–6× ROI Year 1</span>
+      <span class="meta-chip chip-purple">Break-even: 5–7 months</span>
+      <span class="meta-chip chip-gold">★ Jess Recommends</span>
+    </div>
+
+    <div class="note-block">
+      <strong>Why this option exists:</strong> Andrew described a "business brain" that fully understands all company data and requires no manual loading. He also confirmed that no formal PM/CRM platform exists and the team explored "consolidating into ClickUp" on the discovery call. This option combines the BI intelligence layer (Option 3) with the operational consolidation of ClickUp (Option 2) — giving Forma both the intelligence and the structure to scale.
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title">Core Systems</div>
+        <div class="inner-box" style="margin-bottom:10px;">
+          <div class="box-label purple">Custom BI Intelligence Layer</div>
+          <ul class="dot-list purple">
+            <li>LangChain — multi-model orchestration: Gemini (primary analysis) + Grok (strategy, manual) + Claude (team/connectors)</li>
+            <li>Pinecone — vector database for Dropbox + ClickUp data indexing</li>
+            <li>Snowflake — data warehouse for inventory + financial simulations</li>
+            <li>Streamlit — custom dashboard for Andrew's weekly reviews</li>
+          </ul>
+        </div>
+        <div class="inner-box" style="margin-bottom:10px;">
+          <div class="box-label purple">ClickUp Central Hub</div>
+          <ul class="dot-list purple">
+            <li>CRM migrated from Google Sheets — reps, surgeons, distributor accounts</li>
+            <li>PM workflows — tasks, goals, approval chains</li>
+            <li>Custom fields for interim inventory simulation <span class="unverified">NOT VERIFIED</span></li>
+            <li>Native AI add-ons for summarization + automation</li>
+          </ul>
+        </div>
+        <div class="inner-box">
+          <div class="box-label">Integrations</div>
+          <ul class="dot-list" style="font-size:12px;">
+            <li>ClickUp APIs + Zapier/Make → Gmail / Dropbox sync</li>
+            <li>Google Workspace bidirectional (Sheets/Drive/Gmail)</li>
+            <li>Dropbox native integration → ClickUp task attachments</li>
+            <li>QuickBooks Desktop interim via API/Zapier</li>
+            <li>Future: Odoo or QB Online + Implantbase custom connectors <span class="unverified">NOT VERIFIED: Implantbase API depth</span></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">ROI Breakdown</div>
+        <div class="three-col" style="grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="inner-box purple-tint">
+            <div class="box-label purple">Labor Savings</div>
+            <div class="box-value">$41K–$52K</div>
+            <div class="box-sub">Annual (20–25 hrs/wk → 4–5 hrs)</div>
+          </div>
+          <div class="inner-box purple-tint">
+            <div class="box-label purple">Revenue + Cost Uplift</div>
+            <div class="box-value">$105K–$200K</div>
+            <div class="box-sub">Strategic decisions + inventory opt.</div>
+          </div>
+        </div>
+        <div class="inner-box" style="margin-top:10px; margin-bottom:10px;">
+          <div class="box-label">Assumptions</div>
+          <ul class="dot-list" style="font-size:11.5px;">
+            <li>Manual CRM/PM/sales: 20–25 hrs/wk @ $50/hr</li>
+            <li>Revenue base: $500K–$750K; 15–20% strategic uplift</li>
+            <li>Inventory holding costs: $30K–$50K annual; 25–35% reduction</li>
+            <li>ClickUp Business ~$12/user/mo for team size</li>
+          </ul>
+        </div>
+        <div class="inner-box gold-tint">
+          <div class="box-label" style="color:var(--gold)">Why Option 4 Beats Separate Builds</div>
+          <ul class="dot-list" style="font-size:12px;">
+            <li>ClickUp feeds structured data directly into the BI layer — no extra connectors</li>
+            <li>Permission tiers built once, apply to both surfaces</li>
+            <li>ERP swap touches one layer; ClickUp and BI stay intact</li>
+            <li>Grok workaround feasible with LangChain routing</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Full ERP Process Flow (ClickUp + BI Layer)</div>
+    <div class="flow-wrap">
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--purple)">1</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Analyze Inventory — BI Layer Trigger <span class="flow-ai">AI TRIGGER</span></div>
+          <div class="flow-desc">LangChain pulls from ClickUp (post-CRM migration: velocity + usage), Dropbox (historical), and Gmail (POs/invoices). Gemini primary + Grok/Claude review predict reorders. Output surfaces in ClickUp dashboard for ops sign-off.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--purple)">2</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Place PO — ClickUp Draft + BI Suggestion</div>
+          <div class="flow-desc">ClickUp generates PO draft task with AI-suggested quantities from BI layer. Manual QB Desktop entry (interim). Human approves before vendor send.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--purple)">3</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Vendor Processing <span class="flow-ai">AI ASSIST</span></div>
+          <div class="flow-desc">Gmail API auto-creates ClickUp tasks for invoices. AI classifies vendor type (A/B/C) and routes for tracking in both ClickUp and BI layer.</div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--purple)">4</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Receive / Inspect / Package</div>
+          <div class="flow-desc">QMS siloed and untouched (FDA non-negotiable). ClickUp logs inspection notes. BI layer compares received vs. predicted and flags anomalies to ops.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--purple)">5</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Invoice to A/P &amp; Pay</div>
+          <div class="flow-desc">Zapier alerts in ClickUp. BI layer calculates COGS preview in Snowflake. Human sign-off via ClickUp approval workflow before QB Desktop entry.<span class="flow-gate">HUMAN GATE</span></div>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-col">
+          <div class="flow-num" style="background:var(--purple)">6</div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Inventory Asset to HCAR — Full Optimization <span class="flow-ai">AI ASSIST</span></div>
+          <div class="flow-desc">ClickUp custom fields track multi-site consignment. BI layer forecasts optimal field transfers and restock timing with predictive insights. All approvals logged. Post-ERP: ClickUp + custom connectors to Odoo or Implantbase — no BI layer rebuild required.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title">Pros &amp; Cons</div>
+    <div class="pros-cons">
+      <div>
+        <div class="box-label" style="margin-bottom:10px; color:var(--green)">Strengths</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="pro-item"><span class="pro-icon">✓</span>Fully achieves "business brain" — persistent, queryable intelligence</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Fixes CRM/PM gap with ClickUp consolidation</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Addresses all discovery pain points in one build</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Modular — ERP swap doesn't break the build</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Multi-model AI: Gemini + Claude + Grok routing</div>
+          <div class="pro-item"><span class="pro-icon">✓</span>Human-in-the-loop at every critical step</div>
+        </div>
+      </div>
+      <div>
+        <div class="box-label" style="margin-bottom:10px; color:var(--red)">Limitations &amp; Risks</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="con-item"><span class="con-icon">✗</span>Highest cost and build time</div>
+          <div class="con-item"><span class="con-icon">✗</span>Google Sheets → ClickUp CRM migration effort</div>
+          <div class="con-item"><span class="con-icon">✗</span>ClickUp med device field suitability unverified</div>
+          <div class="con-item"><span class="con-icon">✗</span>Requires dev resources for custom BI</div>
+          <div class="con-item"><span class="con-icon">✗</span>ERP decision (#1) and surgery system (#3) must close before full architecture is set</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-block">
+      <strong>⚑ Mitigation strategy:</strong> Start Option 4 with Phase 1 = ClickUp setup + Dropbox indexing (parallel tracks, zero ERP dependency). Full BI orchestration and inventory layer begin only after Open Questions #1, #3, and #6 are resolved by Andrew.
+    </div>
+  </div>
+
+  <!-- ══ RECOMMENDATION ══ -->
+  <div id="rec" class="frame">
+    <div class="frame-header">
+      <div class="frame-eyebrow">Strategic Guidance · Jess Pick</div>
+      <div class="frame-title">Recommendation</div>
+      <div class="frame-desc">Where to go, in what order, and what needs to be confirmed before the first build starts.</div>
+    </div>
+
+    <div class="rec-banner">
+      <div class="rec-eyebrow">★ Recommended Path</div>
+      <div class="rec-title">Option 4 — The Complete Build (Includes Everything in Options 1, 2 &amp; 3)</div>
+      <div class="rec-body">
+        Option 4 is the full picture — it doesn't replace Options 1, 2, and 3, it includes them. The weekly review automation (Option 1), the ClickUp CRM consolidation (Option 2), and the custom BI intelligence layer (Option 3) are all built into Option 4 as sequential phases of a single connected build. You're not choosing between them — you're choosing the order. Option 4 just means we build all of it, with the quick wins landing first and the full "business brain" coming online as each blocker resolves. Same tools, same flows, same human gates — just the complete version.
+      </div>
+    </div>
+
+    <div class="section-title">Phased Execution</div>
+    <div class="timeline-wrap">
+      <div class="timeline-block">
+        <div class="tl-phase">Phase 1 — Option 1 Built In (Now)</div>
+        <div class="tl-title">Quick Wins First</div>
+        <div class="tl-weeks">Weeks 1–6</div>
+        <div class="tl-items">
+          <div class="tl-item">Automate weekly review (Zapier + Gemini)</div>
+          <div class="tl-item">Gmail case sheet basic extraction</div>
+          <div class="tl-item">Dropbox API connection initiated</div>
+          <div class="tl-item">Confirm Open Questions #5 + #3 with Andrew</div>
+          <div class="tl-item">Deliver: 3–5 hrs/week back to Andrew immediately</div>
+        </div>
+      </div>
+      <div class="timeline-block">
+        <div class="tl-phase">Phase 2 — Options 2 &amp; 3 Built In</div>
+        <div class="tl-title">Hub + Intelligence Foundation</div>
+        <div class="tl-weeks">Weeks 4–12</div>
+        <div class="tl-items">
+          <div class="tl-item">ClickUp setup + CRM migration from Google Sheets</div>
+          <div class="tl-item">Dropbox full vector indexing (Pinecone)</div>
+          <div class="tl-item">LangChain orchestration foundation</div>
+          <div class="tl-item">Permission tier definition with Andrew</div>
+          <div class="tl-item">Deliver: First queryable "business brain" prototype</div>
+        </div>
+      </div>
+      <div class="timeline-block">
+        <div class="tl-phase">Phase 3 — Option 4 Complete</div>
+        <div class="tl-title">Full BI Build + ERP Layer</div>
+        <div class="tl-weeks">Weeks 12–20</div>
+        <div class="tl-items">
+          <div class="tl-item">LangChain multi-model orchestration</div>
+          <div class="tl-item">ERP connector integration</div>
+          <div class="tl-item">Inventory forecasting + HCAR automation</div>
+          <div class="tl-item">Deliver: Full Option 4 — complete business brain</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Combined ROI Projection (Option 1 + 4)</div>
+    <table class="roi-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Year 1 Estimate</th>
+          <th>Source</th>
+          <th>Confidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Labor savings (weekly review automation)</td>
+          <td>$20,800</td>
+          <td>10 hrs/wk → 2 hrs @ $50/hr</td>
+          <td><span class="meta-chip chip-green" style="font-size:11px;padding:2px 8px;">High</span></td>
+        </tr>
+        <tr>
+          <td>Labor savings (CRM/PM consolidation)</td>
+          <td>$31,200–$41,600</td>
+          <td>15–20 hrs/wk → 3–4 hrs @ $50/hr</td>
+          <td><span class="meta-chip chip-amber" style="font-size:11px;padding:2px 8px;">Medium</span></td>
+        </tr>
+        <tr>
+          <td>Revenue uplift (BI-assisted decisions)</td>
+          <td>$75K–$150K</td>
+          <td>15–20% on $500K–$750K base</td>
+          <td><span class="meta-chip chip-amber" style="font-size:11px;padding:2px 8px;">Medium</span></td>
+        </tr>
+        <tr>
+          <td>Inventory optimization (fewer shortages + overstock)</td>
+          <td>$30K–$50K</td>
+          <td>25–35% holding cost reduction</td>
+          <td><span class="meta-chip chip-red" style="font-size:11px;padding:2px 8px;">Benchmark</span></td>
+        </tr>
+        <tr>
+          <td><strong>Total Estimated Year 1 Impact</strong></td>
+          <td><strong>$157K–$264K</strong></td>
+          <td>Benchmarks — actuals depend on confirmed data</td>
+          <td><span class="meta-chip chip-gold" style="font-size:11px;padding:2px 8px;">Composite</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note-block">
+      <strong>⚑ All ROI figures use industry benchmarks.</strong> Actuals depend on confirmed data schema (Open Question #5), confirmed revenue base, and ERP platform selected. Labor rate of $50/hr is a benchmark estimate — adjust with Andrew's actual blended rate for precision.
+    </div>
+  </div>
+
+  <!-- ══ BLOCKERS ══ -->
+  <div id="blockers" class="frame">
+    <div class="frame-header">
+      <div class="frame-eyebrow">Open Questions · Pre-Build Gate</div>
+      <div class="frame-title">What Needs to Resolve Before We Build</div>
+      <div class="frame-desc">These unresolved items block specific build stages. Options 1 and early Option 4 (ClickUp + Dropbox) can proceed now. Full BI architecture and inventory flows wait on these answers.</div>
+    </div>
+
+    <div class="section-title">Critical Blockers — Resolve Before Architecture Lock</div>
+    <div class="blocker-grid">
+      <div class="blocker-card">
+        <div class="blocker-icon">🔴</div>
+        <div>
+          <div class="blocker-title">#1 — ERP Platform Decision</div>
+          <div class="blocker-desc">Odoo vs. QB Online vs. QB Online Enterprise vs. Implantbase hybrid. Blocks all ERP-layer integration design. Architecture connectors cannot be finalized until this is confirmed. <strong>Owner: Andrew + Accountant.</strong></div>
+        </div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-icon">🔴</div>
+        <div>
+          <div class="blocker-title">#2 — Implantbase API Depth</div>
+          <div class="blocker-desc">If Implantbase is selected, its API must support inventory sync, QB connection, and BI layer access. If it can't connect, the most critical operational data source is inaccessible. <strong>Owner: Plus 1 + Implantbase vendor.</strong></div>
+        </div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-icon">🟠</div>
+        <div>
+          <div class="blocker-title">#3 — Surgery Tracking System Identity</div>
+          <div class="blocker-desc">Andrew references this weekly as a primary data input. Platform, format, and integration capability are completely unknown. BI layer cannot be designed without this source confirmed. <strong>Owner: Andrew.</strong></div>
+        </div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-icon">🟠</div>
+        <div>
+          <div class="blocker-title">#4 — Tray Locator System</div>
+          <div class="blocker-desc">Physical kit tracking is outside the ERP. Platform unknown. If it cannot connect, a critical operational inventory layer is missing from the BI architecture. <strong>Owner: Andrew.</strong></div>
+        </div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-icon">🟡</div>
+        <div>
+          <div class="blocker-title">#5 — Weekly Review Data Schema</div>
+          <div class="blocker-desc">Required to build the automated weekly business review workflow. Without the exact fields, metrics, and sources Andrew pulls each week, no data pipeline can be designed. <strong>Owner: Andrew.</strong></div>
+        </div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-icon">🟡</div>
+        <div>
+          <div class="blocker-title">#6 — Permission Tier Definitions</div>
+          <div class="blocker-desc">Three conceptual tiers were proposed but never formally defined. Must be confirmed before BI architecture is scoped — affects what AI agents can see and surface. <strong>Owner: Andrew.</strong></div>
+        </div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-icon">🟡</div>
+        <div>
+          <div class="blocker-title">#7 — BI Output Spec</div>
+          <div class="blocker-desc">Marc asked directly: "What are the specific questions you want the BI layer to answer?" Andrew did not fully answer. Must be documented before the intelligence layer can be scoped. <strong>Owner: Andrew + Marc.</strong></div>
+        </div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-icon">🔵</div>
+        <div>
+          <div class="blocker-title">#8 — Grok Integration Path</div>
+          <div class="blocker-desc">Andrew's primary AI tool has no known API integration. Any multi-model architecture must work around this or find an alternative. LangChain routing (Option 3/4) is the current workaround strategy. <strong>Owner: Jessica + Andrew.</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-block">
+      <strong>What can start right now (no blockers):</strong> Option 1 weekly review automation + Zapier setup. ClickUp workspace setup and CRM migration planning. Dropbox API indexing (Pinecone). Gmail case sheet parser (Claude API). All of these are ERP-independent and build toward Option 4 regardless of which ERP Andrew selects.
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.frame').forEach(f => f.classList.remove('active'));
+    document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    const map = {
+      overview: 0, opt1: 1, opt2: 2, opt3: 3, opt4: 4, rec: 5, blockers: 6
+    };
+    const items = document.querySelectorAll('.sb-item');
+    if (map[id] !== undefined && items[map[id]]) {
+      items[map[id]].classList.add('active');
+    }
+    document.querySelector('main').scrollTop = 0;
+  }
+</script>
+</body>
+</html>

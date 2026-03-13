@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — AI Implementation Board</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --surface2: #f2f1ed;
+    --border: rgba(0,0,0,0.10);
+    --border-mid: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text2: #5a5a56;
+    --text3: #9a9a94;
+    --teal: #0f6e56; --teal-bg: #e1f5ee; --teal-border: #5dcaa5;
+    --amber: #854f0b; --amber-bg: #faeeda; --amber-border: #ef9f27;
+    --red: #a32d2d; --red-bg: #fcebeb; --red-border: #e24b4a;
+    --blue: #185fa5; --blue-bg: #e6f1fb; --blue-border: #85b7eb;
+    --purple: #3c3489; --purple-bg: #eeedfe; --purple-border: #afa9ec;
+    --r: 10px; --r-sm: 6px;
+    --font: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: var(--font); color: var(--text); font-size: 14px; line-height: 1.5; }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .page-header p { font-size: 13px; color: var(--text3); }
+
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
+  .metric { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r); padding: 14px 16px; }
+  .metric-num { font-size: 26px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; margin-bottom: 4px; }
+  .metric-label { font-size: 11px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .metric.danger .metric-num { color: var(--red); }
+  .metric.warn .metric-num { color: var(--amber); }
+  .metric.ok .metric-num { color: var(--teal); }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab { padding: 6px 16px; border-radius: 20px; border: 0.5px solid var(--border-mid); font-size: 12px; font-weight: 500; cursor: pointer; background: transparent; color: var(--text2); transition: all 0.15s; font-family: var(--font); }
+  .tab:hover { background: var(--surface2); color: var(--text); }
+  .tab.active { background: var(--text); color: var(--surface); border-color: var(--text); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r); padding: 16px 18px; margin-bottom: 12px; }
+  .card-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .card-sub { font-size: 12px; color: var(--text2); }
+
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin: 0 0 10px; }
+
+  .sys-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r-sm); padding: 10px 12px; cursor: pointer; transition: background 0.12s; margin-bottom: 8px; }
+  .sys-card:hover { background: var(--surface2); }
+  .sys-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+  .sys-name { font-size: 13px; font-weight: 500; }
+  .sys-cat { font-size: 11px; color: var(--text3); }
+
+  .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; letter-spacing: 0.03em; }
+  .badge-active { background: var(--teal-bg); color: var(--teal); }
+  .badge-transition { background: var(--amber-bg); color: var(--amber); }
+  .badge-eval { background: var(--blue-bg); color: var(--blue); }
+  .badge-unknown { background: var(--surface2); color: var(--text3); border: 0.5px solid var(--border); }
+  .badge-rejected { background: var(--red-bg); color: var(--red); }
+
+  .detail { display: none; margin-top: 8px; padding: 10px; background: var(--surface2); border-radius: var(--r-sm); font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .detail.open { display: block; }
+
+  .flag { padding: 10px 14px; border-radius: 0; margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start; }
+  .flag-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .flag-body { font-size: 12px; line-height: 1.5; }
+  .flag.red { background: var(--red-bg); border-left: 3px solid var(--red-border); }
+  .flag.red .flag-title { color: var(--red); }
+  .flag.red .flag-body { color: #6b2020; }
+  .flag.amber { background: var(--amber-bg); border-left: 3px solid var(--amber-border); }
+  .flag.amber .flag-title { color: var(--amber); }
+  .flag.amber .flag-body { color: #5a3508; }
+  .flag.blue { background: var(--blue-bg); border-left: 3px solid var(--blue-border); }
+  .flag.blue .flag-title { color: var(--blue); }
+  .flag.blue .flag-body { color: #0d3d6b; }
+
+  .flow-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .flow-node { padding: 5px 10px; border-radius: var(--r-sm); font-size: 12px; border: 0.5px solid var(--border); background: var(--surface2); color: var(--text2); white-space: nowrap; }
+  .flow-node.manual { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber); }
+  .flow-node.gap { background: var(--red-bg); border-color: var(--red-border); color: var(--red); border-style: dashed; }
+  .flow-arrow { color: var(--text3); font-size: 14px; }
+
+  .action-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
+  .action-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .action-owner { font-size: 11px; font-weight: 600; color: var(--blue); min-width: 72px; padding-top: 1px; }
+  .action-task { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
+  .action-when { font-size: 11px; color: var(--text3); min-width: 100px; text-align: right; padding-top: 1px; }
+  .check { width: 18px; height: 18px; border: 1.5px solid var(--border-mid); border-radius: 4px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.15s; }
+  .check.done { background: var(--teal); border-color: var(--teal); color: white; }
+
+  .tier { border-radius: var(--r-sm); padding: 10px 14px; margin-bottom: 8px; border: 0.5px solid; }
+  .tier.t1 { background: var(--blue-bg); border-color: var(--blue-border); }
+  .tier.t2 { background: var(--amber-bg); border-color: var(--amber-border); }
+  .tier.t3 { background: var(--teal-bg); border-color: var(--teal-border); }
+  .tier-name { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+  .tier.t1 .tier-name { color: var(--blue); }
+  .tier.t2 .tier-name { color: var(--amber); }
+  .tier.t3 .tier-name { color: var(--teal); }
+  .tier-detail { font-size: 12px; color: var(--text2); }
+
+  .erp-option { border: 0.5px solid var(--border); border-radius: var(--r); padding: 14px; cursor: pointer; transition: border-color 0.15s; }
+  .erp-option:hover { border-color: var(--border-mid); }
+  .erp-option.selected { border: 2px solid var(--blue-border); background: var(--blue-bg); }
+  .erp-option-title { font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+  .erp-option.selected .erp-option-title { color: var(--blue); }
+
+  .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--surface2); border: 0.5px solid var(--border); color: var(--text2); margin: 2px; }
+
+  .arch-path { border: 0.5px solid var(--border); border-radius: var(--r); padding: 14px; }
+  .arch-path-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+
+  .divider { height: 0.5px; background: var(--border); margin: 18px 0; }
+
+  .model-card { text-align: center; padding: 12px; background: var(--surface2); border-radius: var(--r-sm); }
+  .model-name { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+  .model-role { font-size: 11px; color: var(--text3); }
+
+  .note { font-size: 12px; color: var(--text2); background: var(--surface2); border-radius: var(--r-sm); padding: 8px 12px; line-height: 1.5; margin-top: 8px; }
+
+  @media (max-width: 640px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .grid2 { grid-template-columns: 1fr; }
+    .grid3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-header">
+    <h1>Forma Medical — AI Implementation Board</h1>
+    <p>Plus 1 Technology &nbsp;·&nbsp; March 2026 &nbsp;·&nbsp; Pre-build phase</p>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="metric-num">9</div><div class="metric-label">Active systems</div></div>
+    <div class="metric danger"><div class="metric-num">0</div><div class="metric-label">Integrations exist</div></div>
+    <div class="metric warn"><div class="metric-num">4</div><div class="metric-label">Critical unknowns</div></div>
+    <div class="metric ok"><div class="metric-num">8</div><div class="metric-label">Next actions</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('stack', this)">Tech stack</button>
+    <button class="tab" onclick="showTab('flows', this)">Data flows</button>
+    <button class="tab" onclick="showTab('erp', this)">ERP decision</button>
+    <button class="tab" onclick="showTab('flags', this)">Flags &amp; gaps</button>
+    <button class="tab" onclick="showTab('actions', this)">Next actions</button>
+    <button class="tab" onclick="showTab('arch', this)">Architecture</button>
+  </div>
+
+  <!-- TECH STACK -->
+  <div id="tab-stack" class="panel active">
+    <div class="grid2">
+      <div>
+        <div class="section-label">Active systems</div>
+        <div class="sys-card" onclick="toggleDetail('d-qbd')">
+          <div class="sys-header"><span class="sys-name">QuickBooks Desktop</span><span class="badge badge-transition">In transition</span></div>
+          <div class="sys-cat">ERP / Accounting · Hosted on remote server</div>
+          <div class="detail" id="d-qbd">Handles complex multi-site consignment inventory. Andrew called it "terrible" and "too slow to scale." No automation should be built here until ERP decision is finalized. Integrating with QB Desktop is possible but difficult — limited data exposure.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-gsheets')">
+          <div class="sys-header"><span class="sys-name">Google Sheets</span><span class="badge badge-active">Active</span></div>
+          <div class="sys-cat">CRM · Manually updated weekly</div>
+          <div class="detail" id="d-gsheets">Current CRM after abandoning Nutshell. 2 W2 employees aggregate inputs from 45 independent distributors. Works today, not scalable. Previous formal CRM failed due to zero adoption.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-dropbox')">
+          <div class="sys-header"><span class="sys-name">Dropbox</span><span class="badge badge-active">Active</span></div>
+          <div class="sys-cat">File management · Strategic asset</div>
+          <div class="detail" id="d-dropbox">Highly organized folder tree. Andrew cites this as a company strength — previous acquirer praised it. Priority connection for the BI layer. No current search or AI indexing.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-excel')">
+          <div class="sys-header"><span class="sys-name">Excel (multiple)</span><span class="badge badge-unknown">Scope unclear</span></div>
+          <div class="sys-cat">Inventory tracking + Customer tracking</div>
+          <div class="detail" id="d-excel">Appears in two separate contexts on the tech stack slide: inventory tracking AND customer tracking. These may be distinct files. Scope and ownership must be clarified before BI layer design.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-gmail')">
+          <div class="sys-header"><span class="sys-name">Gmail</span><span class="badge badge-active">Active</span></div>
+          <div class="sys-cat">Email · Case sheet delivery channel</div>
+          <div class="detail" id="d-gmail">Andrew called email "marginally important" but Gmail is actually the delivery channel for case sheets that trigger the entire order-to-cash process. This is understated — needs clarification before deprioritizing.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-bill')">
+          <div class="sys-header"><span class="sys-name">Bill.com</span><span class="badge badge-unknown">Not discussed</span></div>
+          <div class="sys-cat">AP / Payments</div>
+          <div class="detail" id="d-bill">Present on the tech stack slide but never mentioned in discovery. Handoff to/from QuickBooks Desktop needs documentation. Do not assume role or scope.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-adobe')">
+          <div class="sys-header"><span class="sys-name">Adobe Sign</span><span class="badge badge-active">Active</span></div>
+          <div class="sys-cat">Contracts</div>
+          <div class="detail" id="d-adobe">Used for contracts. Not discussed in discovery in depth. Likely remains unchanged in future state.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-qms')">
+          <div class="sys-header"><span class="sys-name">QMS (FDA)</span><span class="badge badge-active">Active</span></div>
+          <div class="sys-cat">Compliance · Non-negotiable</div>
+          <div class="detail" id="d-qms">FDA-required quality management system. Andrew described it as "pretty boring" — a compliance checkbox. Not in scope for AI integration. Must not be disrupted.</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-label">AI tools in use</div>
+        <div class="sys-card" onclick="toggleDetail('d-grok')">
+          <div class="sys-header"><span class="sys-name">Grok (xAI)</span><span class="badge badge-active">Heavy use</span></div>
+          <div class="sys-cat">Strategic analysis · Andrew's primary tool</div>
+          <div class="detail" id="d-grok">Andrew's primary AI for decision-making and strategy. No platform has been found that integrates well with Grok's API. This is a gap — any platform recommendation must address Grok connectivity or note it as a known limitation.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-gemini')">
+          <div class="sys-header"><span class="sys-name">Gemini</span><span class="badge badge-active">Heavy use</span></div>
+          <div class="sys-cat">Strategic analysis · Used alongside Grok</div>
+          <div class="detail" id="d-gemini">Used heavily by Andrew in parallel with Grok. The baseline AI conversation shared as a starting benchmark came from Gemini. Multi-model convergence is a deliberate strategy, not a gap.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-claude')">
+          <div class="sys-header"><span class="sys-name">Claude</span><span class="badge badge-active">Team use</span></div>
+          <div class="sys-cat">Used by other team members · Has connectors</div>
+          <div class="detail" id="d-claude">Used more by other team members than Andrew. Has connector integrations available in Claude.ai — advantage over Grok and Gemini for platform integration work.</div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">Under evaluation / in transition</div>
+        <div class="sys-card" onclick="toggleDetail('d-odoo')">
+          <div class="sys-header"><span class="sys-name">Odoo</span><span class="badge badge-eval">Evaluating</span></div>
+          <div class="sys-cat">ERP · Implementation started, paused</div>
+          <div class="detail" id="d-odoo">Implementation began but paused. Andrew now views it as "a huge lift" and "very challenging to modify in the future." Still on the table as ERP Option A alongside QB Online + Implantbase.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-implant')">
+          <div class="sys-header"><span class="sys-name">Implantbase</span><span class="badge badge-eval">Leading candidate</span></div>
+          <div class="sys-cat">Inventory · Ortho-specific · API unverified</div>
+          <div class="detail" id="d-implant">Niche medical device inventory platform — strong candidate for the highest-value operational layer. API and integration capability are completely unverified. Must be confirmed before any BI layer design touches inventory.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-qbo')">
+          <div class="sys-header"><span class="sys-name">QB Online Enterprise</span><span class="badge badge-eval">New option</span></div>
+          <div class="sys-cat">ERP · Introduced during discovery</div>
+          <div class="detail" id="d-qbo">Introduced by Marc during the call — Andrew was unaware it existed. Released less than a year ago. Potentially much easier to integrate than QB Desktop. Needs evaluation by Andrew's accountant.</div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">Critical unknowns</div>
+        <div class="sys-card" onclick="toggleDetail('d-surgery')" style="border-color:var(--red-border);background:var(--red-bg)">
+          <div class="sys-header"><span class="sys-name">Surgery tracking system</span><span class="badge badge-unknown">Unnamed</span></div>
+          <div class="sys-cat" style="color:var(--red)">Andrew's weekly data source · Platform unknown</div>
+          <div class="detail" id="d-surgery">Andrew references this system weekly as a primary input into his AI analysis. Tracks per-surgery details and customer cohorts. The platform has never been identified. Critical gap — the BI layer cannot be designed until this source is named.</div>
+        </div>
+        <div class="sys-card" onclick="toggleDetail('d-tray')" style="border-color:var(--red-border);background:var(--red-bg)">
+          <div class="sys-header"><span class="sys-name">Tray Locator</span><span class="badge badge-unknown">Unnamed</span></div>
+          <div class="sys-cat" style="color:var(--red)">Physical tray tracking · Outside ERP</div>
+          <div class="detail" id="d-tray">Appears in the ERP flow document as a separate system outside the ERP that tracks physical set/tray locations. Platform is unknown. Operationally critical for consignment management and inventory intelligence.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA FLOWS -->
+  <div id="tab-flows" class="panel">
+    <div class="note" style="margin-bottom:16px">No integrations currently exist between any core systems. All data flows are manual or human-bridged.</div>
+    <div class="section-label">Current data flows</div>
+    <div class="card">
+      <div class="card-title">Weekly business review</div>
+      <div style="margin-top:10px">
+        <div class="flow-row"><div class="flow-node manual">QuickBooks Desktop</div><div class="flow-arrow">→</div><div class="flow-node manual">Manual extract</div><div class="flow-arrow">→</div><div class="flow-node">AI prompt (Grok/Gemini)</div></div>
+        <div class="flow-row"><div class="flow-node manual">Google Sheets (CRM)</div><div class="flow-arrow">→</div><div class="flow-node manual">Manual pull</div><div class="flow-arrow">→</div><div class="flow-node">AI prompt</div></div>
+        <div class="flow-row"><div class="flow-node gap">Surgery system [UNKNOWN]</div><div class="flow-arrow">→</div><div class="flow-node manual">Manual</div><div class="flow-arrow">→</div><div class="flow-node">AI prompt</div></div>
+        <div class="flow-row"><div class="flow-node">Dropbox</div><div class="flow-arrow">→</div><div class="flow-node gap">No connection</div><div class="flow-arrow">→</div><div class="flow-node gap">Nothing</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Order-to-cash (product sale)</div>
+      <div style="margin-top:10px">
+        <div class="flow-row"><div class="flow-node">Surgery happens</div><div class="flow-arrow">→</div><div class="flow-node manual">Rep fills case sheet</div><div class="flow-arrow">→</div><div class="flow-node manual">Email to Forma</div></div>
+        <div class="flow-row"><div class="flow-node manual">Email to Forma</div><div class="flow-arrow">→</div><div class="flow-node manual">Manual upload to ERP</div><div class="flow-arrow">→</div><div class="flow-node">Sales order created</div></div>
+        <div class="flow-row"><div class="flow-node">Sales order</div><div class="flow-arrow">→</div><div class="flow-node">Invoice to A/R</div><div class="flow-arrow">→</div><div class="flow-node">Days/weeks: PO from hospital</div></div>
+        <div class="flow-row"><div class="flow-node">Hospital PO received</div><div class="flow-arrow">→</div><div class="flow-node manual">Manual upload to ERP</div><div class="flow-arrow">→</div><div class="flow-node">Payment received</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Inventory / consignment request</div>
+      <div style="margin-top:10px">
+        <div class="flow-row"><div class="flow-node manual">Rep texts / calls Forma</div><div class="flow-arrow">→</div><div class="flow-node manual">Internal ops fulfills</div><div class="flow-arrow">→</div><div class="flow-node gap">No system tracking</div></div>
+      </div>
+      <div class="note">"They literally text somebody or pick up the phone... and those sets magically arrive." No software layer manages kit dispatch or acknowledgment.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Sales activity logging</div>
+      <div style="margin-top:10px">
+        <div class="flow-row"><div class="flow-node">45 distributors (field)</div><div class="flow-arrow">→</div><div class="flow-node manual">Calls / conversations</div></div>
+        <div class="flow-row"><div class="flow-node manual">2 W2 employees aggregate</div><div class="flow-arrow">→</div><div class="flow-node manual">Manual entry → Google Sheets</div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:12px;color:var(--text3);align-items:center;margin-top:4px">
+      <span style="display:inline-flex;gap:4px;align-items:center"><span style="width:12px;height:12px;border-radius:2px;background:var(--amber-bg);border:1px solid var(--amber-border);display:inline-block"></span>Manual step</span>
+      <span style="display:inline-flex;gap:4px;align-items:center"><span style="width:12px;height:12px;border-radius:2px;background:var(--red-bg);border:1px dashed var(--red-border);display:inline-block"></span>Gap / unknown</span>
+    </div>
+  </div>
+
+  <!-- ERP DECISION -->
+  <div id="tab-erp" class="panel">
+    <div class="flag red" style="margin-bottom:16px"><div><div class="flag-title">ERP decision not finalized</div><div class="flag-body">No automation may be built on the ERP layer until the path is confirmed by Andrew. Architecture must remain modular.</div></div></div>
+    <div class="section-label">Option A</div>
+    <div class="erp-option" id="erp-a" onclick="selectERP('a')" style="margin-bottom:12px">
+      <div class="erp-option-title">Odoo (full ERP)</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;margin-bottom:8px">Open-source ERP. Implementation started, then paused. Better for integrations than Salesforce/HubSpot. Andrew now concerned it's "a huge lift" and hard to modify.</div>
+      <div><span class="pill">Implementation started</span><span class="pill">Paused</span><span class="pill">Integration-friendly</span><span class="pill">Modification risk</span></div>
+    </div>
+    <div class="section-label">Option B</div>
+    <div class="erp-option" id="erp-b" onclick="selectERP('b')" style="margin-bottom:20px">
+      <div class="erp-option-title">QuickBooks Online + Implantbase</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;margin-bottom:8px">Split: QB Online handles accounting; Implantbase handles ortho-specific inventory and consignment. Andrew's current prediction: "probably Implantbase with some combination of QuickBooks."</div>
+      <div><span class="pill">Andrew's lean</span><span class="pill">Implantbase API unverified</span><span class="pill">QB Online easier to integrate</span><span class="pill">Two-platform risk</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Rejected options</div>
+    <div class="grid2">
+      <div class="card" style="opacity:0.65"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:600">NetSuite</span><span class="badge badge-rejected">Rejected</span></div><div style="font-size:12px;color:var(--text2)">Custom workflow coding quoted at $150K+. Described as "crazy." Hard ceiling on implementation cost.</div></div>
+      <div class="card" style="opacity:0.65"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:600">QuickBooks Desktop</span><span class="badge badge-rejected">Phasing out</span></div><div style="font-size:12px;color:var(--text2)">"Terrible, too slow to scale, too clunky." Hosted on remote server. Difficult to integrate. Must exit.</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Key ERP constraints</div>
+    <div class="flag amber"><div><div class="flag-title">Inventory pull timing</div><div class="flag-body">Inventory must pull from HCAR to field at time of sales order — not time of invoice. ERP must support this.</div></div></div>
+    <div class="flag amber"><div><div class="flag-title">Barcode / serialization</div><div class="flag-body">Not serialized today, but future-proofing is required. ERP must support barcode scanning and future serialization.</div></div></div>
+    <div class="flag amber"><div><div class="flag-title">Custom pricing per customer</div><div class="flag-body">Construct or itemized pricing, unique per customer, with ability to change price files. Must be native to ERP.</div></div></div>
+    <div class="flag amber"><div><div class="flag-title">Royalty &amp; commission reports</div><div class="flag-body">Quarterly royalty reports by SKU (excluding surgeon's own usage). Variable commissions per distributor with accruals.</div></div></div>
+  </div>
+
+  <!-- FLAGS & GAPS -->
+  <div id="tab-flags" class="panel">
+    <div class="section-label">Critical gaps — must resolve before build</div>
+    <div class="flag red"><div><div class="flag-title">Surgery tracking system is unnamed</div><div class="flag-body">Andrew references this as a primary weekly data source. The platform has never been identified. BI layer cannot be designed without this source confirmed.</div></div></div>
+    <div class="flag red"><div><div class="flag-title">Tray Locator platform unknown</div><div class="flag-body">Tracks physical set/tray locations outside the ERP. Platform unidentified. Critical for consignment management and inventory intelligence.</div></div></div>
+    <div class="flag red"><div><div class="flag-title">Implantbase API completely unverified</div><div class="flag-body">Leading inventory candidate but no integration research done. Must confirm API capability before any inventory automation is scoped.</div></div></div>
+    <div class="flag red"><div><div class="flag-title">ERP not decided</div><div class="flag-body">No ERP-layer automation until path is confirmed. Architecture must be modular and platform-agnostic at this layer.</div></div></div>
+    <div class="divider"></div>
+    <div class="section-label">Open questions from discovery</div>
+    <div class="flag amber"><div><div class="flag-title">Permission tiers undefined</div><div class="flag-body">Andrew proposed a conceptual 3-tier model ("I'm making these up"). Must be formally defined before BI architecture is set. Directly affects what agents can see.</div></div></div>
+    <div class="flag amber"><div><div class="flag-title">BI output spec not documented</div><div class="flag-body">Marc asked directly: "What are the questions you want to ask? What reports?" Andrew did not fully answer. Must be documented before design begins.</div></div></div>
+    <div class="flag amber"><div><div class="flag-title">Grok integration path unknown</div><div class="flag-body">Andrew uses Grok heavily. No platform integrates with Grok yet. Any platform recommendation must address this or note it as a known gap.</div></div></div>
+    <div class="flag amber"><div><div class="flag-title">Excel scope unclear</div><div class="flag-body">Excel appears in inventory AND customer tracking on the tech stack slide. These may be separate files. Scope of each must be confirmed.</div></div></div>
+    <div class="flag amber"><div><div class="flag-title">Bill.com role undocumented</div><div class="flag-body">Present on the tech stack but not discussed in discovery. Handoff to/from QuickBooks needs documentation.</div></div></div>
+    <div class="flag amber"><div><div class="flag-title">Workflow maps exist but not shared</div><div class="flag-body">Andrew has workflow maps but was hesitant to share them. Brain dump is the critical unlock for all design work.</div></div></div>
+    <div class="divider"></div>
+    <div class="section-label">Design guardrails</div>
+    <div class="flag blue"><div><div class="flag-title">Architecture before automation</div><div class="flag-body">No workflows built until current-state is fully documented. Human approval gates required at all lifecycle transitions.</div></div></div>
+    <div class="flag blue"><div><div class="flag-title">Modular, platform-agnostic design</div><div class="flag-body">"Could we build it so that it's flexible?" System must tolerate swapping ERP, CRM, or other tools without full rebuild.</div></div></div>
+    <div class="flag blue"><div><div class="flag-title">Rep adoption is the hard constraint</div><div class="flag-body">Previous CRM failed due to non-adoption. Any field-facing solution must be near-zero friction.</div></div></div>
+    <div class="flag blue"><div><div class="flag-title">Exit readiness in ~5 years</div><div class="flag-body">Company is being built to scale and sell. Dropbox organization was cited as a prior acquisition asset.</div></div></div>
+  </div>
+
+  <!-- NEXT ACTIONS -->
+  <div id="tab-actions" class="panel">
+    <div class="note" style="margin-bottom:16px">Click any item to mark complete. All actions are pre-build — no build work begins until Andrew's brain dump is received and reviewed.</div>
+    <div class="section-label">Andrew</div>
+    <div class="card">
+      <div class="action-row"><div class="action-owner">Andrew</div><div class="action-task">Compile and share workflow brain dump — ERP, CRM, inventory, Dropbox, email data flows</div><div class="action-when">Immediately</div><div class="check" onclick="toggleCheck(this)"></div></div>
+      <div class="action-row"><div class="action-owner">Andrew</div><div class="action-task">Identify the unnamed surgery tracking system (platform name + data it holds)</div><div class="action-when">With brain dump</div><div class="check" onclick="toggleCheck(this)"></div></div>
+      <div class="action-row"><div class="action-owner">Andrew</div><div class="action-task">Have accountant evaluate QuickBooks Online Enterprise for consignment inventory fit</div><div class="action-when">Before next call</div><div class="check" onclick="toggleCheck(this)"></div></div>
+    </div>
+    <div class="section-label" style="margin-top:14px">Jessica</div>
+    <div class="card">
+      <div class="action-row"><div class="action-owner">Jessica</div><div class="action-task">Analyze CRM options: ClickUp, Go High Level — features, pricing, integration fit</div><div class="action-when">This week</div><div class="check" onclick="toggleCheck(this)"></div></div>
+      <div class="action-row"><div class="action-owner">Jessica</div><div class="action-task">Research Grok integration paths across all platform options</div><div class="action-when">This week</div><div class="check" onclick="toggleCheck(this)"></div></div>
+      <div class="action-row"><div class="action-owner">Jessica</div><div class="action-task">Research Implantbase API capability and connector options</div><div class="action-when">This week</div><div class="check" onclick="toggleCheck(this)"></div></div>
+    </div>
+    <div class="section-label" style="margin-top:14px">Marc</div>
+    <div class="card">
+      <div class="action-row"><div class="action-owner">Marc</div><div class="action-task">Review Andrew's brain dump and determine architecture path: API-connect vs. consolidate</div><div class="action-when">After brain dump</div><div class="check" onclick="toggleCheck(this)"></div></div>
+      <div class="action-row"><div class="action-owner">Marc + Jess</div><div class="action-task">Prepare formal scoping doc with two high-level architecture paths</div><div class="action-when">After brain dump review</div><div class="check" onclick="toggleCheck(this)"></div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Permission tiers (proposed)</div>
+    <div class="tier t1"><div class="tier-name">Tier 1 — Leadership</div><div class="tier-detail">Full access to all data, all systems, all AI outputs</div></div>
+    <div class="tier t2"><div class="tier-name">Tier 2 — Back office</div><div class="tier-detail">Financial, inventory, quality access. No salary/sensitive exec data</div></div>
+    <div class="tier t3"><div class="tier-name">Tier 3 — Sales</div><div class="tier-detail">Read access to CRM, accounts, regional data. No financials</div></div>
+    <div class="note">Andrew noted "I'm making these up" — tiers must be formally defined before architecture is finalized.</div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <div id="tab-arch" class="panel">
+    <div class="section-label">Two paths under evaluation</div>
+    <div class="grid2" style="margin-bottom:16px">
+      <div class="arch-path"><div class="arch-path-title">Path A — API connect</div><div style="font-size:12px;color:var(--text2);margin-top:4px;margin-bottom:8px;line-height:1.6">Keep all existing tools in place. Connect each via API into a central intelligence layer / agent. BI sits on top, reads everything, writes nothing unless approved. Maximum flexibility for future tool swaps.</div><div><span class="pill">Most modular</span><span class="pill">Highest complexity</span><span class="pill">Aligns with Andrew's vision</span></div></div>
+      <div class="arch-path"><div class="arch-path-title">Path B — Consolidate + connect</div><div style="font-size:12px;color:var(--text2);margin-top:4px;margin-bottom:8px;line-height:1.6">Move CRM and management layer into ClickUp (or similar). Integrate remaining systems — especially ERP — via API. Fewer data sources to connect; cleaner central hub. BI layer sits on top of the hub.</div><div><span class="pill">Cleaner data</span><span class="pill">Adoption risk</span><span class="pill">Jessica's recommendation</span></div></div>
+    </div>
+    <div class="section-label">Target future state (12 months)</div>
+    <div class="card" style="margin-bottom:16px">
+      <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:12px">Andrew's stated vision: "Something sitting on top of whatever ERP is, on top of an email server, on top of our CRM — a system that fully understands where our business is."</div>
+      <div class="grid2">
+        <div><div class="section-label">Changing</div><div><span class="pill" style="border-color:#e59b1e;color:#7a4f00;background:#fef3d7">ERP → QB Online or Odoo</span><span class="pill" style="border-color:#e59b1e;color:#7a4f00;background:#fef3d7">Inventory → Implantbase</span><span class="pill" style="border-color:#e59b1e;color:#7a4f00;background:#fef3d7">Customer tracking → IN ERP</span><span class="pill" style="border-color:#e59b1e;color:#7a4f00;background:#fef3d7">Project mgmt → TBD</span><span class="pill" style="border-color:#e59b1e;color:#7a4f00;background:#fef3d7">Bookkeeping → TBD (not human)</span><span class="pill" style="border-color:#e59b1e;color:#7a4f00;background:#fef3d7">AI → Sits on top with all data</span></div></div>
+        <div><div class="section-label">Staying same</div><div><span class="pill" style="border-color:#1d9e75;color:#04342c;background:#e1f5ee">Dropbox</span><span class="pill" style="border-color:#1d9e75;color:#04342c;background:#e1f5ee">Gmail</span><span class="pill" style="border-color:#1d9e75;color:#04342c;background:#e1f5ee">Google Sheets (for now)</span><span class="pill" style="border-color:#1d9e75;color:#04342c;background:#e1f5ee">Zoom / Otter.ai</span><span class="pill" style="border-color:#1d9e75;color:#04342c;background:#e1f5ee">Adobe Sign</span><span class="pill" style="border-color:#1d9e75;color:#04342c;background:#e1f5ee">QMS (FDA)</span></div></div>
+      </div>
+    </div>
+    <div class="section-label">Multi-model AI strategy</div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px">"When we're making these decisions, we're not running it through one model, we're running it through three different models... and trying to converge to something." — Andrew Davison</div>
+      <div class="grid3">
+        <div class="model-card"><div class="model-name">Grok</div><div class="model-role">Current events · Strategy</div></div>
+        <div class="model-card"><div class="model-name">Gemini</div><div class="model-role">Analysis · Andrew primary</div></div>
+        <div class="model-card"><div class="model-name">Claude</div><div class="model-role">Team use · Has connectors</div></div>
+      </div>
+      <div class="note" style="margin-top:10px">Goal: formalize multi-model review for major decisions (hiring, investment, territory planning). Currently all manual prompt construction.</div>
+    </div>
+  </div>
+
+</div>
+<script>
+function showTab(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+function toggleDetail(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  el.textContent = el.classList.contains('done') ? '✓' : '';
+  const row = el.closest('.action-row');
+  if (row) row.style.opacity = el.classList.contains('done') ? '0.45' : '1';
+}
+function selectERP(path) {
+  document.querySelectorAll('.erp-option').forEach(e => e.classList.remove('selected'));
+  document.getElementById('erp-' + path).classList.add('selected');
+}
+</script>
+</body>
+</html>

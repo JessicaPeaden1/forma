@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — Operating Model Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --hosp:       #185FA5; --hosp-bg:  #EEF5FC; --hosp-bd:  #B5CDE4;
+    --front:      #534AB7; --front-bg: #F3F1FB; --front-bd: #CFBFEE;
+    --back:       #8B3319; --back-bg:  #FFF4EE; --back-bd:  #F5C4B3;
+    --fin:        #0F6E56; --fin-bg:   #EDF7F2; --fin-bd:   #9FE1CB;
+    --sys:        #7A4508; --sys-bg:   #FBF6EA; --sys-bd:   #E8D8A0;
+    --dat:        #883050; --dat-bg:   #FAF0F4; --dat-bd:   #EAB8CB;
+    --sup:        #3B6D11; --sup-bg:   #F2F7EE; --sup-bd:   #BEDCB4;
+    --warn:       #C85228; --warn-bg:  #FFF3EE; --warn-bd:  #F5C4B3;
+    --info:       #0F6E56;
+    --bg:         #F7F6F2;
+    --surface:    #FFFFFF;
+    --border:     #E2DFD8;
+    --text:       #1A1916;
+    --text-2:     #5C5A55;
+    --text-3:     #9A9890;
+    --font:       'DM Sans', sans-serif;
+    --mono:       'DM Mono', monospace;
+    --radius:     6px;
+    --radius-lg:  10px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .page-header-left h1 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .page-header-left p {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 2px;
+  }
+  .header-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 0.5px solid;
+  }
+  .badge-warn   { background: var(--warn-bg);  color: var(--warn);  border-color: var(--warn-bd); }
+  .badge-info   { background: var(--fin-bg);   color: var(--fin);   border-color: var(--fin-bd); }
+  .badge-purple { background: var(--front-bg); color: var(--front); border-color: var(--front-bd); }
+
+  .header-controls { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+  .btn {
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--bg); border-color: #c8c5bc; color: var(--text); }
+  .btn-primary { background: var(--text); color: #fff; border-color: var(--text); }
+  .btn-primary:hover { background: #333; }
+
+  /* ── LEGEND ── */
+  .legend-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+  }
+  .legend-label { font-size: 10px; font-weight: 500; color: var(--text-3); letter-spacing: 0.05em; margin-right: 4px; }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--text-2); cursor: pointer; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; border: 0.5px solid rgba(0,0,0,0.1); }
+  .leg.dimmed { opacity: 0.35; }
+
+  /* ── MAIN LAYOUT ── */
+  .main { padding: 24px 32px 48px; }
+
+  /* ── BLUEPRINT TABLE ── */
+  .bp-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  /* Stage header row */
+  .th-corner {
+    width: 110px;
+    min-width: 110px;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
+    padding: 10px 8px;
+    vertical-align: middle;
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--text-3);
+    letter-spacing: 0.06em;
+    text-align: center;
+  }
+  .th-stage {
+    background: #EEF5FC;
+    border-bottom: 2px solid #B5CDE4;
+    border-right: 1px solid var(--border);
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--hosp);
+    letter-spacing: -0.01em;
+  }
+  .th-stage:last-child { border-right: none; }
+
+  /* Data rows */
+  tr.layer-row td {
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    vertical-align: top;
+    padding: 0;
+    transition: background 0.15s;
+  }
+  tr.layer-row td:last-child { border-right: none; }
+  tr.layer-row:last-of-type td { border-bottom: none; }
+
+  .row-label {
+    width: 110px;
+    min-width: 110px;
+    padding: 12px 10px;
+    vertical-align: middle;
+    border-right: 3px solid var(--border) !important;
+    background: var(--bg);
+  }
+  .row-label-inner {
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+  .row-label-sub { font-size: 9px; font-weight: 400; color: var(--text-3); margin-top: 2px; }
+
+  /* Layer-specific border accent */
+  .r-hosp  .row-label { border-right-color: var(--hosp)  !important; }
+  .r-front .row-label { border-right-color: var(--front) !important; }
+  .r-back  .row-label { border-right-color: var(--back)  !important; }
+  .r-fin   .row-label { border-right-color: var(--fin)   !important; }
+  .r-sys   .row-label { border-right-color: var(--sys)   !important; }
+  .r-dat   .row-label { border-right-color: var(--dat)   !important; }
+  .r-sup   .row-label { border-right-color: var(--sup)   !important; }
+
+  /* Color skins */
+  .r-hosp  td.cell { background: var(--hosp-bg); }
+  .r-front td.cell { background: var(--front-bg); }
+  .r-back  td.cell { background: var(--back-bg); }
+  .r-fin   td.cell { background: var(--fin-bg); }
+  .r-sys   td.cell { background: var(--sys-bg); }
+  .r-dat   td.cell { background: var(--dat-bg); }
+  .r-sup   td.cell { background: var(--sup-bg); }
+
+  .r-hosp  .row-label-inner { color: var(--hosp); }
+  .r-front .row-label-inner { color: var(--front); }
+  .r-back  .row-label-inner { color: var(--back); }
+  .r-fin   .row-label-inner { color: var(--fin); }
+  .r-sys   .row-label-inner { color: var(--sys); }
+  .r-dat   .row-label-inner { color: var(--dat); }
+  .r-sup   .row-label-inner { color: var(--sup); }
+
+  /* Cell content */
+  td.cell {
+    padding: 10px 11px;
+    min-width: 160px;
+    cursor: pointer;
+    position: relative;
+  }
+  td.cell:hover { filter: brightness(0.97); }
+  td.cell.active { box-shadow: inset 0 0 0 2px rgba(0,0,0,0.15); z-index: 1; }
+
+  .ct {
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+  .ci {
+    font-size: 10.5px;
+    padding-left: 9px;
+    position: relative;
+    margin-bottom: 3px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .ci::before { content: '·'; position: absolute; left: 0; color: var(--text-3); }
+
+  .risk-note {
+    font-size: 9.5px;
+    color: var(--warn);
+    font-weight: 500;
+    margin-top: 6px;
+    padding: 4px 6px;
+    background: rgba(200,82,40,0.07);
+    border-radius: 3px;
+    border-left: 2px solid var(--warn);
+    line-height: 1.4;
+  }
+  .info-note {
+    font-size: 9.5px;
+    color: var(--fin);
+    font-weight: 500;
+    margin-top: 6px;
+    padding: 4px 6px;
+    background: rgba(15,110,86,0.07);
+    border-radius: 3px;
+    border-left: 2px solid var(--fin);
+    line-height: 1.4;
+  }
+  .sys-note {
+    font-size: 9.5px;
+    color: var(--sys);
+    font-weight: 500;
+    margin-top: 6px;
+    padding: 4px 6px;
+    background: rgba(122,69,8,0.07);
+    border-radius: 3px;
+    border-left: 2px solid var(--sys);
+    line-height: 1.4;
+  }
+
+  .quote-cell { border-left: 3px solid var(--warn) !important; }
+  .quote-text {
+    font-style: italic;
+    font-size: 9.5px;
+    color: var(--back);
+    margin-top: 5px;
+    padding: 4px 7px;
+    background: rgba(139,51,25,0.06);
+    border-radius: 3px;
+    line-height: 1.45;
+  }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    font-family: var(--mono);
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin: 2px 2px 0 0;
+    border: 0.5px solid;
+    font-weight: 500;
+  }
+  .tag-sys  { background: var(--sys-bg);  color: var(--sys);  border-color: var(--sys-bd); }
+  .tag-warn { background: var(--warn-bg); color: var(--warn); border-color: var(--warn-bd); }
+  .tag-fin  { background: var(--fin-bg);  color: var(--fin);  border-color: var(--fin-bd); }
+  .tag-dat  { background: var(--dat-bg);  color: var(--dat);  border-color: var(--dat-bd); }
+
+  /* ── DIVIDER ROWS ── */
+  tr.divider-row td {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+  .divider-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px 5px 12px;
+  }
+  .divider-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .divider-line {
+    flex: 1;
+    border-top: 1.5px dashed var(--border);
+  }
+
+  /* ── HANDOFF ROWS ── */
+  tr.handoff-row td {
+    background: #FAFAF8;
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+    height: 28px;
+  }
+  .hf-corner {
+    padding: 0 8px;
+    font-size: 8.5px;
+    font-weight: 500;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    text-align: right;
+    vertical-align: middle;
+    border-right: 3px solid var(--border);
+  }
+  .hf-cell {
+    padding: 0 8px;
+    vertical-align: middle;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .hf-cell:last-child { border-right: none; }
+  .hf-arrow {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9px;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  .hf-arrow-line {
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(to right, var(--border), #c8c5bc);
+    border-radius: 1px;
+    position: relative;
+    min-width: 20px;
+  }
+  .hf-arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -4px; top: -3px;
+    border: 4px solid transparent;
+    border-left: 5px solid #c8c5bc;
+  }
+  .hf-label {
+    font-size: 9px;
+    color: var(--text-3);
+    font-weight: 500;
+  }
+  .hf-label.warn { color: var(--warn); }
+
+  /* ── DETAIL PANEL (click-expand) ── */
+  .detail-panel {
+    display: none;
+    position: fixed;
+    top: 0; right: 0;
+    width: 340px;
+    height: 100vh;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    box-shadow: -4px 0 20px rgba(0,0,0,0.08);
+    z-index: 200;
+    overflow-y: auto;
+    padding: 20px;
+    animation: slideIn 0.2s ease;
+  }
+  .detail-panel.open { display: block; }
+  @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .panel-close {
+    position: absolute; top: 16px; right: 16px;
+    background: none; border: none; cursor: pointer;
+    font-size: 16px; color: var(--text-3); line-height: 1;
+    padding: 4px;
+  }
+  .panel-close:hover { color: var(--text); }
+  .panel-layer-tag {
+    display: inline-block;
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 20px;
+    margin-bottom: 8px;
+  }
+  .panel-stage { font-size: 12px; color: var(--text-3); margin-bottom: 4px; }
+  .panel-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+  .panel-section { margin-bottom: 14px; }
+  .panel-section-label { font-size: 9px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+  .panel-item { font-size: 12px; padding-left: 12px; position: relative; margin-bottom: 4px; color: var(--text); line-height: 1.45; }
+  .panel-item::before { content: '→'; position: absolute; left: 0; color: var(--text-3); font-size: 10px; }
+  .panel-flag { font-size: 11px; padding: 7px 9px; border-radius: 5px; margin-bottom: 6px; line-height: 1.45; font-weight: 500; }
+  .panel-flag.risk  { background: var(--warn-bg); color: var(--warn); border-left: 3px solid var(--warn); }
+  .panel-flag.info  { background: var(--fin-bg);  color: var(--fin);  border-left: 3px solid var(--fin); }
+  .panel-flag.sys   { background: var(--sys-bg);  color: var(--sys);  border-left: 3px solid var(--sys); }
+  .panel-quote { font-style: italic; font-size: 11px; color: var(--back); background: rgba(139,51,25,0.06); padding: 8px 10px; border-radius: 5px; border-left: 3px solid var(--back); margin-top: 8px; line-height: 1.5; }
+
+  /* ── SECTION TITLES ── */
+  .section-title {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-3); margin: 28px 0 12px;
+  }
+
+  /* ── CALLOUTS GRID ── */
+  .co-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .co {
+    background: var(--warn-bg);
+    border: 0.5px solid var(--warn-bd);
+    border-left: 3px solid var(--warn);
+    border-radius: var(--radius-lg);
+    padding: 11px 13px;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .co strong { font-size: 11px; font-weight: 600; color: var(--warn); display: block; margin-bottom: 3px; }
+  .co.green { background: var(--fin-bg);   border-color: var(--fin-bd);   border-left-color: var(--fin); }
+  .co.green strong { color: var(--fin); }
+  .co.purple { background: var(--front-bg); border-color: var(--front-bd); border-left-color: var(--front); }
+  .co.purple strong { color: var(--front); }
+
+  /* ── AUTOMATION SIGNALS ── */
+  .sig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .sig {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-top: 3px solid var(--sys);
+    border-radius: var(--radius-lg);
+    padding: 11px 13px;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .sig strong { font-size: 11px; font-weight: 600; color: var(--sys); display: block; margin-bottom: 4px; }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 10px; color: var(--text-3);
+  }
+
+  /* ── FILTERS ── */
+  .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-btn {
+    font-family: var(--font);
+    font-size: 10px; font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: #c0bdb5; }
+  .filter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+  /* dimming */
+  .layer-dimmed { opacity: 0.25; transition: opacity 0.2s; }
+
+  /* tooltip */
+  .tooltip {
+    position: fixed;
+    background: var(--text);
+    color: #fff;
+    font-size: 10px;
+    padding: 5px 9px;
+    border-radius: var(--radius);
+    pointer-events: none;
+    z-index: 300;
+    display: none;
+    max-width: 220px;
+    line-height: 1.45;
+  }
+
+  @media print {
+    .page-header, .header-controls, .filter-bar, .detail-panel { display: none !important; }
+    body { background: #fff; }
+    .bp-table { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- STICKY HEADER -->
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Forma Medical — Operating Model Blueprint</h1>
+    <p>Current state · Surgical case lifecycle · Plus 1 Technology AI Implementation · March 2026</p>
+    <div class="header-badges">
+      <span class="badge badge-warn">⚠ 4 Critical Risks</span>
+      <span class="badge badge-info">⚑ 2 ERP Constraints</span>
+      <span class="badge badge-purple">6 Automation Signals</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="btn" onclick="toggleAllFlags()">Toggle Flags</button>
+    <button class="btn" onclick="expandAll()">Expand All</button>
+    <button class="btn btn-primary" onclick="window.print()">⬇ Print / Save PDF</button>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend-bar">
+  <span class="legend-label">LAYERS</span>
+  <div class="leg" onclick="filterLayer('hosp')" data-layer="hosp"><div class="leg-dot" style="background:var(--hosp-bd)"></div>Hospital</div>
+  <div class="leg" onclick="filterLayer('front')" data-layer="front"><div class="leg-dot" style="background:var(--front-bd)"></div>Frontstage (Rep/Distributor)</div>
+  <div class="leg" onclick="filterLayer('back')" data-layer="back"><div class="leg-dot" style="background:var(--back-bd)"></div>Backstage (Ops)</div>
+  <div class="leg" onclick="filterLayer('fin')" data-layer="fin"><div class="leg-dot" style="background:var(--fin-bd)"></div>Finance</div>
+  <div class="leg" onclick="filterLayer('sys')" data-layer="sys"><div class="leg-dot" style="background:var(--sys-bd)"></div>Systems</div>
+  <div class="leg" onclick="filterLayer('dat')" data-layer="dat"><div class="leg-dot" style="background:var(--dat-bd)"></div>Data</div>
+  <div class="leg" onclick="filterLayer('sup')" data-layer="sup"><div class="leg-dot" style="background:var(--sup-bd)"></div>Supporting</div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detail-panel">
+  <button class="panel-close" onclick="closePanel()">✕</button>
+  <div id="panel-content"></div>
+</div>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <span style="font-size:10px;font-weight:500;color:var(--text-3);align-self:center;margin-right:4px;">FILTER BY STAGE:</span>
+    <button class="filter-btn active" onclick="filterStage(0, this)">All Stages</button>
+    <button class="filter-btn" onclick="filterStage(1, this)">① Pre-Surgery</button>
+    <button class="filter-btn" onclick="filterStage(2, this)">② Surgery Day</button>
+    <button class="filter-btn" onclick="filterStage(3, this)">③ Post-Case</button>
+    <button class="filter-btn" onclick="filterStage(4, this)">④ Billing</button>
+    <button class="filter-btn" onclick="filterStage(5, this)">⑤ Reporting</button>
+  </div>
+
+  <!-- BLUEPRINT TABLE -->
+  <table class="bp-table" id="bp-table">
+    <thead>
+      <tr>
+        <th class="th-corner">LAYER / STAGE</th>
+        <th class="th-stage">① Pre-Surgery Prep</th>
+        <th class="th-stage">② Surgery Day</th>
+        <th class="th-stage">③ Post-Case</th>
+        <th class="th-stage">④ Billing</th>
+        <th class="th-stage">⑤ Reporting</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- ═══ LAYER 1: HOSPITAL ═══ -->
+      <tr class="layer-row r-hosp" data-layer="hosp">
+        <td class="row-label">
+          <div class="row-label-inner">Customer /<br>Hospital</div>
+          <div class="row-label-sub">External</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Hospital — Pre-Surgery" data-layer="hospital" data-color="hosp"
+          data-items="Schedules surgery with surgeon|Coordinates with sales rep for tray request|Confirms procedure date and location"
+          data-flags="risk:No direct system visibility into Forma's tray availability or dispatch status">
+          <div class="ct">Pre-surgery</div>
+          <div class="ci">Schedules surgery</div>
+          <div class="ci">Coordinates with surgeon &amp; rep</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Hospital — Surgery Day" data-layer="hospital" data-color="hosp"
+          data-items="Receives surgical tray and implant kit|Procedure performed in OR|Surgeon uses implants from consignment tray">
+          <div class="ct">Surgery day</div>
+          <div class="ci">Receives surgical tray / implant kit</div>
+          <div class="ci">Procedure performed in OR</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Hospital — Post-Case" data-layer="hospital" data-color="hosp"
+          data-items="Eventually issues purchase order to Forma|PO timing is not controlled by Forma|Hospital timeline does not align to Forma billing needs"
+          data-flags="risk:⚠ PO arrives days–weeks after surgery. This delay drives the entire order-to-cash timing gap and is the root cause of billing latency.">
+          <div class="ct">Post-case</div>
+          <div class="ci">Eventually provides purchase order</div>
+          <div class="risk-note">⚠ PO arrives days–weeks after surgery — drives the entire order-to-cash timing gap</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Hospital — Billing" data-layer="hospital" data-color="hosp"
+          data-items="Receives invoice from Forma Medical|Processes payment per hospital A/P cycle|No automated reminders currently in place">
+          <div class="ct">Billing</div>
+          <div class="ci">Receives invoice from Forma</div>
+          <div class="ci">Processes payment</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Hospital — Reporting" data-layer="hospital" data-color="hosp"
+          data-items="Hospital relationship maintained by rep|Surgeon account managed and tracked|Account activity logged into Google Sheets CRM">
+          <div class="ct">Reporting</div>
+          <div class="ci">Relationship maintained via rep</div>
+          <div class="ci">Surgeon account managed</div>
+        </td>
+      </tr>
+
+      <!-- HANDOFF 1: Hospital → Rep -->
+      <tr class="handoff-row">
+        <td class="hf-corner">Handoff ↓</td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">Surgery schedule</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">Tray received</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label warn">⚠ PO (delayed)</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">Invoice delivery</span></div></td>
+        <td class="hf-cell"></td>
+      </tr>
+
+      <!-- DIVIDER: LINE OF VISIBILITY -->
+      <tr class="divider-row">
+        <td colspan="6">
+          <div class="divider-inner">
+            <span class="divider-label">LINE OF VISIBILITY</span>
+            <div class="divider-line"></div>
+            <span style="font-size:9px;color:var(--text-3)">Everything above is visible to the customer</span>
+          </div>
+        </td>
+      </tr>
+
+      <!-- ═══ LAYER 2: FRONTSTAGE ═══ -->
+      <tr class="layer-row r-front" data-layer="front">
+        <td class="row-label">
+          <div class="row-label-inner">Frontstage<br>Rep / 1099<br>Distributor</div>
+          <div class="row-label-sub">45 reps · 2 mgrs</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Frontstage — Pre-Surgery" data-layer="frontstage" data-color="front"
+          data-items="Requests tray via phone or text to Forma ops|No system confirmation received after request|Must track delivery ETA manually|Rep has no visibility into tray location or dispatch"
+          data-flags="risk:⚠ Zero-friction required. A formal CRM was tried and failed completely due to non-adoption. Any solution for the field must be near-invisible to the rep.">
+          <div class="ct">Pre-surgery</div>
+          <div class="ci">Requests tray via phone or text</div>
+          <div class="ci">No system confirmation received</div>
+          <div class="risk-note">⚠ Prior CRM failed — non-adoption. Field must be zero-friction.</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Frontstage — Surgery Day" data-layer="frontstage" data-color="front"
+          data-items="Present in OR to support surgeon during procedure|Manages surgeon relationship in the room|Observes implant usage and records what was used|Provides clinical support for the procedure">
+          <div class="ct">Surgery day</div>
+          <div class="ci">Present in OR to support procedure</div>
+          <div class="ci">Manages surgeon relationship</div>
+          <div class="ci">Observes implant usage</div>
+        </td>
+        <td class="cell quote-cell" onclick="openPanel(this)" data-title="Frontstage — Post-Case" data-layer="frontstage" data-color="front"
+          data-items="Fills out paper or email-based case sheet after surgery|Emails case sheet to Forma operations staff|Case sheet timing is inconsistent — up to rep discretion|Obtains hospital PO from hospital A/P contact"
+          data-flags="risk:⚠ 45 independent distributors managed by 2 internal staff. Compliance is inconsistent and self-reported."
+          data-quote="&quot;boots on the ground compliance is absolutely terrible&quot; — Andrew Davison">
+          <div class="ct">Post-case</div>
+          <div class="ci">Fills out case sheet</div>
+          <div class="ci">Emails to Forma ops</div>
+          <div class="quote-text">"boots on the ground compliance is absolutely terrible" — Andrew Davison</div>
+          <div class="risk-note">⚠ 45 distributors · 2 managers · compliance inconsistent</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Frontstage — Billing" data-layer="frontstage" data-color="front"
+          data-items="Obtains hospital PO from hospital A/P team|Forwards PO to Forma operations|Rep is dependent on hospital's own A/P timeline">
+          <div class="ct">Billing</div>
+          <div class="ci">Obtains hospital PO</div>
+          <div class="ci">Forwards to Forma ops</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Frontstage — Reporting" data-layer="frontstage" data-color="front"
+          data-items="Activity logged into Google Sheets CRM|2 Forma employees manually aggregate 45 rep inputs weekly|No automated pull — all manual transcription|Google Sheets replaced a formal CRM after non-adoption"
+          data-flags="risk:⚠ High-risk single point of failure. 2 humans serve as the data aggregation layer for 45 independent reps.">
+          <div class="ct">Reporting</div>
+          <div class="ci">Activity → Google Sheets CRM</div>
+          <div class="ci">2 staff aggregate 45 reps weekly</div>
+          <div class="risk-note">⚠ Manual transcription — no automated capture</div>
+        </td>
+      </tr>
+
+      <!-- HANDOFF 2: Rep → Ops -->
+      <tr class="handoff-row">
+        <td class="hf-corner">Handoff ↓</td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label warn">⚠ Text / phone only</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">Verbal / OR observation</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label warn">⚠ Gmail — email trigger</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">PO upload to ERP</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label warn">⚠ Manual → G-Sheets</span></div></td>
+      </tr>
+
+      <!-- DIVIDER: LINE OF INTERNAL INTERACTION -->
+      <tr class="divider-row">
+        <td colspan="6">
+          <div class="divider-inner">
+            <span class="divider-label">LINE OF INTERNAL INTERACTION</span>
+            <div class="divider-line"></div>
+            <span style="font-size:9px;color:var(--text-3)">Internal operations — not visible to the customer</span>
+          </div>
+        </td>
+      </tr>
+
+      <!-- ═══ LAYER 3: BACKSTAGE ═══ -->
+      <tr class="layer-row r-back" data-layer="back">
+        <td class="row-label">
+          <div class="row-label-inner">Backstage<br>Forma Ops /<br>Admin</div>
+          <div class="row-label-sub">Internal team</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Backstage — Pre-Surgery" data-layer="backstage" data-color="back"
+          data-items="Prepares and sterilizes surgical trays for dispatch|Ships consignment inventory to hospital or field location|Coordinates with vendor for cleaning and repackaging|No automated confirmation sent back to requesting rep"
+          data-flags="risk:⚠ Zero system record of tray request. No acknowledgment sent to rep. High-value consignment assets shipped with no audit trail.">
+          <div class="ct">Pre-surgery</div>
+          <div class="ci">Prepares &amp; sterilizes trays</div>
+          <div class="ci">Ships inventory to field</div>
+          <div class="ci">Tracks consignment assets</div>
+          <div class="risk-note">⚠ No confirmation back to rep after request</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Backstage — Surgery Day" data-layer="backstage" data-color="back"
+          data-items="Inventory deployed to field or hospital OR|Tray location updated in Tray Locator (outside ERP)|Surgery tracking system updated — platform unknown"
+          data-flags="risk:⚠ Tray Locator is a separate system outside ERP. Platform has not been identified. Surgery tracking system also unknown.">
+          <div class="ct">Surgery day</div>
+          <div class="ci">Inventory deployed to field</div>
+          <div class="ci">Tray Locator updated (outside ERP)</div>
+          <div class="risk-note">⚠ Tray Locator platform unknown — must be identified</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Backstage — Post-Case" data-layer="backstage" data-color="back"
+          data-items="Receives emailed case sheet via Gmail|Staff manually interprets case sheet content|Manually creates Sales Order in ERP|Records inventory deduction at Sales Order (not invoice)|QMS inspection logged separately — not connected to ERP"
+          data-flags="sys:⚑ Gmail is the structural trigger for order-to-cash. A missed or delayed email directly delays billing."
+          data-quote="The case sheet email is the entry point for the entire billing cycle.">
+          <div class="ct">Post-case</div>
+          <div class="ci">Receives case sheet via Gmail</div>
+          <div class="ci">Manually creates Sales Order in ERP</div>
+          <div class="ci">Inventory deducted at SO creation</div>
+          <div class="sys-note">⚑ Gmail is the order-to-cash trigger</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Backstage — Billing" data-layer="backstage" data-color="back"
+          data-items="Uploads hospital PO to ERP system|Sales order converted to invoice in ERP|Invoice sent to hospital|A/R tracked in QuickBooks Desktop">
+          <div class="ct">Billing</div>
+          <div class="ci">Uploads hospital PO to ERP</div>
+          <div class="ci">Sales order → invoice</div>
+          <div class="ci">Invoice sent to hospital</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Backstage — Reporting" data-layer="backstage" data-color="back"
+          data-items="Andrew manually reviews business performance weekly|Pulls P&L, CRM data, surgery data into AI models|Runs Grok, Gemini, and Claude in parallel on same data|No automated aggregation — all manual prompt construction"
+          data-flags="risk:⚠ Entirely manual. Same inputs, same questions, every week. High-effort, repeatable process with no automation.">
+          <div class="ct">Reporting</div>
+          <div class="ci">Andrew reviews performance weekly</div>
+          <div class="ci">P&amp;L + CRM + surgery data → AI models</div>
+          <div class="risk-note">⚠ Fully manual — no automated aggregation</div>
+        </td>
+      </tr>
+
+      <!-- HANDOFF 3: Ops → Finance -->
+      <tr class="handoff-row">
+        <td class="hf-corner">Handoff ↓</td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">Vendor A/P</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">Inventory asset record</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">SO → inventory pull</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">Invoice / A/R</span></div></td>
+        <td class="hf-cell"><div class="hf-arrow"><div class="hf-arrow-line"></div><span class="hf-label">P&amp;L / review data</span></div></td>
+      </tr>
+
+      <!-- ═══ LAYER 4: FINANCE ═══ -->
+      <tr class="layer-row r-fin" data-layer="fin">
+        <td class="row-label">
+          <div class="row-label-inner">Finance</div>
+          <div class="row-label-sub">QB Desktop</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Finance — Pre-Surgery" data-layer="finance" data-color="fin"
+          data-items="Vendor A/P payments processed for inventory and cleaning|Consignment inventory asset recorded on books|Pre-surgery inventory value held as an asset">
+          <div class="ct">Pre-surgery</div>
+          <div class="ci">Vendor A/P payments</div>
+          <div class="ci">Consignment asset recorded</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Finance — Surgery Day" data-layer="finance" data-color="fin"
+          data-items="Inventory asset value held on books during surgery|No financial event triggered until case sheet received|Consignment inventory remains as asset until Sales Order created">
+          <div class="ct">Surgery day</div>
+          <div class="ci">Inventory asset value held</div>
+          <div class="ci">No financial event until case sheet</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Finance — Post-Case" data-layer="finance" data-color="fin"
+          data-items="Inventory deduction recorded when Sales Order is created|Inventory does NOT pull at invoice — pulls at Sales Order|This behavior must be preserved in any ERP migration"
+          data-flags="info:⚑ NON-NEGOTIABLE CONSTRAINT: Inventory pulls at Sales Order — NOT at invoice. This is a core financial workflow requirement that must be preserved in Odoo or QB Online + Implantbase.">
+          <div class="ct">Post-case</div>
+          <div class="ci">Inventory deducted at SO creation</div>
+          <div class="info-note">⚑ Pulls at Sales Order — NOT invoice. Must be preserved in ERP migration.</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Finance — Billing" data-layer="finance" data-color="fin"
+          data-items="Invoice sent to hospital from ERP|A/R tracked in QuickBooks Desktop|Multiple reconciliation loops — no centralized log|Someone checks and reconciles later — implied throughout">
+          <div class="ct">Billing</div>
+          <div class="ci">Invoice sent · A/R tracked</div>
+          <div class="ci">QB Desktop manages A/R</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Finance — Reporting" data-layer="finance" data-color="fin"
+          data-items="Weekly P&L review by Andrew|Cohort analysis across sales regions and reps|Financial review completed manually|Multiple reconciliation loops with no centralized log"
+          data-flags="risk:⚠ 'Someone checks this and we reconcile later' — implied throughout all financial and sales tracking conversations.">
+          <div class="ct">Reporting</div>
+          <div class="ci">Weekly P&amp;L review</div>
+          <div class="ci">Cohort analysis — manual</div>
+          <div class="risk-note">⚠ Multiple reconciliation loops, no central log</div>
+        </td>
+      </tr>
+
+      <!-- ═══ LAYER 5: SYSTEMS ═══ -->
+      <tr class="layer-row r-sys" data-layer="sys">
+        <td class="row-label">
+          <div class="row-label-inner">Systems</div>
+          <div class="row-label-sub">All siloed</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Systems — Pre-Surgery" data-layer="systems" data-color="sys"
+          data-items="QuickBooks Desktop — ERP and accounting (active, hosted on remote server)|Tray Locator — tracks tray location (outside ERP, platform unknown)|Dropbox — file management, highly organized, no AI or search access"
+          data-flags="risk:⚠ QB Desktop integration is painful and limited. Hosted on remote server adds another integration complication. No integrations exist between any of these systems.">
+          <div class="ct">Pre-surgery</div>
+          <span class="tag tag-sys">QuickBooks Desktop</span>
+          <span class="tag tag-sys">Tray Locator</span>
+          <span class="tag tag-sys">Dropbox</span>
+          <div class="risk-note">⚠ QB Desktop: painful to integrate, remote-hosted</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Systems — Surgery Day" data-layer="systems" data-color="sys"
+          data-items="Tray Locator — updated with tray location (outside ERP)|Surgery Tracking System — platform completely unknown|No system sends data back to Forma ops in real time"
+          data-flags="risk:⚠ Surgery tracking system platform has not been identified. Tray Locator is outside ERP. Both must be identified before any integration is designed.">
+          <div class="ct">Surgery day</div>
+          <span class="tag tag-sys">Tray Locator</span>
+          <span class="tag tag-warn">Surgery Tracking (unknown)</span>
+          <div class="risk-note">⚠ Both platforms unidentified — cannot integrate</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Systems — Post-Case" data-layer="systems" data-color="sys"
+          data-items="Gmail — receives case sheet emails (entry point for order-to-cash)|QuickBooks Desktop ERP — Sales Order created manually|QMS — FDA compliance system, logs receiving inspections (siloed from ERP)|No automated data transfer between any of these systems"
+          data-flags="sys:⚑ Gmail is structurally the intake gate for the billing cycle. Despite being rated 'marginally important' by Andrew, it is the critical first step.|risk:⚠ QMS and ERP share zero data. Quality records from inspections never reach financial records.">
+          <div class="ct">Post-case</div>
+          <span class="tag tag-sys">Gmail</span>
+          <span class="tag tag-sys">QB Desktop ERP</span>
+          <span class="tag tag-warn">QMS (siloed from ERP)</span>
+          <div class="sys-note">⚑ Gmail is the order-to-cash entry point</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Systems — Billing" data-layer="systems" data-color="sys"
+          data-items="QuickBooks Desktop — manages SO to invoice conversion|All billing runs through QB Desktop|No automated invoice delivery system identified">
+          <div class="ct">Billing</div>
+          <span class="tag tag-sys">QuickBooks Desktop</span>
+          <div class="ci" style="margin-top:6px;">ERP handles SO → invoice conversion</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Systems — Reporting" data-layer="systems" data-color="sys"
+          data-items="QuickBooks Desktop — P&L source|Google Sheets — CRM and rep activity|Grok (xAI) — used heavily by Andrew for strategy, no API integration path|Gemini — used alongside Grok for multi-model analysis|Claude — used by team members, has connector integrations|Dropbox — unindexed strategic asset, no search or AI access"
+          data-flags="risk:⚠ All AI usage is manual prompt construction — no automation. No Grok API integration path has been identified. All systems remain completely disconnected.">
+          <div class="ct">Reporting</div>
+          <span class="tag tag-sys">QB Desktop</span>
+          <span class="tag tag-sys">Google Sheets</span>
+          <span class="tag tag-sys">Grok (xAI)</span>
+          <span class="tag tag-sys">Gemini</span>
+          <span class="tag tag-sys">Claude</span>
+          <span class="tag tag-warn">No Grok API path</span>
+          <div class="risk-note">⚠ All AI use is fully manual — no automation</div>
+        </td>
+      </tr>
+
+      <!-- ═══ LAYER 6: DATA ═══ -->
+      <tr class="layer-row r-dat" data-layer="dat">
+        <td class="row-label">
+          <div class="row-label-inner">Data</div>
+          <div class="row-label-sub">Unstructured</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Data — Pre-Surgery" data-layer="data" data-color="dat"
+          data-items="Inventory levels — tracked in ERP|Surgeon account records — in Google Sheets CRM|Distributor records — in Google Sheets|Tray request — NOT captured in any system"
+          data-flags="risk:⚠ No structured data capture from rep tray requests. High-value consignment assets are dispatched with zero system record on the rep's side.">
+          <div class="ct">Pre-surgery</div>
+          <span class="tag tag-dat">Inventory levels</span>
+          <span class="tag tag-dat">Surgeon account</span>
+          <span class="tag tag-dat">Distributor record</span>
+          <div class="risk-note">⚠ Tray request not captured in any system</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Data — Surgery Day" data-layer="data" data-color="dat"
+          data-items="Tray location — updated in Tray Locator (outside ERP)|Implant usage — observed and noted by rep manually|No real-time data feed back to Forma ops">
+          <div class="ct">Surgery day</div>
+          <span class="tag tag-dat">Tray location</span>
+          <span class="tag tag-dat">Implant usage (manual)</span>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Data — Post-Case" data-layer="data" data-color="dat"
+          data-items="Case sheet — unstructured, emailed by rep|Sales order — manually created in ERP from case sheet|Inventory deduction — recorded when SO created|QMS inspection record — siloed in FDA compliance system"
+          data-flags="risk:⚠ Case sheet is unstructured free-form data. Staff manually interpret it to create the Sales Order. Errors or misinterpretations here directly impact inventory accuracy and billing.">
+          <div class="ct">Post-case</div>
+          <span class="tag tag-dat">Case sheet</span>
+          <span class="tag tag-dat">Sales order</span>
+          <span class="tag tag-dat">Inventory deduction</span>
+          <div class="risk-note">⚠ Case sheet unstructured — manually interpreted</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Data — Billing" data-layer="data" data-color="dat"
+          data-items="Hospital PO — received and uploaded manually|Invoice — generated from Sales Order in ERP|A/R record — tracked in QuickBooks Desktop">
+          <div class="ct">Billing</div>
+          <span class="tag tag-dat">Hospital PO</span>
+          <span class="tag tag-dat">Invoice</span>
+          <span class="tag tag-dat">A/R record</span>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Data — Reporting" data-layer="data" data-color="dat"
+          data-items="CRM data — Google Sheets (rep activity, surgeon accounts)|P&L — QuickBooks Desktop|Surgery cohort data — separate tracking system (unknown source)|Sales regions and rep performance — manually aggregated|No unified data layer — all pulled separately per review cycle"
+          data-flags="risk:⚠ Every reporting input is pulled manually from a different silo. There is no unified data layer. Andrew has to manually construct each AI prompt from scratch each week.">
+          <div class="ct">Reporting</div>
+          <span class="tag tag-dat">CRM (G-Sheets)</span>
+          <span class="tag tag-dat">P&amp;L</span>
+          <span class="tag tag-dat">Surgery cohorts</span>
+          <span class="tag tag-dat">Sales regions</span>
+          <span class="tag tag-dat">Rep activity</span>
+          <div class="risk-note">⚠ No unified data layer — all manual pulls</div>
+        </td>
+      </tr>
+
+      <!-- ═══ LAYER 7: SUPPORTING PROCESSES ═══ -->
+      <tr class="layer-row r-sup" data-layer="sup">
+        <td class="row-label">
+          <div class="row-label-inner">Supporting<br>Processes</div>
+          <div class="row-label-sub">Background</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Supporting — Pre-Surgery" data-layer="supporting" data-color="sup"
+          data-items="Vendor component production — external|Vendor C — cleaning, sterilization, and repackaging|Consignment asset inventory tracking|Vendor A/P managed through QB Desktop">
+          <div class="ct">Pre-surgery</div>
+          <div class="ci">Vendor production</div>
+          <div class="ci">Vendor C — cleaning &amp; packaging</div>
+          <div class="ci">Consignment asset tracking</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Supporting — Surgery Day" data-layer="supporting" data-color="sup"
+          data-items="Field inventory deployment logistics|OR support by rep — clinical presence|Tray location updated in separate system">
+          <div class="ct">Surgery day</div>
+          <div class="ci">Field inventory deployment</div>
+          <div class="ci">OR support by rep</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Supporting — Post-Case" data-layer="supporting" data-color="sup"
+          data-items="Restock shipment back to Forma after case|QMS receiving inspection logged for FDA compliance|Vendor C re-cleaning and repackaging initiated|ERP inventory reconciliation"
+          data-flags="risk:⚠ QMS and ERP are completely siloed. QMS logs the inspection for FDA. ERP records the financial inventory. Neither system knows what the other did.">
+          <div class="ct">Post-case</div>
+          <div class="ci">Restock shipment to Forma</div>
+          <div class="ci">QMS receiving inspection logged</div>
+          <div class="risk-note">⚠ QMS and ERP siloed — quality data never reaches finance</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Supporting — Billing" data-layer="supporting" data-color="sup"
+          data-items="A/P reconciliation with vendors|ERP inventory reconciliation cycles|Manual review of outstanding receivables">
+          <div class="ct">Billing</div>
+          <div class="ci">A/P reconciliation with vendors</div>
+          <div class="ci">ERP inventory reconciliation</div>
+        </td>
+        <td class="cell" onclick="openPanel(this)" data-title="Supporting — Reporting" data-layer="supporting" data-color="sup"
+          data-items="Weekly AI review — multi-model (Grok, Gemini, Claude in parallel)|Cohort analysis — manually constructed each week|Strategic decisions run through multiple AI models simultaneously|Andrew manually constructs prompts each week — same inputs, same format"
+          data-flags="sys:⚑ HIGH-VALUE AUTOMATION TARGET: Weekly AI review is a repeatable, high-volume, rules-based process. Same inputs and same questions every week. This is the clearest near-term automation opportunity once the BI layer is defined.">
+          <div class="ct">Reporting</div>
+          <div class="ci">Weekly AI review — multi-model</div>
+          <div class="ci">Cohort analysis — manual</div>
+          <div class="sys-note">⚑ Prime automation candidate — recurring, rules-based</div>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <!-- CRITICAL FLAGS -->
+  <div class="section-title">CRITICAL FLAGS — CURRENT STATE</div>
+  <div class="co-grid">
+    <div class="co">
+      <strong>⚠ Gmail is the order-to-cash trigger</strong>
+      Case sheet email starts the entire order-to-cash process. Andrew rated email as "marginally important" — but it is structurally the intake gate for billing. A missed or delayed email directly delays invoicing.
+    </div>
+    <div class="co">
+      <strong>⚠ QMS and ERP are completely siloed</strong>
+      QMS records receiving inspections for FDA compliance. ERP records financial inventory. The two systems share zero data. Quality records from receiving inspections never reach financial records.
+    </div>
+    <div class="co">
+      <strong>⚠ Tray Locator and Surgery Tracking platforms are unknown</strong>
+      Tray location tracking exists as a separate system with no ERP integration. The surgery tracking platform has also not been identified. Both must be resolved before any inventory automation can be designed.
+    </div>
+    <div class="co">
+      <strong>⚠ Rep compliance is structurally unreliable</strong>
+      45 independent distributors managed by 2 internal staff. Andrew: "boots on the ground compliance is absolutely terrible." Case sheet delays directly delay billing. No system enforcement exists.
+    </div>
+    <div class="co green">
+      <strong>⚑ Inventory must pull at Sales Order — not invoice</strong>
+      This is a non-negotiable constraint. Whatever ERP is selected (Odoo or QB Online + Implantbase), inventory deduction must trigger at Sales Order creation — not at invoice. This must be preserved in the migration.
+    </div>
+    <div class="co green">
+      <strong>⚑ No ERP-layer automation until decision is confirmed</strong>
+      Client is evaluating Odoo vs. QB Online + Implantbase. NetSuite was rejected ($150K+ customization). No automations should be designed at the ERP layer until the ERP decision is formally confirmed by Andrew.
+    </div>
+    <div class="co purple">
+      <strong>⚑ No integrations exist between any core systems</strong>
+      Andrew confirmed: "Highly disconnected. For sure." QB Desktop, Google Sheets, Dropbox, Tray Locator, QMS, and Gmail all operate as completely independent silos with no data flow between them.
+    </div>
+    <div class="co purple">
+      <strong>⚑ Weekly AI strategy review is fully manual</strong>
+      Andrew manually constructs prompts and feeds P&L, CRM, and surgery data into Grok, Gemini, and Claude weekly. Same inputs, same questions, every week. High-effort repeatable process — prime automation candidate.
+    </div>
+  </div>
+
+  <!-- AUTOMATION SIGNALS -->
+  <div class="section-title" style="margin-top:32px;">AUTOMATION SIGNALS FROM DISCOVERY</div>
+  <div class="sig-grid">
+    <div class="sig">
+      <strong>Weekly data → AI aggregation</strong>
+      Same inputs, same questions every week. Immediate automation candidate once the BI layer is defined and the ERP decision is confirmed.
+    </div>
+    <div class="sig">
+      <strong>Rep activity → Google Sheets</strong>
+      2 humans manually transcribing 45 independent reps weekly. High-risk single point of failure for CRM data quality and continuity.
+    </div>
+    <div class="sig">
+      <strong>Kit request via text / phone</strong>
+      Zero system record. No acknowledgment sent to rep after request. High-value consignment assets shipped with no audit trail on either side.
+    </div>
+    <div class="sig">
+      <strong>Multi-model AI decision workflow</strong>
+      Andrew runs the same decision through Grok, Gemini, and Claude in parallel manually. Prompt construction is cumbersome — templatable and triggerable once formalized.
+    </div>
+    <div class="sig">
+      <strong>Weekly cohort &amp; sales tracking</strong>
+      Defined metrics + defined targets = ideal automated dashboard candidate. No custom logic required — just automated pull from existing sources.
+    </div>
+    <div class="sig">
+      <strong>Dropbox — unindexed strategic asset</strong>
+      Highly organized file tree, no search or AI access. A prior acquirer cited this organizational structure as a major exit asset. Currently completely dark to AI systems.
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <span>Forma Medical · Operating Model Blueprint · Current State · Plus 1 Technology AI Implementation</span>
+  <span>March 2026 · Click any cell to expand · Use filters to isolate layers or stages</span>
+</div>
+
+<!-- PANEL OVERLAY -->
+<div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.2);z-index:150;" onclick="closePanel()"></div>
+
+<script>
+  // ── CELL CLICK → DETAIL PANEL ──
+  const panelEl = document.getElementById('detail-panel');
+  const panelContent = document.getElementById('panel-content');
+  const overlayEl = document.getElementById('overlay');
+
+  const colorMap = {
+    hosp:  { bg: '#EEF5FC', accent: '#185FA5', bd: '#B5CDE4' },
+    front: { bg: '#F3F1FB', accent: '#534AB7', bd: '#CFBFEE' },
+    back:  { bg: '#FFF4EE', accent: '#8B3319', bd: '#F5C4B3' },
+    fin:   { bg: '#EDF7F2', accent: '#0F6E56', bd: '#9FE1CB' },
+    sys:   { bg: '#FBF6EA', accent: '#7A4508', bd: '#E8D8A0' },
+    dat:   { bg: '#FAF0F4', accent: '#883050', bd: '#EAB8CB' },
+    sup:   { bg: '#F2F7EE', accent: '#3B6D11', bd: '#BEDCB4' },
+  };
+
+  function openPanel(cell) {
+    const title   = cell.dataset.title   || '';
+    const layer   = cell.dataset.layer   || '';
+    const color   = cell.dataset.color   || 'sys';
+    const items   = (cell.dataset.items  || '').split('|').filter(Boolean);
+    const flags   = (cell.dataset.flags  || '').split('|').filter(Boolean);
+    const quote   = cell.dataset.quote   || '';
+
+    const c = colorMap[color] || colorMap.sys;
+
+    // remove previous active
+    document.querySelectorAll('td.cell.active').forEach(el => el.classList.remove('active'));
+    cell.classList.add('active');
+
+    let flagsHTML = '';
+    flags.forEach(f => {
+      const [type, ...rest] = f.split(':');
+      const text = rest.join(':');
+      flagsHTML += `<div class="panel-flag ${type}">${text}</div>`;
+    });
+
+    let itemsHTML = items.map(i => `<div class="panel-item">${i}</div>`).join('');
+    let quoteHTML = quote ? `<div class="panel-quote">${quote}</div>` : '';
+
+    panelContent.innerHTML = `
+      <div class="panel-layer-tag" style="background:${c.bg};color:${c.accent};border:0.5px solid ${c.bd}">${layer.toUpperCase()}</div>
+      <div class="panel-title">${title}</div>
+      ${items.length ? `<div class="panel-section"><div class="panel-section-label">Activities &amp; Notes</div>${itemsHTML}</div>` : ''}
+      ${quoteHTML}
+      ${flagsHTML ? `<div class="panel-section"><div class="panel-section-label">Flags &amp; Constraints</div>${flagsHTML}</div>` : ''}
+    `;
+
+    panelEl.classList.add('open');
+    overlayEl.style.display = 'block';
+  }
+
+  function closePanel() {
+    panelEl.classList.remove('open');
+    overlayEl.style.display = 'none';
+    document.querySelectorAll('td.cell.active').forEach(el => el.classList.remove('active'));
+  }
+
+  // ── STAGE FILTER ──
+  let activeStage = 0;
+  function filterStage(col, btn) {
+    activeStage = col;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const allCols = document.querySelectorAll('td.cell, th.th-stage, .hf-cell');
+    allCols.forEach(el => {
+      el.style.opacity = '';
+      el.style.pointerEvents = '';
+    });
+
+    if (col === 0) return;
+
+    document.querySelectorAll('td.cell, .hf-cell').forEach((el, i) => {
+      const colIndex = (el.cellIndex !== undefined ? el.cellIndex : Array.from(el.parentNode.children).indexOf(el));
+      if (colIndex !== col) {
+        el.style.opacity = '0.2';
+        el.style.pointerEvents = 'none';
+      }
+    });
+
+    document.querySelectorAll('th.th-stage').forEach((th, i) => {
+      th.style.opacity = (i + 1 === col) ? '1' : '0.35';
+    });
+  }
+
+  // ── LAYER FILTER ──
+  let dimmedLayers = new Set();
+  function filterLayer(layer) {
+    const legEl = document.querySelector(`.leg[data-layer="${layer}"]`);
+    const rows  = document.querySelectorAll(`tr[data-layer="${layer}"]`);
+
+    if (dimmedLayers.has(layer)) {
+      dimmedLayers.delete(layer);
+      rows.forEach(r => r.classList.remove('layer-dimmed'));
+      legEl.classList.remove('dimmed');
+    } else {
+      dimmedLayers.add(layer);
+      rows.forEach(r => r.classList.add('layer-dimmed'));
+      legEl.classList.add('dimmed');
+    }
+  }
+
+  // ── TOGGLE FLAGS ──
+  let flagsVisible = true;
+  function toggleAllFlags() {
+    flagsVisible = !flagsVisible;
+    document.querySelectorAll('.risk-note, .info-note, .sys-note, .quote-text').forEach(el => {
+      el.style.display = flagsVisible ? '' : 'none';
+    });
+  }
+
+  // ── EXPAND ALL ──
+  function expandAll() {
+    // Show a message since panels are single-view
+    alert('Click any cell to view its full detail panel. Use layer legend to show/hide rows. Use stage filters to isolate columns.');
+  }
+
+  // ── KEYBOARD ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePanel();
+  });
+</script>
+</body>
+</html>

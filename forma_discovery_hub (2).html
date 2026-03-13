@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — Discovery Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal-50: #E1F5EE; --teal-100: #9FE1CB; --teal-300: #5DCAA5;
+    --teal-600: #0F6E56; --teal-900: #04342C;
+    --blue-50: #E6F1FB; --blue-200: #85B7EB; --blue-600: #185FA5; --blue-900: #042C53;
+    --amber-50: #FAEEDA; --amber-200: #EF9F27; --amber-600: #BA7517; --amber-900: #633806;
+    --red-50: #FCEBEB; --red-200: #F09595; --red-600: #A32D2D;
+    --purple-50: #EEEDFE; --purple-200: #AFA9EC; --purple-600: #534AB7;
+    --pink-50: #FBEAF0; --pink-200: #ED93B1; --pink-600: #993556;
+    --gray-50: #F5F4F0; --gray-100: #E8E6DF; --gray-200: #D4D2CB;
+    --gray-400: #AAAAAA; --gray-600: #666666; --gray-900: #1a1a1a;
+    --bg: #F0EEE8;
+    --surface: #FAFAF8;
+    --card: #FFFFFF;
+    --border: rgba(0,0,0,0.10);
+    --border-strong: rgba(0,0,0,0.18);
+    --text: #1a1a1a;
+    --text-muted: #666666;
+    --text-hint: #AAAAAA;
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    --shadow-tile: 0 1px 2px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────────── */
+  .page-header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-wrap: wrap;
+  }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .logo-pill {
+    padding: 5px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+    background: var(--surface);
+  }
+  .logo-pill.primary {
+    background: var(--teal-50);
+    border-color: var(--teal-300);
+    color: var(--teal-600);
+  }
+  .header-center { text-align: center; flex: 1; min-width: 200px; }
+  .header-center h1 { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+  .header-center p { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .header-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .header-meta span { color: var(--text); font-weight: 500; }
+  .meta-item { display: flex; gap: 4px; }
+
+  /* ── LAYOUT ─────────────────────────────────────────────── */
+  .page { max-width: 1280px; margin: 0 auto; padding: 28px 28px 60px; }
+
+  .section { margin-bottom: 20px; }
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-hint);
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+    padding: 20px 22px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: -0.01em;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); gap: 14px; }
+
+  /* ── NAV TILES ──────────────────────────────────────────── */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0,1fr));
+    gap: 10px;
+  }
+  .nav-tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 15px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-decoration: none;
+    box-shadow: var(--shadow-tile);
+    display: block;
+  }
+  .nav-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+    border-color: var(--border-strong);
+  }
+  .tile-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 9px;
+    font-size: 14px;
+  }
+  .nav-tile h3 { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .nav-tile p { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+  /* ── ABOUT / INFO ───────────────────────────────────────── */
+  .info-table { width: 100%; }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+  .info-value { font-size: 12px; font-weight: 500; color: var(--text); text-align: right; }
+
+  .sales-flow { display: flex; flex-direction: column; align-items: center; gap: 0; margin-top: 14px; }
+  .flow-node {
+    width: 100%; padding: 8px 14px; text-align: center;
+    font-size: 12px; font-weight: 500; border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .flow-node.accent { background: var(--teal-50); border-color: var(--teal-300); color: var(--teal-600); }
+  .flow-arrow { font-size: 16px; color: var(--text-hint); line-height: 1.4; padding: 1px 0; }
+  .callout {
+    width: 100%;
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    padding: 7px 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 8px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── SCOPE STEPS ────────────────────────────────────────── */
+  .scope-step {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .scope-step:last-child { border-bottom: none; }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--teal-50); border: 1px solid var(--teal-300);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; color: var(--teal-600);
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-text { font-size: 12.5px; color: var(--text); line-height: 1.5; }
+
+  /* ── PIPELINE ───────────────────────────────────────────── */
+  .pipeline {
+    display: flex;
+    gap: 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin: 8px 0 12px;
+  }
+  .pipe-stage {
+    flex: 1; text-align: center;
+    padding: 9px 4px;
+    font-size: 11px; font-weight: 500;
+    background: var(--surface);
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .pipe-stage:last-child { border-right: none; }
+  .pipe-stage.active { background: var(--teal-50); color: var(--teal-600); }
+  .pipe-stage .sub { font-size: 9px; font-weight: 400; opacity: 0.75; margin-top: 2px; display: block; }
+
+  .status-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--teal-50); border-radius: var(--radius-sm);
+    padding: 8px 12px; border: 1px solid var(--teal-300);
+  }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal-600); flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .status-text { font-size: 12px; font-weight: 500; color: var(--teal-600); }
+  .status-sub { font-size: 11px; color: var(--teal-600); opacity: 0.7; }
+
+  /* ── PRINCIPLES ─────────────────────────────────────────── */
+  .principle-card {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--amber-200);
+    border-radius: var(--radius-sm);
+    padding: 11px 13px;
+    margin-bottom: 9px;
+    background: var(--card);
+  }
+  .principle-card:last-child { margin-bottom: 0; }
+  .principle-card.danger { border-left-color: #E24B4A; }
+  .principle-card h4 { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .principle-card p { font-size: 11.5px; color: var(--text-muted); line-height: 1.55; }
+
+  /* ── TECH STACK ─────────────────────────────────────────── */
+  .tech-group { margin-bottom: 14px; }
+  .tech-group-label {
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-hint); margin-bottom: 7px;
+  }
+  .chip-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 10px; border-radius: 20px;
+    font-size: 11.5px; font-weight: 500;
+    border: 1px solid transparent;
+  }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .chip.active  { background: var(--blue-50);   border-color: var(--blue-200);   color: var(--blue-600); }
+  .chip.active .chip-dot  { background: var(--blue-600); }
+  .chip.eval    { background: var(--amber-50);  border-color: var(--amber-200);  color: var(--amber-900); }
+  .chip.eval .chip-dot    { background: var(--amber-600); }
+  .chip.unknown { background: var(--red-50);    border-color: var(--red-200);    color: var(--red-600); }
+  .chip.unknown .chip-dot { background: var(--red-600); }
+  .chip.ai      { background: var(--purple-50); border-color: var(--purple-200); color: var(--purple-600); }
+  .chip.ai .chip-dot      { background: var(--purple-600); }
+  .chip.replaced { background: var(--gray-50);  border-color: var(--gray-200);  color: var(--text-muted); }
+  .chip.replaced .chip-dot { background: var(--gray-400); }
+
+  .legend-strip {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    padding: 12px 0 0;
+    margin-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-muted);
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+
+  /* ── DISCOVERY THEMES ───────────────────────────────────── */
+  .themes-table { width: 100%; border-collapse: collapse; }
+  .themes-table th {
+    background: var(--surface);
+    font-size: 11px; font-weight: 600;
+    color: var(--text-muted);
+    padding: 9px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-strong);
+    letter-spacing: 0.03em;
+  }
+  .themes-table td {
+    padding: 11px 12px;
+    font-size: 12px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  .themes-table tr:last-child td { border-bottom: none; }
+  .themes-table tr:nth-child(even) td { background: #FAFAF8; }
+  .align-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 7px; border-radius: 10px;
+    margin-bottom: 4px;
+  }
+  .align-yes { background: #EAF3DE; color: #3B6D11; }
+  .diverge-note { font-size: 11px; color: var(--text-muted); display: block; margin-top: 3px; }
+
+  /* ── ANIMATIONS ─────────────────────────────────────────── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.45s ease forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in:nth-child(1) { animation-delay: 0.05s; }
+  .fade-in:nth-child(2) { animation-delay: 0.12s; }
+  .fade-in:nth-child(3) { animation-delay: 0.19s; }
+  .fade-in:nth-child(4) { animation-delay: 0.26s; }
+  .fade-in:nth-child(5) { animation-delay: 0.33s; }
+  .fade-in:nth-child(6) { animation-delay: 0.40s; }
+
+  /* ── RESPONSIVE ─────────────────────────────────────────── */
+  @media (max-width: 960px) {
+    .nav-grid { grid-template-columns: repeat(3,1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .page { padding: 16px 14px 40px; }
+    .nav-grid { grid-template-columns: repeat(2,1fr); }
+    .page-header { padding: 14px 16px; }
+    .header-meta { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="page-header">
+  <div class="header-left">
+    <div class="logo-pill primary">Forma Medical</div>
+    <div class="logo-pill">Plus 1 Technology</div>
+  </div>
+  <div class="header-center">
+    <h1>Forma Medical — AI Implementation</h1>
+    <p>Discovery &amp; Architecture Workspace</p>
+  </div>
+  <div class="header-meta">
+    <div class="meta-item">Lead: <span>Jessica Peaden</span></div>
+    <div class="meta-item">Phase: <span>Discovery</span></div>
+    <div class="meta-item">Date: <span>March 2026</span></div>
+    <div class="meta-item">Type: <span>AI Implementation</span></div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- NAV TILES -->
+  <div class="section" style="animation-delay:0s">
+    <div class="section-label">Board navigation</div>
+    <div class="nav-grid">
+      <a class="nav-tile fade-in" href="#about">
+        <div class="tile-icon" style="background:var(--teal-50)">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="2.5" stroke="#0F6E56" stroke-width="1.5"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>About Forma</h3>
+        <p>Company profile &amp; sales model</p>
+      </a>
+      <a class="nav-tile fade-in" href="#scope">
+        <div class="tile-icon" style="background:var(--blue-50)">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#185FA5" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="#185FA5" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Engagement scope</h3>
+        <p>Six-phase project roadmap</p>
+      </a>
+      <a class="nav-tile fade-in" href="#principles">
+        <div class="tile-icon" style="background:var(--amber-50)">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2L2 13h12L8 2z" stroke="#BA7517" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 7v3M8 11.5v.5" stroke="#BA7517" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Governing principles</h3>
+        <p>Five implementation standards</p>
+      </a>
+      <a class="nav-tile fade-in" href="#status">
+        <div class="tile-icon" style="background:var(--teal-50)">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#0F6E56" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Project status</h3>
+        <p>Current lifecycle stage</p>
+      </a>
+      <a class="nav-tile fade-in" href="#stack">
+        <div class="tile-icon" style="background:var(--purple-50)">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="#534AB7" stroke-width="1.5"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="#534AB7" stroke-width="1.5"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="#534AB7" stroke-width="1.5"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="#534AB7" stroke-width="1.5"/></svg>
+        </div>
+        <h3>Technology stack</h3>
+        <p>All systems &amp; integration gaps</p>
+      </a>
+      <a class="nav-tile fade-in" href="#themes">
+        <div class="tile-icon" style="background:var(--pink-50)">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="#993556" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Discovery themes</h3>
+        <p>What data confirms vs. diverges</p>
+      </a>
+    </div>
+  </div>
+
+  <!-- ABOUT + SCOPE/STATUS -->
+  <div class="grid-2 section">
+
+    <!-- ABOUT FORMA -->
+    <div id="about" class="card" style="scroll-margin-top: 80px;">
+      <div class="card-title">About Forma Medical</div>
+      <div class="info-table">
+        <div class="info-row"><span class="info-label">Sector</span><span class="info-value">Orthopedic implants — minimally invasive</span></div>
+        <div class="info-row"><span class="info-label">Procedures</span><span class="info-value">MTP fusion · Hammertoe · Bunion repair</span></div>
+        <div class="info-row"><span class="info-label">W-2 employees</span><span class="info-value">2 staff</span></div>
+        <div class="info-row"><span class="info-label">Distributors</span><span class="info-value">45 independent 1099 reps</span></div>
+        <div class="info-row"><span class="info-label">Inventory model</span><span class="info-value">Consignment — deployed before invoicing</span></div>
+        <div class="info-row"><span class="info-label">Regulatory</span><span class="info-value">FDA-regulated, QMS required</span></div>
+        <div class="info-row"><span class="info-label">Growth target</span><span class="info-value">~15 FT reps · 5-year build-to-exit</span></div>
+      </div>
+
+      <div class="section-label" style="margin-top:18px; margin-bottom:8px;">Sales flow</div>
+      <div class="sales-flow">
+        <div class="flow-node accent">Forma Medical</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node">45 independent 1099 distributors</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node">Hospitals / surgery centers</div>
+      </div>
+      <div class="callout">Consignment model — inventory in field before invoicing occurs</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <!-- SCOPE -->
+      <div id="scope" class="card" style="scroll-margin-top: 80px;">
+        <div class="card-title">Engagement scope</div>
+        <div class="scope-step"><div class="step-num">1</div><div class="step-text">Evaluate current tech stack</div></div>
+        <div class="scope-step"><div class="step-num">2</div><div class="step-text">Map current ERP flow</div></div>
+        <div class="scope-step"><div class="step-num">3</div><div class="step-text">Identify automation &amp; AI opportunities</div></div>
+        <div class="scope-step"><div class="step-num">4</div><div class="step-text">Support ERP transition</div></div>
+        <div class="scope-step"><div class="step-num">5</div><div class="step-text">Design scalable operational architecture</div></div>
+        <div class="scope-step"><div class="step-num">6</div><div class="step-text">Build AI intelligence layer — the "business brain"</div></div>
+      </div>
+
+      <!-- STATUS -->
+      <div id="status" class="card" style="scroll-margin-top: 80px;">
+        <div class="card-title">Project lifecycle</div>
+        <div class="pipeline">
+          <div class="pipe-stage active">Discovery<span class="sub">Current</span></div>
+          <div class="pipe-stage">Validation</div>
+          <div class="pipe-stage">Optimization</div>
+          <div class="pipe-stage">Architecture</div>
+          <div class="pipe-stage">Implementation</div>
+        </div>
+        <div class="status-bar">
+          <div class="status-dot"></div>
+          <div>
+            <div class="status-text">Discovery &amp; current-state documentation</div>
+            <div class="status-sub">Active — March 2026</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GOVERNING PRINCIPLES -->
+  <div id="principles" class="section" style="scroll-margin-top: 80px;">
+    <div class="section-label">Governing principles</div>
+    <div class="grid-3">
+      <div>
+        <div class="principle-card">
+          <h4>Architecture before automation</h4>
+          <p>No workflows or automation are implemented until current-state systems and processes are documented and validated.</p>
+        </div>
+        <div class="principle-card">
+          <h4>ERP decision gate</h4>
+          <p>No ERP-layer automation until the client confirms the future direction: Odoo OR QuickBooks Online + Implantbase.</p>
+        </div>
+      </div>
+      <div>
+        <div class="principle-card">
+          <h4>Human approval gates</h4>
+          <p>Major lifecycle transitions must include human review and sign-off before changes are executed.</p>
+        </div>
+        <div class="principle-card">
+          <h4>AI assists — humans decide</h4>
+          <p>AI provides analysis, recommendations, and insights. Final operational decisions remain human-driven.</p>
+        </div>
+      </div>
+      <div>
+        <div class="principle-card danger">
+          <h4>Inventory process safeguards</h4>
+          <p>Inventory process changes require client validation due to FDA medical device compliance requirements.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div id="stack" class="section" style="scroll-margin-top: 80px;">
+    <div class="section-label">Technology stack</div>
+    <div class="card">
+      <div class="grid-2">
+        <div>
+          <div class="tech-group">
+            <div class="tech-group-label">ERP / Finance</div>
+            <div class="chip-grid">
+              <div class="chip active"><div class="chip-dot"></div>QuickBooks Desktop</div>
+              <div class="chip active"><div class="chip-dot"></div>Bill.com</div>
+              <div class="chip eval"><div class="chip-dot"></div>QuickBooks Online Enterprise</div>
+              <div class="chip eval"><div class="chip-dot"></div>Odoo</div>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">Inventory management</div>
+            <div class="chip-grid">
+              <div class="chip eval"><div class="chip-dot"></div>Implantbase</div>
+              <div class="chip unknown"><div class="chip-dot"></div>Tray Locator System</div>
+              <div class="chip active"><div class="chip-dot"></div>Excel</div>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">CRM / Sales tracking</div>
+            <div class="chip-grid">
+              <div class="chip active"><div class="chip-dot"></div>Google Sheets CRM</div>
+              <div class="chip replaced"><div class="chip-dot"></div>Nutshell CRM (replaced)</div>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">Compliance</div>
+            <div class="chip-grid">
+              <div class="chip unknown"><div class="chip-dot"></div>QMS platform (unknown)</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="tech-group">
+            <div class="tech-group-label">Communication &amp; documents</div>
+            <div class="chip-grid">
+              <div class="chip active"><div class="chip-dot"></div>Gmail</div>
+              <div class="chip active"><div class="chip-dot"></div>Dropbox</div>
+              <div class="chip active"><div class="chip-dot"></div>Adobe Sign</div>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">Meetings</div>
+            <div class="chip-grid">
+              <div class="chip active"><div class="chip-dot"></div>Zoom</div>
+              <div class="chip active"><div class="chip-dot"></div>Otter.ai</div>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">AI tools</div>
+            <div class="chip-grid">
+              <div class="chip ai"><div class="chip-dot"></div>Grok (primary)</div>
+              <div class="chip ai"><div class="chip-dot"></div>Gemini</div>
+              <div class="chip ai"><div class="chip-dot"></div>Claude</div>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">Unknown / unconfirmed</div>
+            <div class="chip-grid">
+              <div class="chip unknown"><div class="chip-dot"></div>Surgery tracking system</div>
+              <div class="chip unknown"><div class="chip-dot"></div>Implantbase API</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="legend-strip">
+        <div class="legend-item"><div class="chip-dot" style="background:var(--blue-600)"></div>Active / confirmed</div>
+        <div class="legend-item"><div class="chip-dot" style="background:var(--amber-600)"></div>Under evaluation</div>
+        <div class="legend-item"><div class="chip-dot" style="background:var(--red-600)"></div>Unknown platform</div>
+        <div class="legend-item"><div class="chip-dot" style="background:var(--purple-600)"></div>AI tools</div>
+        <div class="legend-item"><div class="chip-dot" style="background:var(--gray-400)"></div>Replaced / deprecated</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCOVERY THEMES -->
+  <div id="themes" class="section" style="scroll-margin-top: 80px;">
+    <div class="section-label">Key themes from discovery</div>
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table class="themes-table">
+        <thead>
+          <tr>
+            <th style="width:110px;">Topic</th>
+            <th>What Andrew said</th>
+            <th>What data shows</th>
+            <th style="width:280px;">Align / diverge</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Systems</strong></td>
+            <td>Systems are highly disconnected</td>
+            <td>No integrations confirmed between any active systems</td>
+            <td>
+              <span class="align-tag align-yes">Aligns</span>
+              <span class="diverge-note">Email is not marginal — it acts as an operational trigger</span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>AI goal</strong></td>
+            <td>Goal is a "business brain"</td>
+            <td>Manual weekly AI analysis process already in place</td>
+            <td>
+              <span class="align-tag align-yes">Aligns</span>
+              <span class="diverge-note">No automation or persistent intelligence layer exists yet</span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>CRM</strong></td>
+            <td>CRM is "in a weird spot"</td>
+            <td>Google Sheets replaced Nutshell CRM</td>
+            <td>
+              <span class="align-tag align-yes">Aligns</span>
+              <span class="diverge-note">Simple system works for now — not scalable long-term</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>

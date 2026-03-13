@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — AI Baseline & Opportunity Map</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0f1c2e;
+    --navy-mid: #172436;
+    --navy-light: #1e3248;
+    --navy-border: #2a4060;
+    --accent: #00b4d8;
+    --accent-dim: rgba(0,180,216,0.12);
+    --amber: #f59e0b;
+    --amber-bg: rgba(245,158,11,0.12);
+    --red: #ef4444;
+    --red-bg: rgba(239,68,68,0.12);
+    --green: #10b981;
+    --green-bg: rgba(16,185,129,0.12);
+    --teal: #14b8a6;
+    --teal-bg: rgba(20,184,166,0.12);
+    --purple: #8b5cf6;
+    --purple-bg: rgba(139,92,246,0.12);
+    --orange: #f97316;
+    --slate: #94a3b8;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --surface: #1a2a3e;
+    --surface-raised: #1e3350;
+    --border: rgba(255,255,255,0.08);
+    --border-mid: rgba(255,255,255,0.14);
+    --sidebar-w: 240px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--navy); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; font-size: 14px; line-height: 1.6; }
+
+  /* SIDEBAR */
+  aside { width: var(--sidebar-w); background: var(--navy-mid); border-right: 1px solid var(--navy-border); display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
+  .sidebar-header { padding: 18px 16px 14px; border-bottom: 1px solid var(--navy-border); }
+  .sidebar-logo { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+  .sidebar-title { font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.3; }
+  .sidebar-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .nav-group { padding: 10px 8px 4px; }
+  .nav-group-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; padding: 0 8px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; cursor: pointer; color: var(--text-secondary); font-size: 12.5px; transition: all 0.15s; border: none; background: none; width: 100%; text-align: left; }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); }
+  .nav-item.active { background: var(--accent-dim); color: var(--accent); font-weight: 500; }
+  .nav-item .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .dot-teal { background: var(--teal); }
+  .dot-amber { background: var(--amber); }
+  .dot-red { background: var(--red); }
+  .dot-green { background: var(--green); }
+  .dot-purple { background: var(--purple); }
+  .dot-accent { background: var(--accent); }
+  .dot-orange { background: var(--orange); }
+  .sidebar-footer { margin-top: auto; padding: 12px 16px; border-top: 1px solid var(--navy-border); font-size: 11px; color: var(--text-muted); }
+
+  /* MAIN */
+  main { flex: 1; overflow-y: auto; padding: 28px 32px; }
+  .frame { display: none; }
+  .frame.active { display: block; }
+  .frame-header { margin-bottom: 24px; }
+  .frame-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .frame-title { font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1.2; margin-bottom: 6px; }
+  .frame-desc { font-size: 13px; color: var(--text-secondary); max-width: 680px; }
+
+  /* CARDS */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .card-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px; }
+  .card-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card.amber { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.06); }
+  .card.red { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.06); }
+  .card.green { border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.06); }
+  .card.teal { border-color: rgba(20,184,166,0.25); background: rgba(20,184,166,0.06); }
+  .card.purple { border-color: rgba(139,92,246,0.25); background: rgba(139,92,246,0.06); }
+  .card.accent { border-color: rgba(0,180,216,0.3); background: rgba(0,180,216,0.06); }
+  .card.orange { border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.06); }
+  .card-icon { font-size: 18px; margin-bottom: 8px; }
+  .card-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+  .card-value { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+  .card-note { font-size: 12px; color: var(--text-secondary); }
+
+  /* PIPELINE / FLOW */
+  .flow-wrap { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
+  .flow-step { display: flex; align-items: flex-start; gap: 14px; }
+  .flow-col { display: flex; flex-direction: column; align-items: center; }
+  .flow-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .flow-line { width: 2px; flex: 1; min-height: 20px; background: var(--navy-border); }
+  .flow-body { flex: 1; padding-bottom: 20px; }
+  .flow-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+  .flow-sub { font-size: 12px; color: var(--text-secondary); }
+  .flow-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+  .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .badge-accent { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(0,180,216,0.3); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid rgba(139,92,246,0.3); }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 20px; }
+  thead th { text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--navy-border); }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(255,255,255,0.03); }
+  td.primary { color: var(--text-primary); font-weight: 500; }
+  td.center { text-align: center; }
+
+  /* STICKY NOTES */
+  .sticky-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .sticky { border-radius: 8px; padding: 14px; font-size: 12.5px; font-weight: 500; line-height: 1.5; min-width: 180px; max-width: 220px; }
+  .sticky-red { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+  .sticky-amber { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fcd34d; }
+  .sticky-green { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #6ee7b7; }
+  .sticky-accent { background: rgba(0,180,216,0.1); border: 1px solid rgba(0,180,216,0.25); color: #67e8f9; }
+  .sticky-purple { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25); color: #c4b5fd; }
+
+  /* QUOTE */
+  .quote-block { border-left: 3px solid var(--accent); background: rgba(0,180,216,0.07); border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 13px; color: var(--text-secondary); font-style: italic; margin-bottom: 14px; line-height: 1.6; }
+  .quote-attr { font-size: 11px; font-style: normal; color: var(--text-muted); margin-top: 6px; }
+
+  /* SECTION DIVIDER */
+  .section-divider { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); padding: 10px 0 8px; border-top: 1px solid var(--navy-border); margin-bottom: 14px; }
+
+  /* RATING DOTS */
+  .rating { display: flex; gap: 4px; }
+  .rating-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .rating-dot.filled-green { background: var(--green); }
+  .rating-dot.filled-amber { background: var(--amber); }
+  .rating-dot.filled-red { background: var(--red); }
+  .rating-dot.empty { background: var(--navy-border); }
+
+  /* PILL */
+  .pill { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+  .pill-accent { background: var(--accent-dim); color: var(--accent); }
+  .pill-amber { background: var(--amber-bg); color: var(--amber); }
+  .pill-red { background: var(--red-bg); color: var(--red); }
+  .pill-green { background: var(--green-bg); color: var(--green); }
+  .pill-purple { background: var(--purple-bg); color: var(--purple); }
+
+  /* ALERT */
+  .alert { display: flex; gap: 10px; padding: 12px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 12.5px; }
+  .alert-red { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); }
+  .alert-amber { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+  .alert-green { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); }
+  .alert-accent { background: rgba(0,180,216,0.08); border: 1px solid rgba(0,180,216,0.25); }
+  .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .alert-text { color: var(--text-secondary); line-height: 1.5; }
+  .alert-text strong { color: var(--text-primary); }
+
+  /* NUMBERED LIST */
+  .num-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .num-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--text-secondary); }
+  .num-list .num { width: 22px; height: 22px; border-radius: 50%; background: var(--navy-light); border: 1px solid var(--navy-border); font-size: 11px; font-weight: 700; color: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+  /* PROGRESS BAR */
+  .prog-row { margin-bottom: 10px; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+  .prog-label span:first-child { color: var(--text-secondary); }
+  .prog-label span:last-child { color: var(--text-muted); }
+  .prog-bar { height: 6px; background: var(--navy-border); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 3px; }
+
+  /* SCORE */
+  .score-box { text-align: center; padding: 20px; }
+  .score-num { font-size: 48px; font-weight: 800; line-height: 1; }
+  .score-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* HIGHLIGHT ROW */
+  .highlight-row { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .highlight-icon { font-size: 22px; flex-shrink: 0; }
+  .highlight-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+  .highlight-value { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .highlight-note { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* RANK TABLE ROWS */
+  .rank-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; background: var(--surface); border: 1px solid var(--border); }
+  .rank-num { font-size: 13px; font-weight: 800; color: var(--text-muted); width: 20px; flex-shrink: 0; }
+  .rank-label { flex: 1; font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .rank-sub { font-size: 11px; color: var(--text-muted); }
+  .rank-meta { display: flex; gap: 8px; align-items: center; }
+
+  /* OVERVIEW TOP STRIP */
+  .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .stat-box .stat-val { font-size: 26px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .stat-box .stat-lbl { font-size: 11px; color: var(--text-muted); }
+  .stat-box .stat-note { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* TAG */
+  .tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--navy-light); color: var(--text-muted); border: 1px solid var(--navy-border); margin: 2px 2px 0 0; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--navy-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  @media (max-width: 900px) {
+    .card-grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .card-grid-2 { grid-template-columns: 1fr; }
+    .stat-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Forma Medical</div>
+    <div class="sidebar-title">AI Baseline &amp; Opportunity Map</div>
+    <div class="sidebar-sub">Strategic AI Assessment</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Overview</div>
+    <button class="nav-item active" onclick="showFrame('overview')">
+      <span class="dot dot-accent"></span> AI State at a Glance
+    </button>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Current State</div>
+    <button class="nav-item" onclick="showFrame('weekly-process')">
+      <span class="dot dot-amber"></span> Weekly AI Process
+    </button>
+    <button class="nav-item" onclick="showFrame('multi-model')">
+      <span class="dot dot-accent"></span> Multi-Model Strategy
+    </button>
+    <button class="nav-item" onclick="showFrame('scenario-modeling')">
+      <span class="dot dot-purple"></span> Scenario Modeling
+    </button>
+    <button class="nav-item" onclick="showFrame('performance-analysis')">
+      <span class="dot dot-teal"></span> Performance Analysis
+    </button>
+    <button class="nav-item" onclick="showFrame('decision-support')">
+      <span class="dot dot-green"></span> Decision Support
+    </button>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Gaps & Readiness</div>
+    <button class="nav-item" onclick="showFrame('limitations')">
+      <span class="dot dot-red"></span> Limitations
+    </button>
+    <button class="nav-item" onclick="showFrame('integrations')">
+      <span class="dot dot-amber"></span> AI &amp; Operations
+    </button>
+    <button class="nav-item" onclick="showFrame('ai-literacy')">
+      <span class="dot dot-accent"></span> AI Literacy
+    </button>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Opportunities</div>
+    <button class="nav-item" onclick="showFrame('opportunities')">
+      <span class="dot dot-green"></span> Opportunity Register
+    </button>
+    <button class="nav-item" onclick="showFrame('tools')">
+      <span class="dot dot-purple"></span> Tools Assessment
+    </button>
+  </div>
+
+  <div class="sidebar-footer">AI Baseline · v1.0 · 2025</div>
+</aside>
+
+<!-- MAIN -->
+<main>
+
+  <!-- OVERVIEW -->
+  <div id="overview" class="frame active">
+    <div class="frame-header">
+      <div class="frame-tag">AI Baseline &amp; Opportunity Map</div>
+      <div class="frame-title">AI State at a Glance</div>
+      <div class="frame-desc">Where Forma stands today with AI — what's working, what's broken, and where the biggest opportunities lie.</div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--accent)">3</div>
+        <div class="stat-lbl">AI Models in Active Use</div>
+        <div class="stat-note">Grok · Gemini · Claude</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--amber)">0</div>
+        <div class="stat-lbl">Automated AI Integrations</div>
+        <div class="stat-note">All data entry is manual</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--red)">0</div>
+        <div class="stat-lbl">Persistent AI Memory</div>
+        <div class="stat-note">Each session starts fresh</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--green)">High</div>
+        <div class="stat-lbl">Leadership AI Adoption</div>
+        <div class="stat-note">Rare for this company size</div>
+      </div>
+    </div>
+
+    <div class="section-divider">What's Working</div>
+    <div class="card-grid-3">
+      <div class="card green">
+        <div class="card-icon">✅</div>
+        <div class="card-label">Leadership Adoption</div>
+        <div class="card-value">Andrew uses AI weekly</div>
+        <div class="card-note">Already incorporated into the operating rhythm — this is uncommon at this company size.</div>
+      </div>
+      <div class="card green">
+        <div class="card-icon">✅</div>
+        <div class="card-label">Multi-Model Approach</div>
+        <div class="card-value">Grok + Gemini + Claude</div>
+        <div class="card-note">Intentional model diversity to reduce bias and triangulate decisions.</div>
+      </div>
+      <div class="card green">
+        <div class="card-icon">✅</div>
+        <div class="card-label">Organized Data Exists</div>
+        <div class="card-value">Dropbox knowledge base</div>
+        <div class="card-note">Highly organized file structure — once indexed, this becomes a major AI asset.</div>
+      </div>
+    </div>
+
+    <div class="section-divider">Critical Gaps</div>
+    <div class="card-grid-3">
+      <div class="card red">
+        <div class="card-icon">🔴</div>
+        <div class="card-label">No Automation</div>
+        <div class="card-value">100% manual process</div>
+        <div class="card-note">Every analysis requires manual extraction, prompt construction, and model input.</div>
+      </div>
+      <div class="card red">
+        <div class="card-icon">🔴</div>
+        <div class="card-label">No Memory</div>
+        <div class="card-value">Context reset every session</div>
+        <div class="card-note">Business context must be re-provided every single week from scratch.</div>
+      </div>
+      <div class="card red">
+        <div class="card-icon">🔴</div>
+        <div class="card-label">No Data Integration</div>
+        <div class="card-value">AI has no live data access</div>
+        <div class="card-note">Disconnected from QuickBooks, Google Sheets, ERP, and inventory systems.</div>
+      </div>
+      <div class="card amber">
+        <div class="card-icon">⚠️</div>
+        <div class="card-label">Prompt Engineering Burden</div>
+        <div class="card-value">No templates or reuse</div>
+        <div class="card-note">Andrew constructs prompts from scratch each time — output quality tied to his bandwidth.</div>
+      </div>
+      <div class="card amber">
+        <div class="card-icon">⚠️</div>
+        <div class="card-label">No Shared Team Layer</div>
+        <div class="card-value">Siloed AI use</div>
+        <div class="card-note">Team members use different models independently with no shared context or coordination.</div>
+      </div>
+      <div class="card amber">
+        <div class="card-icon">⚠️</div>
+        <div class="card-label">Unnamed Surgery System</div>
+        <div class="card-value">Unidentified data source 🔴</div>
+        <div class="card-note">Surgery tracking system is a data gap in every weekly AI cycle. Needs identification.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEKLY PROCESS -->
+  <div id="weekly-process" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 1 — Current State</div>
+      <div class="frame-title">Andrew's Weekly AI Process</div>
+      <div class="frame-desc">A fully manual, end-to-end process executed every week. No automation exists at any step.</div>
+    </div>
+
+    <div class="quote-block">
+      "Every week I run our P&L through AI, I run our CRM, I run every single... it's all very manual."
+      <div class="quote-attr">— Andrew</div>
+    </div>
+    <div class="quote-block">
+      "The intelligence is there. It's just a pretty cumbersome process. I have to think, all right, what are the inputs into this prompt? What do I want out of it?"
+      <div class="quote-attr">— Andrew</div>
+    </div>
+
+    <div class="section-divider">Step-by-Step Weekly Workflow</div>
+    <div class="flow-wrap">
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(0,180,216,0.15);color:var(--accent)">⏰</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">End of Week Trigger</div>
+          <div class="flow-sub">Manual — no scheduled trigger, no automation</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(239,68,68,0.15);color:var(--red)">1</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Pull P&L from QuickBooks Desktop <span class="flow-badge badge-red">Manual</span></div>
+          <div class="flow-sub">Manual export — no API or live connection available</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(239,68,68,0.15);color:var(--red)">2</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Pull CRM Data from Google Sheets <span class="flow-badge badge-red">Manual</span></div>
+          <div class="flow-sub">CRM data lives in Google Sheets — manually gathered each cycle</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(239,68,68,0.15);color:var(--red)">3</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Pull Surgery Tracking + Customer Cohort Data <span class="flow-badge badge-red">Manual</span> <span class="flow-badge badge-amber">⚠️ System Unnamed</span></div>
+          <div class="flow-sub">Source system is unidentified — this is a recurring data gap in every cycle</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(239,68,68,0.15);color:var(--red)">4</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Pull Customer Cohort / Region / Target Data <span class="flow-badge badge-red">Manual</span></div>
+          <div class="flow-sub">Additional segmentation data pulled separately</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(245,158,11,0.15);color:var(--amber)">5</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Manually Construct Prompt from Scratch <span class="flow-badge badge-amber">No Templates</span></div>
+          <div class="flow-sub">Andrew defines inputs and desired outputs each time — no reusable structure</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(0,180,216,0.15);color:var(--accent)">6</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Load into Grok → Get Output</div>
+          <div class="flow-sub">Model 1 of 3 — runs independently</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(0,180,216,0.15);color:var(--accent)">7</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Load into Gemini → Get Output</div>
+          <div class="flow-sub">Model 2 of 3 — runs independently</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(0,180,216,0.15);color:var(--accent)">8</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Load into Claude → Get Output</div>
+          <div class="flow-sub">Model 3 of 3 — used by some team members</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(245,158,11,0.15);color:var(--amber)">9</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Manually Triangulate & Synthesize Outputs <span class="flow-badge badge-amber">Manual</span></div>
+          <div class="flow-sub">Compare all three model outputs by hand — no shared workspace or tooling</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(16,185,129,0.15);color:var(--green)">✓</div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Make Strategic Decisions</div>
+          <div class="flow-sub">Sales targets · Rep performance · Regional tracking · Territory planning · Hiring</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider">Pain Points</div>
+    <div class="alert alert-red"><div class="alert-icon">🔴</div><div class="alert-text"><strong>No automation at any step.</strong> This is a fully manual process, start to finish.</div></div>
+    <div class="alert alert-red"><div class="alert-icon">🔴</div><div class="alert-text"><strong>No memory or context persistence</strong> between sessions. All context is re-entered weekly.</div></div>
+    <div class="alert alert-red"><div class="alert-icon">🔴</div><div class="alert-text"><strong>No shared team AI layer.</strong> Each person runs their own model with no coordination.</div></div>
+    <div class="alert alert-amber"><div class="alert-icon">⚠️</div><div class="alert-text"><strong>Prompt quality depends entirely on Andrew's bandwidth</strong> and recall each week.</div></div>
+    <div class="alert alert-amber"><div class="alert-icon">⚠️</div><div class="alert-text"><strong>Unnamed surgery system</strong> creates a structural data gap in every single cycle.</div></div>
+  </div>
+
+  <!-- MULTI-MODEL -->
+  <div id="multi-model" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 2 — Current State</div>
+      <div class="frame-title">Multi-Model AI Strategy</div>
+      <div class="frame-desc">Andrew intentionally uses multiple AI models in parallel to reduce bias and validate insights before making decisions.</div>
+    </div>
+
+    <div class="card-grid-3">
+      <div class="card accent">
+        <div class="card-icon">⚡</div>
+        <div class="card-label">Model 1</div>
+        <div class="card-value">Grok</div>
+        <div class="card-note">Andrew's primary model. No known API integration path — limits automation options.</div>
+      </div>
+      <div class="card accent">
+        <div class="card-icon">💎</div>
+        <div class="card-label">Model 2</div>
+        <div class="card-value">Gemini</div>
+        <div class="card-note">Google's frontier model — used for cross-validation of outputs.</div>
+      </div>
+      <div class="card accent">
+        <div class="card-icon">🤖</div>
+        <div class="card-label">Model 3</div>
+        <div class="card-value">Claude</div>
+        <div class="card-note">Anthropic's model — used by some team members for analysis.</div>
+      </div>
+    </div>
+
+    <div class="section-divider">Why Multi-Model?</div>
+    <ul class="num-list">
+      <li><span class="num">1</span><span>Reduce model bias — no single model has a monopoly on Andrew's strategic thinking.</span></li>
+      <li><span class="num">2</span><span>Validate insights — convergence across models increases confidence in conclusions.</span></li>
+      <li><span class="num">3</span><span>Triangulate before deciding — Andrew actively values perspective diversity and wants to preserve this approach.</span></li>
+    </ul>
+
+    <div class="section-divider">Current Workflow</div>
+    <div class="flow-wrap">
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(0,180,216,0.15);color:var(--accent)">P</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Prompt Constructed</div>
+          <div class="flow-sub">Andrew manually builds prompt from scratch each time</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(0,180,216,0.15);color:var(--accent)">G</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Sent to Grok → Output captured</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(0,180,216,0.15);color:var(--accent)">G</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Sent to Gemini → Output captured</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(0,180,216,0.15);color:var(--accent)">C</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Sent to Claude → Output captured</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(245,158,11,0.15);color:var(--amber)">↔</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Compare Results Manually</div>
+          <div class="flow-sub">No tooling — side-by-side review in browser or copy/paste</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-col">
+          <div class="flow-circle" style="background:rgba(16,185,129,0.15);color:var(--green)">✓</div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-title">Synthesize Insights → Decision</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-amber">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-text"><strong>Key constraint:</strong> Grok has no known API integration path. Any automated multi-model architecture will need to work around this or find an alternative for Grok's role in the workflow.</div>
+    </div>
+  </div>
+
+  <!-- SCENARIO MODELING -->
+  <div id="scenario-modeling" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 3 — Current State</div>
+      <div class="frame-title">Business Scenario Modeling</div>
+      <div class="frame-desc">AI is used as a strategic advisor to test scenarios before making real business decisions.</div>
+    </div>
+
+    <div class="section-divider">Scenarios Andrew Models with AI</div>
+    <div class="card-grid-3">
+      <div class="card purple">
+        <div class="card-icon">👤</div>
+        <div class="card-label">Scenario Type</div>
+        <div class="card-value">Rep Hiring</div>
+        <div class="card-note">Evaluating when, where, and how many reps to hire based on revenue and coverage data.</div>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">🗺️</div>
+        <div class="card-label">Scenario Type</div>
+        <div class="card-value">Territory Expansion</div>
+        <div class="card-note">Testing new geographic markets and regional deployment strategies.</div>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">🤝</div>
+        <div class="card-label">Scenario Type</div>
+        <div class="card-value">Distributor Performance</div>
+        <div class="card-note">Analyzing distributor effectiveness and identifying underperformers.</div>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">📈</div>
+        <div class="card-label">Scenario Type</div>
+        <div class="card-value">Sales Growth Projections</div>
+        <div class="card-note">Forecasting growth trajectories under different business conditions.</div>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">💰</div>
+        <div class="card-label">Scenario Type</div>
+        <div class="card-value">Investment Decisions</div>
+        <div class="card-note">Stress-testing capital allocation and ROI scenarios.</div>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">📉</div>
+        <div class="card-label">Scenario Type</div>
+        <div class="card-value">Attrition Impact</div>
+        <div class="card-note">Modeling the downstream effect of sales force attrition on revenue and coverage.</div>
+      </div>
+    </div>
+
+    <div class="alert alert-accent">
+      <div class="alert-icon">💡</div>
+      <div class="alert-text"><strong>Strategic value:</strong> Andrew uses AI as a thinking partner, not just a data processor. He tests scenarios before committing to real decisions — this is a mature and high-value use case worth preserving and building on.</div>
+    </div>
+  </div>
+
+  <!-- PERFORMANCE ANALYSIS -->
+  <div id="performance-analysis" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 4 — Current State</div>
+      <div class="frame-title">Performance & Sales Analysis</div>
+      <div class="frame-desc">AI helps identify patterns, gaps, and opportunities across Forma's operational performance data.</div>
+    </div>
+
+    <div class="card-grid-2">
+      <div class="card teal">
+        <div class="card-label">Data Inputs to AI</div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--teal)">→</span><span class="card-value" style="font-size:13px;margin:0">Sales Activity</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--teal)">→</span><span class="card-value" style="font-size:13px;margin:0">Surgeon Adoption Patterns</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--teal)">→</span><span class="card-value" style="font-size:13px;margin:0">Customer Cohorts</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--teal)">→</span><span class="card-value" style="font-size:13px;margin:0">Regional Performance</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--teal)">→</span><span class="card-value" style="font-size:13px;margin:0">Distributor Activity</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--teal)">→</span><span class="card-value" style="font-size:13px;margin:0">Revenue and Margin Data</span></div>
+        </div>
+      </div>
+      <div class="card teal">
+        <div class="card-label">What AI Identifies</div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--green)">✓</span><span class="card-value" style="font-size:13px;margin:0">Performance Patterns</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--green)">✓</span><span class="card-value" style="font-size:13px;margin:0">Performance Gaps</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--green)">✓</span><span class="card-value" style="font-size:13px;margin:0">Expansion Opportunities</span></div>
+        </div>
+        <div style="margin-top:16px;" class="card-note">AI analysis guides decisions on rep deployment, surgeon focus, region prioritization, and demand forecasting.</div>
+      </div>
+    </div>
+
+    <div class="section-divider">Data Sources — Current Connection Status</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Data Source</th>
+          <th>What It Contains</th>
+          <th>AI Connection</th>
+          <th>Extract Method</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="primary">QuickBooks Desktop</td>
+          <td>P&L, financial data</td>
+          <td><span class="pill pill-red">❌ Not Connected</span></td>
+          <td>Manual export</td>
+        </tr>
+        <tr>
+          <td class="primary">Google Sheets (CRM)</td>
+          <td>CRM, sales activity</td>
+          <td><span class="pill pill-red">❌ Not Connected</span></td>
+          <td>Manual copy</td>
+        </tr>
+        <tr>
+          <td class="primary">Surgery Tracking System</td>
+          <td>Cohort, procedure data</td>
+          <td><span class="pill pill-red">❌ Not Connected</span></td>
+          <td>Manual — <strong style="color:var(--amber)">System Unnamed</strong></td>
+        </tr>
+        <tr>
+          <td class="primary">Dropbox</td>
+          <td>Docs, knowledge base</td>
+          <td><span class="pill pill-red">❌ Not Connected</span></td>
+          <td>Not currently queried</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DECISION SUPPORT -->
+  <div id="decision-support" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 5 — Current State</div>
+      <div class="frame-title">Strategic Decision Support</div>
+      <div class="frame-desc">AI-assisted decision-making at the leadership level — with Andrew reviewing all outputs before acting.</div>
+    </div>
+
+    <div class="alert alert-green">
+      <div class="alert-icon">✅</div>
+      <div class="alert-text"><strong>Important distinction:</strong> AI is not making decisions automatically. Andrew reviews all AI outputs and decides how to act. This is responsible, human-in-the-loop AI use.</div>
+    </div>
+
+    <div class="section-divider">Decisions Informed by AI</div>
+    <div class="card-grid-3">
+      <div class="card green">
+        <div class="card-icon">📍</div>
+        <div class="card-value">Rep Deployment</div>
+        <div class="card-note">Where to place sales reps for maximum territory coverage and ROI.</div>
+      </div>
+      <div class="card green">
+        <div class="card-icon">🏥</div>
+        <div class="card-value">Surgeon Focus</div>
+        <div class="card-note">Which surgeons to prioritize based on adoption likelihood and volume.</div>
+      </div>
+      <div class="card green">
+        <div class="card-icon">🗺️</div>
+        <div class="card-value">Regional Expansion</div>
+        <div class="card-note">Which regions to grow into next based on market signals and capacity.</div>
+      </div>
+      <div class="card green">
+        <div class="card-icon">📦</div>
+        <div class="card-value">Inventory Demand</div>
+        <div class="card-note">How inventory demand may evolve based on procedure pipeline and region shifts.</div>
+      </div>
+      <div class="card green">
+        <div class="card-icon">👥</div>
+        <div class="card-value">Hiring Decisions</div>
+        <div class="card-note">When and where to hire — informed by scenario modeling outputs.</div>
+      </div>
+      <div class="card green">
+        <div class="card-icon">💵</div>
+        <div class="card-value">Investment Allocation</div>
+        <div class="card-note">Capital decisions informed by AI scenario stress-testing.</div>
+      </div>
+    </div>
+
+    <div class="section-divider">Vision: What Andrew Actually Wants</div>
+    <div class="quote-block">
+      "Not a chatbot — a business brain that understands all company data and can answer strategic questions without manual data loading."
+      <div class="quote-attr">— Andrew's stated vision for the future AI layer</div>
+    </div>
+
+    <div class="card-grid-2">
+      <div class="card accent">
+        <div class="card-label">Key Requirement</div>
+        <div class="card-value">Modular Architecture</div>
+        <div class="card-note">Andrew explicitly asked whether the system could swap out underlying AI tools without rebuilding the whole AI layer. Needs to be tool-agnostic at the infrastructure level.</div>
+      </div>
+      <div class="card accent">
+        <div class="card-label">Key Requirement</div>
+        <div class="card-value">Multi-Model Preservation</div>
+        <div class="card-note">He wants to keep using multiple models in parallel. The architecture must support this — not collapse everything into a single model.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIMITATIONS -->
+  <div id="limitations" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 7 — Gaps</div>
+      <div class="frame-title">Limitations & Friction Points</div>
+      <div class="frame-desc">The structural gaps that limit Forma's AI effectiveness and cap the value of Andrew's current process.</div>
+    </div>
+
+    <div class="sticky-grid">
+      <div class="sticky sticky-red">Manual data prep<br><span style="font-size:11px;opacity:0.7">Every source, every week</span></div>
+      <div class="sticky sticky-red">Disconnected systems<br><span style="font-size:11px;opacity:0.7">No live data access</span></div>
+      <div class="sticky sticky-red">No persistent context<br><span style="font-size:11px;opacity:0.7">Fresh start every session</span></div>
+      <div class="sticky sticky-amber">No shared knowledge layer<br><span style="font-size:11px;opacity:0.7">Team works in silos</span></div>
+      <div class="sticky sticky-amber">No prompt templates<br><span style="font-size:11px;opacity:0.7">Re-invented weekly</span></div>
+      <div class="sticky sticky-amber">Unnamed surgery system<br><span style="font-size:11px;opacity:0.7">🔴 Unknown data source</span></div>
+      <div class="sticky sticky-red">No Grok API<br><span style="font-size:11px;opacity:0.7">Limits automation options</span></div>
+      <div class="sticky sticky-amber">Dropbox not queryable<br><span style="font-size:11px;opacity:0.7">Knowledge base untapped</span></div>
+    </div>
+
+    <div class="section-divider">Detailed Gap Breakdown</div>
+    <table>
+      <thead>
+        <tr><th>Gap</th><th>Impact</th><th>Severity</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="primary">No Automation</td>
+          <td>Every analysis requires manual extraction, prompt construction, and model input. No scheduled or triggered analysis exists.</td>
+          <td><span class="pill pill-red">🔴 Critical</span></td>
+        </tr>
+        <tr>
+          <td class="primary">No Memory / Context Persistence</td>
+          <td>Each AI session starts fresh. Business context must be re-provided every week.</td>
+          <td><span class="pill pill-red">🔴 Critical</span></td>
+        </tr>
+        <tr>
+          <td class="primary">No Data Integration</td>
+          <td>AI models have no direct connection to any live data source. Analysis is only as current as the last manual pull.</td>
+          <td><span class="pill pill-red">🔴 Critical</span></td>
+        </tr>
+        <tr>
+          <td class="primary">No Grok API</td>
+          <td>Andrew's preferred model has no known integration path, limiting multi-model architecture options significantly.</td>
+          <td><span class="pill pill-amber">⚠️ High</span></td>
+        </tr>
+        <tr>
+          <td class="primary">Prompt Engineering Burden</td>
+          <td>No templated or repeatable prompt structure. Output quality is tied to Andrew's bandwidth each week.</td>
+          <td><span class="pill pill-amber">⚠️ High</span></td>
+        </tr>
+        <tr>
+          <td class="primary">No Shared Team AI Layer</td>
+          <td>Team members use different models independently with no shared context, coordinated outputs, or institutional memory.</td>
+          <td><span class="pill pill-amber">⚠️ High</span></td>
+        </tr>
+        <tr>
+          <td class="primary">Dropbox Not Queryable</td>
+          <td>A high-value unstructured data source is completely disconnected from all analytical workflows.</td>
+          <td><span class="pill pill-amber">⚠️ Medium</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- INTEGRATIONS -->
+  <div id="integrations" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 8 — Gaps</div>
+      <div class="frame-title">AI & Operations: Current State</div>
+      <div class="frame-desc">AI is currently isolated from all operational systems. Zero integration exists — and zero workflow automation is AI-driven.</div>
+    </div>
+
+    <div class="section-divider">Systems Not Connected to AI</div>
+    <div class="card-grid-3">
+      <div class="card red">
+        <div class="card-icon">📊</div>
+        <div class="card-value">QuickBooks Desktop</div>
+        <div class="card-note">Financial data must be manually extracted and pasted into prompts each week.</div>
+      </div>
+      <div class="card red">
+        <div class="card-icon">📋</div>
+        <div class="card-value">Google Sheets (CRM)</div>
+        <div class="card-note">Sales and CRM data is stored here but not connected to any AI pipeline.</div>
+      </div>
+      <div class="card red">
+        <div class="card-icon">📁</div>
+        <div class="card-value">Dropbox</div>
+        <div class="card-note">Highly organized knowledge base — but completely disconnected from AI. Not queryable.</div>
+      </div>
+      <div class="card red">
+        <div class="card-icon">🏭</div>
+        <div class="card-value">ERP</div>
+        <div class="card-note">No AI connection or data flow from the ERP system.</div>
+      </div>
+      <div class="card red">
+        <div class="card-icon">📦</div>
+        <div class="card-value">Inventory Systems</div>
+        <div class="card-note">Inventory data is not accessible to AI for demand forecasting or alerting.</div>
+      </div>
+      <div class="card amber">
+        <div class="card-icon">🔴</div>
+        <div class="card-value">Surgery Tracking System</div>
+        <div class="card-note">System is unidentified. Cannot assess integration feasibility until system is named.</div>
+      </div>
+    </div>
+
+    <div class="section-divider">Workflows Still Fully Manual (AI Not Involved)</div>
+    <ul class="num-list">
+      <li><span class="num">✗</span><span>ERP entries — still processed manually</span></li>
+      <li><span class="num">✗</span><span>Case sheet processing — no AI automation</span></li>
+      <li><span class="num">✗</span><span>Report generation — built by hand each cycle</span></li>
+      <li><span class="num">✗</span><span>Inventory forecasting — no AI-assisted demand planning</span></li>
+      <li><span class="num">✗</span><span>Document search — no AI query layer over Dropbox</span></li>
+      <li><span class="num">✗</span><span>Operational alerts — no trigger-based AI notifications</span></li>
+    </ul>
+
+    <div class="alert alert-green">
+      <div class="alert-icon">💡</div>
+      <div class="alert-text"><strong>Strength worth noting:</strong> Forma's biggest advantage is leadership adoption. Andrew is already comfortable prompting AI, comparing models, and using AI with real business data. This is uncommon at this company size — and it makes implementation significantly easier.</div>
+    </div>
+  </div>
+
+  <!-- AI LITERACY -->
+  <div id="ai-literacy" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 10 — Readiness</div>
+      <div class="frame-title">AI Literacy Assessment</div>
+      <div class="frame-desc">Where Forma's leadership stands on the AI maturity curve — and what that means for implementation.</div>
+    </div>
+
+    <div class="card-grid-2">
+      <div class="card accent">
+        <div class="score-box">
+          <div class="score-num" style="color:var(--green)">High</div>
+          <div class="score-label">Andrew's AI Literacy Level</div>
+          <div style="margin-top:8px;font-size:12px;color:var(--text-secondary)">Meaningfully above-average for a company at this scale</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Benchmark Context</div>
+        <div class="card-note" style="margin-top:8px;">Most companies of this size are still in the "we've heard of ChatGPT" phase. Andrew is actively running multi-model analysis on live business data every week. That's a 2-3 year head start on most peers.</div>
+      </div>
+    </div>
+
+    <div class="section-divider">What Andrew Can Already Do</div>
+
+    <div class="prog-row">
+      <div class="prog-label"><span>Prompt Engineering</span><span>Advanced</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:80%;background:var(--green)"></div></div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-label"><span>Multi-Model Comparison</span><span>Advanced</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:85%;background:var(--green)"></div></div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-label"><span>AI for Business Decisions</span><span>Advanced</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:90%;background:var(--green)"></div></div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-label"><span>Scenario Modeling with AI</span><span>Advanced</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:85%;background:var(--green)"></div></div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-label"><span>API / Architecture Concepts</span><span>Comfortable</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:65%;background:var(--accent)"></div></div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-label"><span>AI Automation / Pipelines</span><span>Early Stage</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:20%;background:var(--amber)"></div></div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-label"><span>Team-Wide AI Enablement</span><span>Not Started</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:5%;background:var(--red)"></div></div>
+    </div>
+
+    <div class="section-divider" style="margin-top:20px;">Key Signals from Discovery</div>
+    <ul class="num-list">
+      <li><span class="num">✓</span><span>Understands multi-model analysis and intentionally uses different models for different perspectives.</span></li>
+      <li><span class="num">✓</span><span>Has articulated a clear, sophisticated vision: a "business brain" — not a chatbot.</span></li>
+      <li><span class="num">✓</span><span>Comfortable with API concepts and modular architecture — explicitly asked about swappable AI tooling.</span></li>
+      <li><span class="num">✓</span><span>Uses AI for scenario modeling: rep deployment, attrition, territory, hiring, investment.</span></li>
+      <li><span class="num">⚠️</span><span>Current usage is entirely prompt-based and manual — no automation, no pipelines, no integrations yet.</span></li>
+    </ul>
+  </div>
+
+  <!-- OPPORTUNITIES -->
+  <div id="opportunities" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 9 — Opportunities</div>
+      <div class="frame-title">Automation Opportunity Register</div>
+      <div class="frame-desc">Ranked by estimated value and implementation feasibility. Highest ROI items target the weekly manual process first.</div>
+    </div>
+
+    <div class="rank-row" style="border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.06)">
+      <div class="rank-num" style="color:var(--green)">#1</div>
+      <div style="flex:1">
+        <div class="rank-label">Prompt Library & Template System</div>
+        <div class="rank-sub">Eliminate the weekly from-scratch prompt rebuild. Build reusable, parameterized prompt templates for the weekly business review.</div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag">Low effort</span><span class="tag">High impact</span><span class="tag">Week 1</span>
+        </div>
+      </div>
+      <div class="rank-meta">
+        <span class="pill pill-green">Quick Win</span>
+      </div>
+    </div>
+
+    <div class="rank-row" style="border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.06)">
+      <div class="rank-num" style="color:var(--green)">#2</div>
+      <div style="flex:1">
+        <div class="rank-label">Google Sheets (CRM) → AI Data Pipeline</div>
+        <div class="rank-sub">Auto-extract CRM data on a schedule so Andrew doesn't have to pull it manually each week.</div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag">Medium effort</span><span class="tag">High impact</span><span class="tag">Phase 1</span>
+        </div>
+      </div>
+      <div class="rank-meta">
+        <span class="pill pill-green">High Value</span>
+      </div>
+    </div>
+
+    <div class="rank-row" style="border-color:rgba(0,180,216,0.3);background:rgba(0,180,216,0.06)">
+      <div class="rank-num" style="color:var(--accent)">#3</div>
+      <div style="flex:1">
+        <div class="rank-label">QuickBooks Desktop → AI Data Extraction</div>
+        <div class="rank-sub">Automate P&L extraction from QuickBooks Desktop. Options: scheduled export + parser, or QBD connector.</div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag">Medium–High effort</span><span class="tag">High impact</span><span class="tag">Phase 1</span>
+        </div>
+      </div>
+      <div class="rank-meta">
+        <span class="pill pill-accent">High Value</span>
+      </div>
+    </div>
+
+    <div class="rank-row" style="border-color:rgba(0,180,216,0.3);background:rgba(0,180,216,0.06)">
+      <div class="rank-num" style="color:var(--accent)">#4</div>
+      <div style="flex:1">
+        <div class="rank-label">Persistent AI Memory / Business Context Layer</div>
+        <div class="rank-sub">Build a shared context document or vector store that retains Forma's business context across all AI sessions.</div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag">Medium effort</span><span class="tag">High strategic value</span><span class="tag">Phase 1–2</span>
+        </div>
+      </div>
+      <div class="rank-meta">
+        <span class="pill pill-accent">Strategic</span>
+      </div>
+    </div>
+
+    <div class="rank-row" style="border-color:rgba(139,92,246,0.3);background:rgba(139,92,246,0.06)">
+      <div class="rank-num" style="color:var(--purple)">#5</div>
+      <div style="flex:1">
+        <div class="rank-label">Dropbox AI Query Layer</div>
+        <div class="rank-sub">Index Dropbox knowledge base so AI can retrieve documents, SOPs, and historical files on demand without manual digging.</div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag">Medium effort</span><span class="tag">High strategic value</span><span class="tag">Phase 2</span>
+        </div>
+      </div>
+      <div class="rank-meta">
+        <span class="pill pill-purple">Phase 2</span>
+      </div>
+    </div>
+
+    <div class="rank-row" style="border-color:rgba(139,92,246,0.3);background:rgba(139,92,246,0.06)">
+      <div class="rank-num" style="color:var(--purple)">#6</div>
+      <div style="flex:1">
+        <div class="rank-label">Shared Team AI Layer</div>
+        <div class="rank-sub">A centralized AI workspace where the team accesses shared context, shared prompt history, and coordinated outputs — not siloed by individual.</div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag">High effort</span><span class="tag">High long-term value</span><span class="tag">Phase 2</span>
+        </div>
+      </div>
+      <div class="rank-meta">
+        <span class="pill pill-purple">Phase 2</span>
+      </div>
+    </div>
+
+    <div class="rank-row" style="border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.06)">
+      <div class="rank-num" style="color:var(--amber)">#7</div>
+      <div style="flex:1">
+        <div class="rank-label">Surgery Tracking System — Identify & Integrate</div>
+        <div class="rank-sub">First: identify the system. Then assess integration path to eliminate this recurring data gap from the weekly cycle.</div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag">Unknown effort</span><span class="tag">Blocker</span><span class="tag">Needs discovery</span>
+        </div>
+      </div>
+      <div class="rank-meta">
+        <span class="pill pill-amber">Discovery First</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLS -->
+  <div id="tools" class="frame">
+    <div class="frame-header">
+      <div class="frame-tag">Frame 10 — Assessment</div>
+      <div class="frame-title">AI Tools Assessment</div>
+      <div class="frame-desc">Current AI tools in use, their role in Andrew's process, and integration considerations.</div>
+    </div>
+
+    <div class="section-divider">AI Models Currently in Use</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Provider</th>
+          <th>How It's Used</th>
+          <th>API Available</th>
+          <th>Integration Path</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="primary">Grok</td>
+          <td>xAI</td>
+          <td>Primary model — Andrew's preferred tool for weekly analysis</td>
+          <td class="center"><span class="pill pill-amber">⚠️ Limited</span></td>
+          <td>No known integration path — key constraint</td>
+        </tr>
+        <tr>
+          <td class="primary">Gemini</td>
+          <td>Google</td>
+          <td>Cross-validation, multi-model comparison</td>
+          <td class="center"><span class="pill pill-green">✅ Yes</span></td>
+          <td>Google AI Studio / Vertex AI API available</td>
+        </tr>
+        <tr>
+          <td class="primary">Claude</td>
+          <td>Anthropic</td>
+          <td>Used by some team members; strategic analysis</td>
+          <td class="center"><span class="pill pill-green">✅ Yes</span></td>
+          <td>Anthropic API — strong integration support</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-divider">Data Systems — Integration Feasibility</div>
+    <table>
+      <thead>
+        <tr>
+          <th>System</th>
+          <th>Data Type</th>
+          <th>Current AI Role</th>
+          <th>Integration Feasibility</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="primary">QuickBooks Desktop</td>
+          <td>Financial / P&L</td>
+          <td>Manual export to prompt</td>
+          <td><span class="pill pill-amber">⚠️ Moderate — QBD connector or export parser needed</span></td>
+        </tr>
+        <tr>
+          <td class="primary">Google Sheets</td>
+          <td>CRM / Sales</td>
+          <td>Manual copy to prompt</td>
+          <td><span class="pill pill-green">✅ High — Sheets API is well-supported</span></td>
+        </tr>
+        <tr>
+          <td class="primary">Dropbox</td>
+          <td>Docs / Knowledge</td>
+          <td>Not used in AI</td>
+          <td><span class="pill pill-green">✅ High — Dropbox API + vector indexing</span></td>
+        </tr>
+        <tr>
+          <td class="primary">Surgery Tracking System</td>
+          <td>Procedures / Cohorts</td>
+          <td>Manual — source unnamed</td>
+          <td><span class="pill pill-red">🔴 Unknown — system must be identified first</span></td>
+        </tr>
+        <tr>
+          <td class="primary">ERP</td>
+          <td>Operations</td>
+          <td>Not connected</td>
+          <td><span class="pill pill-amber">⚠️ Depends on ERP platform</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="alert alert-accent">
+      <div class="alert-icon">💡</div>
+      <div class="alert-text"><strong>Architecture principle Andrew confirmed:</strong> The AI layer should be modular — able to swap out underlying tools (models, data connectors) without rebuilding the whole system. Design around this from day one.</div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function showFrame(id) {
+    document.querySelectorAll('.frame').forEach(f => f.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+</script>
+</body>
+</html>

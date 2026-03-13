@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Medical — ERP Flow (Current State)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #f8f7f4;
+  --surface: #ffffff;
+  --border: rgba(0,0,0,0.10);
+  --border-mid: rgba(0,0,0,0.18);
+  --text: #1a1a18;
+  --text2: #5a5a56;
+  --text3: #9a9a94;
+  --teal: #0f6e56; --teal-bg: #e1f5ee; --teal-light: #b6e8d3;
+  --amber: #854f0b; --amber-bg: #faeeda; --amber-light: #f0c27a;
+  --red: #a32d2d; --red-bg: #fcebeb; --red-light: #e8a5a5;
+  --blue: #185fa5; --blue-bg: #e6f1fb; --blue-light: #9dc6ef;
+  --gray-bg: #f0efeb;
+  --node-h: 44px;
+  --font: 'DM Sans', system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: var(--font); color: var(--text); font-size: 13px; line-height: 1.5; }
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px 60px; }
+
+.page-header { margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; }
+.page-header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 2px; }
+.page-header p { font-size: 13px; color: var(--text3); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+/* swimlane board */
+.board { border: 0.5px solid var(--border-mid); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.board-header { background: var(--text); color: white; padding: 10px 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; display: flex; gap: 24px; }
+
+.swimlane-grid { display: grid; }
+
+.lane-row { display: grid; grid-template-columns: 130px 1fr; min-height: 90px; border-bottom: 0.5px solid var(--border); }
+.lane-row:last-child { border-bottom: none; }
+
+.lane-label { background: var(--gray-bg); border-right: 0.5px solid var(--border-mid); padding: 14px 12px; display: flex; align-items: center; justify-content: center; text-align: center; }
+.lane-label span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); writing-mode: horizontal-tb; line-height: 1.4; }
+
+.lane-content { padding: 14px 16px; overflow: visible; }
+
+/* nodes */
+.flow { display: flex; align-items: center; flex-wrap: wrap; gap: 0; row-gap: 8px; }
+.flow-group { display: flex; align-items: center; flex-wrap: wrap; }
+
+.node { display: inline-flex; align-items: center; height: 34px; padding: 0 12px; border-radius: 6px; font-size: 12px; font-weight: 500; white-space: nowrap; border: 1px solid transparent; position: relative; }
+.node-normal { background: var(--surface); border-color: var(--border-mid); color: var(--text); }
+.node-manual { background: var(--amber-bg); border-color: var(--amber-light); color: var(--amber); }
+.node-gap { background: var(--red-bg); border-color: var(--red-light); color: var(--red); border-style: dashed; }
+.node-decision { background: var(--blue-bg); border-color: var(--blue-light); color: var(--blue); border-radius: 6px; }
+.node-system { background: var(--teal-bg); border-color: var(--teal-light); color: var(--teal); }
+.node-critical { background: var(--red-bg); border-color: var(--red-light); color: var(--red); font-weight: 600; }
+
+.arr { color: var(--text3); font-size: 16px; margin: 0 4px; flex-shrink: 0; }
+.arr-down { display: block; text-align: center; color: var(--text3); font-size: 16px; margin: 4px auto; }
+
+.branch { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; margin-top: 6px; }
+.branch-path { flex: 1; min-width: 160px; }
+.branch-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px dashed var(--border-mid); }
+.branch-path .flow { flex-direction: column; align-items: flex-start; }
+
+.flag { display: inline-flex; align-items: flex-start; gap: 7px; background: var(--red-bg); border: 1px solid var(--red-light); border-radius: 6px; padding: 5px 10px; font-size: 11px; color: var(--red); margin-top: 6px; }
+.flag-warn { background: var(--amber-bg); border-color: var(--amber-light); color: var(--amber); }
+.flag-info { background: var(--blue-bg); border-color: var(--blue-light); color: var(--blue); }
+.flag strong { font-weight: 600; }
+
+.note-block { background: var(--gray-bg); border-radius: 6px; padding: 8px 12px; font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.5; }
+
+.phase-divider { background: #1a1a18; color: white; padding: 8px 20px; display: flex; align-items: center; gap: 12px; }
+.phase-num { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.phase-title { font-size: 13px; font-weight: 600; letter-spacing: 0.01em; }
+.phase-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-left: auto; }
+
+.req-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 16px; }
+.req-item { background: var(--surface); border: 0.5px solid var(--border-mid); border-radius: 8px; padding: 10px 14px; }
+.req-item-title { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.req-item-body { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.req-item.critical { border-color: var(--red-light); background: var(--red-bg); }
+.req-item.critical .req-item-title { color: var(--red); }
+
+.field-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.field { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--gray-bg); border: 0.5px solid var(--border); color: var(--text2); }
+
+.section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin: 24px 0 10px; }
+
+.roles-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.role-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.role-name { font-size: 12px; font-weight: 600; margin-bottom: 5px; }
+.role-task { font-size: 11px; color: var(--text2); line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-header">
+    <div>
+      <h1>Forma Medical — ERP Flow (Current State)</h1>
+      <p>Plus 1 Technology &nbsp;·&nbsp; March 2026 &nbsp;·&nbsp; In transition — do not automate ERP layer until path confirmed</p>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--surface);border:1px solid var(--border-mid)"></div>System step</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amber-bg);border:1px solid var(--amber-light)"></div>Manual step</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red-bg);border:1px dashed var(--red-light)"></div>Gap / unknown</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--teal-bg);border:1px solid var(--teal-light)"></div>System record</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--blue-bg);border:1px solid var(--blue-light)"></div>Decision / branch</div>
+    </div>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="board" style="margin-bottom:16px">
+    <div class="phase-divider">
+      <div class="phase-num">1</div>
+      <div class="phase-title">Ordering &amp; Receiving Inventory</div>
+      <div class="phase-sub">Trigger: Low stock / forecast</div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>Operations</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-manual">Analyze inventory position</div>
+          <div class="arr">→</div>
+          <div class="node node-manual">AI-assisted forecast</div>
+          <div class="arr">→</div>
+          <div class="node node-normal">Place PO with vendor</div>
+          <div class="arr">→</div>
+          <div class="node node-decision">Vendor type?</div>
+        </div>
+        <div class="branch" style="margin-top:10px">
+          <div class="branch-path">
+            <div class="branch-label">Vendor A (direct)</div>
+            <div class="flow" style="flex-direction:column;align-items:flex-start;gap:6px">
+              <div class="node node-normal">Vendor A makes parts</div>
+              <div class="node node-normal">Ships to Forma</div>
+              <div class="node node-normal">Invoices Forma → A/P</div>
+            </div>
+          </div>
+          <div class="branch-path">
+            <div class="branch-label">Vendor B + C (multi-step)</div>
+            <div class="flow" style="flex-direction:column;align-items:flex-start;gap:6px">
+              <div class="node node-normal">Vendor B makes parts</div>
+              <div class="node node-normal">Ships to Vendor C</div>
+              <div class="node node-normal">Vendor C: clean / inspect / package</div>
+              <div class="node node-normal">Ships to Forma</div>
+              <div class="node node-normal">Vendor C invoices → A/P (NOT COGS)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>Quality / Compliance</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-normal">Receive, inspect, package parts</div>
+          <div class="arr">→</div>
+          <div class="node node-system">Record in QMS (not in ERP)</div>
+        </div>
+        <div class="flag" style="margin-top:8px"><strong>CRITICAL GAP:</strong>&nbsp;QMS and ERP are permanently siloed. Quality records and financial inventory records never touch.</div>
+      </div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>Finance</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-normal">Receive vendor invoice → A/P</div>
+          <div class="arr">→</div>
+          <div class="node node-normal">Pay invoice</div>
+          <div class="arr">→</div>
+          <div class="node node-system">ERP: (+) Inventory Asset @ HCAR</div>
+          <div class="arr">→</div>
+          <div class="node node-system">ERP: (−) Cash / Capture COGS</div>
+        </div>
+        <div class="note-block">Vendor C charges excluded from COGS — must be preserved in any future ERP</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="board" style="margin-bottom:16px">
+    <div class="phase-divider">
+      <div class="phase-num">2</div>
+      <div class="phase-title">Set Build &amp; Field Inventory Deployment</div>
+      <div class="phase-sub">Inventory moves from warehouse to field (consignment)</div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>Operations</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-gap">Plan trays to build [NOT VERIFIED]</div>
+          <div class="arr">→</div>
+          <div class="node node-manual">Assemble tray using variable BOM</div>
+          <div class="arr">→</div>
+          <div class="node node-system">Transfer HCAR → Field Inventory (ERP)</div>
+        </div>
+        <div class="flag flag-warn" style="margin-top:8px"><strong>Variable BOM:</strong>&nbsp;Not a fixed BOM — breaks standard ERP logic. Optional fields: Transfer Type, Set #, Tracking Number.</div>
+        <div class="flow" style="margin-top:10px">
+          <div class="node node-gap">Alt: direct component transfer to field (conditions unknown)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>Tray Tracking</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-gap">Tray Locator system [PLATFORM UNKNOWN]</div>
+          <div class="arr">→</div>
+          <div class="node node-manual">Tracks physical set locations outside ERP</div>
+          <div class="arr">→</div>
+          <div class="node node-gap">Return / reconciliation process [UNDOCUMENTED]</div>
+        </div>
+        <div class="flag" style="margin-top:8px"><strong>Critical unknown:</strong>&nbsp;Tray Locator platform has never been identified. Required for consignment BI design.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="board" style="margin-bottom:16px">
+    <div class="phase-divider">
+      <div class="phase-num">3</div>
+      <div class="phase-title">Surgery &amp; Case Documentation</div>
+      <div class="phase-sub">Trigger: Surgery performed with consignment tray</div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>1099 Sales Rep</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-normal">Surgery performed</div>
+          <div class="arr">→</div>
+          <div class="node node-manual">Rep manually completes case sheet (paper)</div>
+          <div class="arr">→</div>
+          <div class="node node-manual">Emails case sheet to Forma via Gmail</div>
+        </div>
+        <div class="flag flag-warn" style="margin-top:8px"><strong>Scope conflict:</strong>&nbsp;Andrew called email "marginally important" — but Gmail is the actual order-to-cash trigger. Must validate before deprioritizing email integration.</div>
+        <div class="note-block" style="margin-top:6px">Case sheet fields: Distributor · Surgeon · MD/DPM/DO · Indication · Pricing Strategy · First-time user · Hospital/ASC</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="board" style="margin-bottom:16px">
+    <div class="phase-divider">
+      <div class="phase-num">4</div>
+      <div class="phase-title">Sales Order Creation &amp; Restock</div>
+      <div class="phase-sub">Trigger: Case sheet received via email</div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>Internal Admin</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-manual">Receive case sheet email</div>
+          <div class="arr">→</div>
+          <div class="node node-manual">Manually create Sales Order in QB Desktop</div>
+          <div class="arr">→</div>
+          <div class="node node-system">ERP: Inventory pulled from HCAR</div>
+        </div>
+        <div class="flag" style="margin-top:8px"><strong>CRITICAL CONSTRAINT:</strong>&nbsp;Inventory must pull at Sales Order — not at invoice time. Non-standard rule. Any future ERP defaults will produce incorrect financials if not explicitly configured.</div>
+        <div class="field-list">
+          <span class="field">Distributor</span><span class="field">Surgeon</span><span class="field">MD/DPM/DO</span><span class="field">Indication</span><span class="field">Pricing Strategy</span><span class="field">First-time user</span><span class="field">Hospital or ASC</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>Operations</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-normal">Generate packing list</div>
+          <div class="arr">→</div>
+          <div class="node node-normal">Send restock to rep (90%+ = 1:1 ratio)</div>
+          <div class="arr">→</div>
+          <div class="node node-gap">Exception logic for non-1:1 [NOT VERIFIED]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="board" style="margin-bottom:28px">
+    <div class="phase-divider">
+      <div class="phase-num">5</div>
+      <div class="phase-title">Billing &amp; Payment</div>
+      <div class="phase-sub">Trigger: Hospital PO received (days or weeks after surgery)</div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>1099 Sales Rep</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-normal">Hospital provides PO to rep</div>
+          <div class="arr">→</div>
+          <div class="node node-gap">Rep forwards PO to Forma [channel not verified]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lane-row">
+      <div class="lane-label"><span>Finance</span></div>
+      <div class="lane-content">
+        <div class="flow">
+          <div class="node node-manual">Manually upload PO to ERP</div>
+          <div class="arr">→</div>
+          <div class="node node-system">Sales Order → Invoice (A/R)</div>
+          <div class="arr">→</div>
+          <div class="node node-normal">Hospital pays</div>
+          <div class="arr">→</div>
+          <div class="node node-system">A/R cleared · Revenue cycle closed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERP REQUIREMENTS -->
+  <div class="section-title">ERP Requirements — Must Be Preserved in Any Migration</div>
+  <div class="req-grid">
+    <div class="req-item critical">
+      <div class="req-item-title">Inventory pull at Sales Order</div>
+      <div class="req-item-body">Not at invoice time. Non-standard. Must be explicitly configured in any new ERP.</div>
+    </div>
+    <div class="req-item critical">
+      <div class="req-item-title">Variable Bill of Materials</div>
+      <div class="req-item-body">Tray contents vary per build. Not fixed BOM. Breaks standard ERP logic — must be custom handled.</div>
+    </div>
+    <div class="req-item">
+      <div class="req-item-title">Customer-specific pricing</div>
+      <div class="req-item-body">Construct or itemized. Unique per customer. Ability to update price files per account.</div>
+    </div>
+    <div class="req-item">
+      <div class="req-item-title">Royalty reports</div>
+      <div class="req-item-body">SKU-based, quarterly. Must exclude designing surgeon's own usage from calculation.</div>
+    </div>
+    <div class="req-item">
+      <div class="req-item-title">Commission reports</div>
+      <div class="req-item-body">Variable per distributor. Includes accruals and bonus incentives.</div>
+    </div>
+    <div class="req-item">
+      <div class="req-item-title">Barcode / scannable</div>
+      <div class="req-item-body">Not in use today. ERP must support it — future-proof requirement.</div>
+    </div>
+    <div class="req-item">
+      <div class="req-item-title">Serialization readiness</div>
+      <div class="req-item-body">Not serialized now. Must be able to activate in future without ERP rebuild.</div>
+    </div>
+    <div class="req-item">
+      <div class="req-item-title">SKU reorder analysis</div>
+      <div class="req-item-body">Based on historical velocity + forecasted usage. Must be native or AI-assistable.</div>
+    </div>
+  </div>
+
+  <!-- ROLES -->
+  <div class="section-title" style="margin-top:28px">Roles in ERP Flow</div>
+  <div class="roles-grid">
+    <div class="role-card">
+      <div class="role-name">Operations / Supply Chain</div>
+      <div class="role-task">Inventory planning, PO, receiving, set build, tray transfers</div>
+    </div>
+    <div class="role-card">
+      <div class="role-name">Quality / Compliance</div>
+      <div class="role-task">QMS recording (siloed from ERP). FDA non-negotiable.</div>
+    </div>
+    <div class="role-card">
+      <div class="role-name">Finance / Back Office</div>
+      <div class="role-task">A/P, A/R, COGS, invoice conversion, payment tracking</div>
+    </div>
+    <div class="role-card">
+      <div class="role-name">1099 Sales Reps</div>
+      <div class="role-task">Case sheet documentation, hospital PO coordination. High-touch, field-based.</div>
+    </div>
+    <div class="role-card">
+      <div class="role-name">Internal Admin</div>
+      <div class="role-task">Manual case sheet intake, sales order creation, packing list, restock dispatch</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

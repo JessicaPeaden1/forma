@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Forma Medical — Open Questions Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111418;
+    --surface2: #181c21;
+    --surface3: #1f242b;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8eaed;
+    --text2: #8a9099;
+    --text3: #545c66;
+    --critical: #ff4f4f;
+    --critical-bg: rgba(255,79,79,0.1);
+    --critical-border: rgba(255,79,79,0.25);
+    --high: #f59e0b;
+    --high-bg: rgba(245,158,11,0.1);
+    --high-border: rgba(245,158,11,0.25);
+    --medium: #3b82f6;
+    --medium-bg: rgba(59,130,246,0.1);
+    --medium-border: rgba(59,130,246,0.25);
+    --low: #22c55e;
+    --low-bg: rgba(34,197,94,0.1);
+    --low-border: rgba(34,197,94,0.25);
+    --nv: rgba(255,255,255,0.06);
+    --accent: #00d4ff;
+    --accent-dim: rgba(0,212,255,0.12);
+    --resolved-op: 0.3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* GRID BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  /* HEADER */
+  .header { margin-bottom: 2.5rem; }
+  .header-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background: var(--accent);
+  }
+  .header h1 {
+    font-size: clamp(26px, 4vw, 40px);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .header h1 span { color: var(--accent); }
+  .header-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 0.75rem;
+  }
+
+  /* STATS ROW */
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 2rem; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .stat::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .stat.s-open::after { background: var(--accent); }
+  .stat.s-critical::after { background: var(--critical); }
+  .stat.s-high::after { background: var(--high); }
+  .stat.s-resolved::after { background: var(--low); }
+  .stat-n {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat.s-open .stat-n { color: var(--accent); }
+  .stat.s-critical .stat-n { color: var(--critical); }
+  .stat.s-high .stat-n { color: var(--high); }
+  .stat.s-resolved .stat-n { color: var(--low); }
+  .stat-l {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* CONTROLS */
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+  .search-wrap { flex: 1; min-width: 200px; position: relative; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; pointer-events: none; font-family: 'IBM Plex Mono', monospace; }
+  .search-input {
+    width: 100%;
+    padding: 9px 12px 9px 34px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'Syne', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text3); }
+
+  .filter-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Syne', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+  }
+  .filter-btn:hover { border-color: var(--border2); color: var(--text); }
+  .filter-btn.active.all { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active.critical { background: var(--critical-bg); border-color: var(--critical); color: var(--critical); }
+  .filter-btn.active.high { background: var(--high-bg); border-color: var(--high); color: var(--high); }
+  .filter-btn.active.medium { background: var(--medium-bg); border-color: var(--medium); color: var(--medium); }
+  .filter-btn.active.low { background: var(--low-bg); border-color: var(--low); color: var(--low); }
+
+  .count-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 1rem;
+  }
+
+  /* GROUP */
+  .group-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 18px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .group-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s;
+    cursor: pointer;
+  }
+  .card:hover { border-color: var(--border2); transform: translateY(-1px); }
+  .card.resolved { opacity: var(--resolved-op); }
+
+  .card-header { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; }
+
+  .priority-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .priority-pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .priority-pill.critical { background: var(--critical-bg); border: 1px solid var(--critical-border); color: var(--critical); }
+  .priority-pill.critical::before { background: var(--critical); }
+  .priority-pill.high { background: var(--high-bg); border: 1px solid var(--high-border); color: var(--high); }
+  .priority-pill.high::before { background: var(--high); }
+  .priority-pill.medium { background: var(--medium-bg); border: 1px solid var(--medium-border); color: var(--medium); }
+  .priority-pill.medium::before { background: var(--medium); }
+  .priority-pill.low { background: var(--low-bg); border: 1px solid var(--low-border); color: var(--low); }
+  .priority-pill.low::before { background: var(--low); }
+
+  .q-text { font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--text); flex: 1; }
+
+  .chevron {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text3);
+    margin-left: 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: transform 0.2s;
+    user-select: none;
+  }
+  .chevron.open { transform: rotate(180deg); }
+
+  /* DETAIL */
+  .card-detail {
+    border-top: 1px solid var(--border);
+    padding: 14px 16px;
+    display: none;
+    background: var(--surface2);
+    animation: slideDown 0.15s ease;
+  }
+  .card-detail.open { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .detail-grid { display: grid; grid-template-columns: 90px 1fr; gap: 6px 12px; margin-bottom: 12px; }
+  .detail-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; padding-top: 2px; }
+  .detail-val { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+  .who-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .who-tag {
+    display: inline-flex;
+    padding: 2px 9px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    background: var(--surface3);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+  }
+
+  .nv-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .nv-tag {
+    display: inline-flex;
+    padding: 2px 9px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,212,255,0.2);
+    background: rgba(0,212,255,0.06);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+  }
+
+  .card-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .resolve-btn {
+    padding: 6px 14px;
+    border-radius: 7px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Syne', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .resolve-btn:hover { border-color: var(--low); color: var(--low); background: var(--low-bg); }
+  .resolve-btn.done { border-color: var(--low); color: var(--low); background: var(--low-bg); }
+
+  .empty { text-align: center; padding: 3rem; color: var(--text3); font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+
+  /* PROGRESS BAR */
+  .progress-wrap { margin-bottom: 1.5rem; }
+  .progress-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .progress-label span { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; }
+  .progress-track { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--low)); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* FOOTER */
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; gap: 8px; }
+  .footer-left { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); }
+  .footer-note { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); text-align: right; }
+
+  @media (max-width: 560px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .detail-grid { grid-template-columns: 1fr; }
+    .detail-label { padding-top: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">Forma Medical · Plus 1 Technology</div>
+    <h1>Open Questions<br /><span>& Discovery Gaps</span></h1>
+    <div class="header-sub">Section 7 — Items requiring client resolution before design or architecture can proceed</div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Resolution progress</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">/</span>
+      <input class="search-input" type="text" id="search" placeholder="Search questions, areas, owners…" oninput="render()" />
+    </div>
+    <button class="filter-btn active all" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn critical" onclick="setFilter('critical',this)">Critical</button>
+    <button class="filter-btn high" onclick="setFilter('high',this)">High</button>
+    <button class="filter-btn medium" onclick="setFilter('medium',this)">Medium</button>
+    <button class="filter-btn low" onclick="setFilter('low',this)">Low</button>
+  </div>
+
+  <div class="count-label" id="meta"></div>
+  <div id="list"></div>
+
+  <div class="footer">
+    <div class="footer-left">Last updated: March 11, 2026 · Forma Medical AI Implementation</div>
+    <div class="footer-note">No items assumed, guessed, or inferred. Each question must be resolved before corresponding design work can proceed.</div>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  { id:1, q:"What is the final ERP direction — Odoo, QB Online, QB Online Enterprise, Implantbase hybrid, or something else?", why:"Blocks all ERP-layer integration design. Architecture depends on this single decision.", who:["Andrew","Accounting team"], priority:"critical", area:"ERP Decision", frames:["ERP Decision"] },
+  { id:2, q:"What is Implantbase's API — does it support integrations needed for inventory, QB sync, and the BI layer?", why:"Leading inventory candidate. If it cannot connect, the most critical operational data source is inaccessible.", who:["Plus 1","Implantbase vendor"], priority:"critical", area:"ERP Decision", frames:["ERP Decision","Inventory Ownership"] },
+  { id:3, q:"What is the unnamed surgery tracking system Andrew references weekly?", why:"Andrew cites it as a primary input for his weekly AI review. Platform, format, and integration capability are completely unknown.", who:["Andrew"], priority:"high", area:"Unknown Systems", frames:["Surgery tracking system"] },
+  { id:4, q:"What is the Tray Locator system — platform, format, and integration capability?", why:"Physical kit tracking is outside the ERP. If this cannot connect, a critical operational data layer is missing from the BI architecture.", who:["Andrew"], priority:"high", area:"Unknown Systems", frames:["Tray locator"] },
+  { id:5, q:"What are the specific data fields and metrics Andrew tracks weekly — the full schema?", why:"Required to build the automated weekly business review workflow. Without the schema, no data pipeline can be designed.", who:["Andrew"], priority:"high", area:"Reporting Requirements", frames:["Reporting Requirements"] },
+  { id:6, q:"What are the exact three permission tiers and who belongs to each?", why:"Marc confirmed this 'will change the architecture.' Permissioning must be defined before the BI layer can be scoped.", who:["Andrew"], priority:"high", area:"Permissions", frames:["Permissions"] },
+  { id:7, q:"What is the full order-to-cash and consignment workflow in detail — including exceptions, returns, and reconciliation?", why:"Andrew flagged these as potentially a different project. Contains the highest-value automation candidates in the current state.", who:["Andrew"], priority:"high", area:"Process Workflow", frames:[] },
+  { id:8, q:"What are the specific recurring reports, dashboards, and strategic questions the BI layer must answer?", why:"Marc asked this directly in discovery and did not receive a complete answer. Required to scope the BI layer without inferring business intent.", who:["Andrew"], priority:"high", area:"Reporting Requirements", frames:["Reporting Requirements"] },
+  { id:9, q:"What are the exact royalty report logic and commission calculation rules?", why:"SKU-based royalties with surgeon exclusion logic and variable distributor commissions with accruals are operationally important and system-sensitive.", who:["Andrew"], priority:"medium", area:"Finance & Commissions", frames:[] },
+  { id:10, q:"What is the exact role of Bill.com vs. QuickBooks Desktop in the AP workflow?", why:"Bill.com appears on the tech stack. If it is processing payments, it may need to be in the integration architecture.", who:["Andrew","Finance"], priority:"medium", area:"Finance & Commissions", frames:[] },
+  { id:11, q:"What does 'Excel for inventory' and 'Excel for customer tracking' mean — are these separate files and what do they contain?", why:"Multiple Excel uses are listed on the tech stack. Consolidating or integrating them requires knowing what is in each file.", who:["Andrew"], priority:"medium", area:"Inventory Ownership", frames:["Inventory Ownership"] },
+  { id:12, q:"Are lot numbers and expiration dates currently tracked for inventory? If not, is this a compliance gap?", why:"Medical device implants typically require lot/expiration traceability. Current-state status is unconfirmed in all source materials.", who:["Andrew","QMS documentation"], priority:"medium", area:"Inventory Ownership", frames:["Inventory Ownership"] },
+  { id:13, q:"What are the return, reconciliation, and exception-handling processes for inventory?", why:"High-value consignment environments often have significant operational complexity in exception handling. Not documented in any materials.", who:["Andrew"], priority:"medium", area:"Process Workflow", frames:[] },
+  { id:14, q:"Does the field team need any direct inventory visibility in the future, even if they do not today?", why:"Affects future-state UX design and access tier assumptions.", who:["Andrew"], priority:"medium", area:"Permissions", frames:["Permissions"] },
+  { id:15, q:"How will Grok be integrated, if at all?", why:"Andrew's primary AI tool has no known API integration path. This directly limits multi-model architecture options.", who:["Jessica","Andrew"], priority:"medium", area:"AI Baseline", frames:[] },
+  { id:16, q:"Is there any existing automation anywhere in the current workflow?", why:"Not discussed in discovery. Partial automations must be identified before assuming everything is manual.", who:["Andrew"], priority:"medium", area:"Process Workflow", frames:[] },
+  { id:17, q:"Is QB Online Enterprise a viable fit for Forma's inventory complexity?", why:"Marc introduced this during discovery and Andrew had not heard of it. Needs evaluation against non-standard inventory requirements.", who:["Marc","Andrew's accountant"], priority:"medium", area:"ERP Decision", frames:["ERP Decision"] },
+  { id:18, q:"What is the QMS platform specifically, and does it have any integration capability?", why:"QMS records receiving/inspection outside the ERP. If it cannot connect, quality and inventory data remain permanently siloed.", who:["Andrew"], priority:"low", area:"Unknown Systems", frames:[] },
+  { id:19, q:"Which parts of the ERP flow document are current-state vs. aspirational discussion items?", why:"The ERP flow document may mix confirmed current-state with proposed future requirements. Validation needed before treating it as source of truth.", who:["Andrew"], priority:"low", area:"Process Workflow", frames:[] },
+  { id:20, q:"What is the actual size and composition of the back-office, finance, and operations teams?", why:"Important for role mapping and human handoff analysis. Current materials only document the sales team structure.", who:["Andrew"], priority:"low", area:"Team Structure", frames:[] },
+];
+
+const resolved = new Set();
+let activeFilter = 'all';
+
+const ORDER = ['ERP Decision','Inventory Ownership','Unknown Systems','Reporting Requirements','Permissions','Finance & Commissions','Process Workflow','AI Baseline','Team Structure'];
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function toggleCard(id) {
+  const d = document.getElementById('detail-' + id);
+  const c = document.getElementById('chevron-' + id);
+  if (!d) return;
+  d.classList.toggle('open');
+  c.classList.toggle('open');
+}
+
+function toggleResolve(id, e) {
+  e.stopPropagation();
+  if (resolved.has(id)) resolved.delete(id); else resolved.add(id);
+  render();
+}
+
+function updateStats() {
+  const total = questions.length;
+  const res = resolved.size;
+  const crit = questions.filter(q => q.priority === 'critical' && !resolved.has(q.id)).length;
+  const high = questions.filter(q => q.priority === 'high' && !resolved.has(q.id)).length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat s-open"><div class="stat-n">${total - res}</div><div class="stat-l">Open</div></div>
+    <div class="stat s-critical"><div class="stat-n">${crit}</div><div class="stat-l">Critical</div></div>
+    <div class="stat s-high"><div class="stat-n">${high}</div><div class="stat-l">High</div></div>
+    <div class="stat s-resolved"><div class="stat-n">${res}</div><div class="stat-l">Resolved</div></div>
+  `;
+  const pct = Math.round((res / total) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+function render() {
+  const search = document.getElementById('search').value.toLowerCase();
+
+  let filtered = questions.filter(q => {
+    const matchFilter = activeFilter === 'all' || q.priority === activeFilter;
+    const matchSearch = !search ||
+      q.q.toLowerCase().includes(search) ||
+      q.area.toLowerCase().includes(search) ||
+      q.who.join(' ').toLowerCase().includes(search) ||
+      q.frames.join(' ').toLowerCase().includes(search);
+    return matchFilter && matchSearch;
+  });
+
+  const groups = {};
+  filtered.forEach(q => {
+    if (!groups[q.area]) groups[q.area] = [];
+    groups[q.area].push(q);
+  });
+
+  let html = '';
+  let count = 0;
+
+  ORDER.forEach(area => {
+    if (!groups[area]) return;
+    html += `<div class="group-label">${area}</div>`;
+    groups[area].forEach(q => {
+      count++;
+      const isRes = resolved.has(q.id);
+      const whoTags = q.who.map(w => `<span class="who-tag">${w}</span>`).join('');
+      const nvTags = q.frames.map(f => `<span class="nv-tag">[NOT VERIFIED] ${f}</span>`).join('');
+
+      html += `
+        <div class="card ${isRes ? 'resolved' : ''}" onclick="toggleCard(${q.id})">
+          <div class="card-header">
+            <span class="priority-pill ${q.priority}">${q.priority}</span>
+            <span class="q-text">${q.q}</span>
+            <span class="chevron" id="chevron-${q.id}">▾</span>
+          </div>
+          <div class="card-detail" id="detail-${q.id}">
+            <div class="detail-grid">
+              <span class="detail-label">Why it matters</span>
+              <span class="detail-val">${q.why}</span>
+              <span class="detail-label">Who answers</span>
+              <span class="detail-val"><div class="who-tags">${whoTags}</div></span>
+              ${q.frames.length ? `<span class="detail-label">NV frames</span><span class="detail-val"><div class="nv-tags">${nvTags}</div></span>` : ''}
+            </div>
+            <div class="card-actions">
+              <button class="resolve-btn ${isRes ? 'done' : ''}" onclick="toggleResolve(${q.id},event)">
+                ${isRes ? '✓ Resolved — click to reopen' : 'Mark as resolved'}
+              </button>
+            </div>
+          </div>
+        </div>`;
+    });
+  });
+
+  document.getElementById('list').innerHTML = html || '<div class="empty">// no matching questions found</div>';
+  document.getElementById('meta').textContent = `${count} question${count !== 1 ? 's' : ''} shown`;
+  updateStats();
+}
+
+render();
+</script>
+</body>
+</html>
